@@ -13,8 +13,8 @@ jobs:
         uses: actions/setup-java@v1.4.3
         with:
           java-version: 19
-      - name: Run Kotlin Linter
-        run: ./gradlew ktlintStagingDebugCheck
-      - name: Run Unit Tests
-        run: ./gradlew testStagingDebugUnitTest
+      - name: Run Linter
+        run: ./gradlew lint
+      - name: Run Tests
+        run: ./gradlew test
     runs-on: ubuntu-latest
