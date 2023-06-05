@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "UHAConnect"
 include ':app'
 include ':backend'
+include ':shared'
