@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "134920031765",
+    "project_id": "uhaconnect",
+    "storage_bucket": "uhaconnect.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134920031765:android:312f8a6422e8843fdb481c",
+        "android_client_info": {
+          "package_name": "me.nathanfallet.uhaconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "134920031765-26kktmvhbui70lsg9ruhskqa716sq00f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZxZViLYsWfGMAQI39VIW9Oop-7IiGOVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "134920031765-26kktmvhbui70lsg9ruhskqa716sq00f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
