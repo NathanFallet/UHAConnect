@@ -79,7 +79,9 @@ fun PostView() {
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
                 Text(
-                    text = "Text de test Text de test Text de test Text de test Text de test Text de test Text de test Text de test Text de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de test",
+                    text = "Text de test Text de test Text de test Text de test Text de " +
+                            "test Text de test Text de test Text de test Text de testText de " +
+                            "testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de testText de test",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Black,
                     modifier = Modifier
