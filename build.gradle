@@ -16,9 +16,6 @@ buildscript {
     }
 }
 
-plugins {
-    id("io.gitlab.arturbosch.detekt") version "1.23.0"
-}
 
 task clean(type: Delete) {
     delete rootProject.buildDir
