@@ -14,6 +14,7 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import io.ktor.util.pipeline.PipelineContext
 import me.nathanfallet.uhaconnect.database.Database
+import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.Users
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
