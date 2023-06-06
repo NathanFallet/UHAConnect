@@ -5,6 +5,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import me.nathanfallet.uhaconnect.models.Comments
+import me.nathanfallet.uhaconnect.models.Favorites
+import me.nathanfallet.uhaconnect.models.Follows
+import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.Posts
 import me.nathanfallet.uhaconnect.models.Users
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -36,6 +41,11 @@ object Database {
         // Create tables (if needed)
         transaction {
             SchemaUtils.create(Users)
+            SchemaUtils.create(Follows)
+            SchemaUtils.create(Posts)
+            SchemaUtils.create(Favorites)
+            SchemaUtils.create(Comments)
+            SchemaUtils.create(Notifications)
         }
 
         // Launch expiration

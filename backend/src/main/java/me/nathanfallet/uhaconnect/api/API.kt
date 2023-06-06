@@ -42,7 +42,7 @@ fun Route.api() {
                     call.respond(mapOf("error" to "Invalid user"))
                     return@get
                 }
-                call.respond(User(1))
+                call.respond(user)
             }
             put("/me") {
                 // TODO: Update my profile
