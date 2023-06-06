@@ -7,7 +7,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.Users
 import org.jetbrains.exposed.sql.selectAll
 
@@ -23,7 +22,7 @@ fun Route.api() {
 
         }
         get("/me") {
-            call.respond(User(1))
+            //call.respond(User(1))
         }
     }
 }
