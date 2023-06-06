@@ -4,8 +4,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -87,8 +88,36 @@ fun PostView() {
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .padding(horizontal = 8.dp)
-
                 )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.Share,
+                        contentDescription = "Share",
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .padding(horizontal = 4.dp)
+
+                    )
+                    Icon(
+                        Icons.Filled.Star,
+                        contentDescription = "Favorite",
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .padding(horizontal = 4.dp)
+
+                    )
+                    Icon(
+                        Icons.Outlined.Create,
+                        contentDescription = "Comment",
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .padding(horizontal = 4.dp)
+
+                    )
+                }
 
 
             }
