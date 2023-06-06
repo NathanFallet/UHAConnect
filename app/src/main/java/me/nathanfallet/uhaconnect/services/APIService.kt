@@ -19,7 +19,7 @@ class APIService {
     // Constants
 
     companion object : SingletonHolder<APIService, Unit>({ APIService() }) {
-        private const val baseUrl = "https://bdensisa.org"
+        private const val baseUrl = "https://uhaconnect.nathanfallet.me"
     }
 
     // Client
