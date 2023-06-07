@@ -13,16 +13,6 @@
         android:theme="@style/Theme.UHAConnect"
         tools:targetApi="31">
         <activity
-            android:name=".features.Favs.FavsView"
-            android:exported="false"
-            android:label="@string/title_activity_favs_view"
-            android:theme="@style/Theme.UHAConnect" />
-        <activity
-            android:name=".features.post.PostView"
-            android:exported="false"
-            android:label="@string/title_activity_post_view"
-            android:theme="@style/Theme.UHAConnect" />
-        <activity
             android:name=".features.MainActivity"
             android:exported="true"
             android:label="@string/app_name"

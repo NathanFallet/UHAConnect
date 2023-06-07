@@ -39,6 +39,16 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding)
                     )
                 }
+                composable("post") {
+                    HomeView(
+                        modifier = Modifier.padding(padding)
+                    )
+                }
+                composable("favs") {
+                    HomeView(
+                        modifier = Modifier.padding(padding)
+                    )
+                }
             }
         }
     }
