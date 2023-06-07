@@ -19,7 +19,12 @@ import me.nathanfallet.uhaconnect.features.Favs.FavsView
 import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
+import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
+import me.nathanfallet.uhaconnect.features.login.LoginPage
+import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +57,23 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding)
                     )
                 }
+
+                composable("login") {
+                    LoginPage(
+                        navigate = navController::navigate,
+                        onCreateAccountClick = { navController.navigate("createAccount") },
+                        onResetPasswordClick = { navController.navigate("resetPassword") }
+                    )
+                }
+                composable("createAccount") {
+                    CreateAccountPage(navigate = { destination: String -> navController.navigate(destination) })
+                }
+                composable("resetPassword") {
+                    ResetPasswordPage(navigate = { destination: String -> navController.navigate(destination) })
+
+                }
+
+
                 composable("notifications") {
                     NotificationView()
                 }
@@ -65,6 +87,7 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding)
                     )
                 }
+
             }
         }
     }
