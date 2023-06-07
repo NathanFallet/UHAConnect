@@ -1,3 +1,5 @@
+package me.nathanfallet.uhaconnect.features.notifications
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
