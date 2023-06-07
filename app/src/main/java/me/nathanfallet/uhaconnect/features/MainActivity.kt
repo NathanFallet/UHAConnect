@@ -1,9 +1,5 @@
 package me.nathanfallet.uhaconnect.features
 
-
-import CreateAccountPage
-import LoginPage
-import ResetPasswordPage
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,6 +19,9 @@ import me.nathanfallet.uhaconnect.features.Favs.FavsView
 import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
+import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
+import me.nathanfallet.uhaconnect.features.login.LoginPage
+import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
 

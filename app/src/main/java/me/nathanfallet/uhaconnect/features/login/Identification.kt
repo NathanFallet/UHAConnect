@@ -1,3 +1,5 @@
+package me.nathanfallet.uhaconnect.features.login
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
