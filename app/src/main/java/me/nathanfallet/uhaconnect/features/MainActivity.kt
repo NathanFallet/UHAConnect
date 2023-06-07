@@ -1,6 +1,5 @@
 package me.nathanfallet.uhaconnect.features
 
-import PostView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +17,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
 import me.nathanfallet.uhaconnect.features.home.HomeView
+import me.nathanfallet.uhaconnect.features.notifications.NotificationView
+import me.nathanfallet.uhaconnect.features.post.PostView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,6 +51,9 @@ fun UHAConnectApp() {
                     HomeView(
                         modifier = Modifier.padding(padding)
                     )
+                }
+                composable("notifications") {
+                    NotificationView()
                 }
                 composable("post") {
                     PostView(
