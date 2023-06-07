@@ -15,19 +15,16 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(
-    title: String,
-    onBackClicked: () -> Unit
-) {
+fun NotificationView() {
     Surface(
         color = Color.LightGray
     ) {
         
 
     TopAppBar(
-        title = { Text(text = title, color = Color.White) },
+        title = { Text(text = "UHAConnect", color = Color.White) },
         navigationIcon = {
-            IconButton(onClick = { onBackClicked() }) {
+            IconButton(onClick = {  }) {
                 Icon(
                     Icons.Filled.ArrowBack,
                     contentDescription = "Back"
@@ -90,25 +87,9 @@ fun TopBar(
 }
 
 
-
-
-@Composable
-fun App() {
-    MaterialTheme {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TopBar(title = "UHAConnect", onBackClicked = { /* Action de retour */ })
-
-            // Reste du contenu de votre application
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewApp() {
-    App()
+    NotificationView()
 }
 

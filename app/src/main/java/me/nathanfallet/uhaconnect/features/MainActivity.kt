@@ -1,5 +1,6 @@
 package me.nathanfallet.uhaconnect.features
 
+import NotificationView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,6 +39,9 @@ fun UHAConnectApp() {
                     HomeView(
                         modifier = Modifier.padding(padding)
                     )
+                }
+                composable("notifications") {
+                    NotificationView()
                 }
             }
         }
