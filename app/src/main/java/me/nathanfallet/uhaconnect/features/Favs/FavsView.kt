@@ -34,8 +34,11 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostView() {
-    Surface(color = Color.LightGray) {
+fun FavsView(modifier: Modifier) {
+    Surface(
+        modifier,
+        color = Color.LightGray
+        ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -104,65 +107,58 @@ fun PostView() {
                         }
                     },
                 )
-
-
-            }
-
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .padding(vertical = 8.dp)
-                    .border(
-                        border = BorderStroke(1.dp, Color.Black),
-                        shape = MaterialTheme.shapes.medium
-                    )
-            ) {
-                Column(
-                    modifier = Modifier.padding(8.dp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .padding(vertical = 8.dp)
+                        .border(
+                            border = BorderStroke(1.dp, Color.Black),
+                            shape = MaterialTheme.shapes.medium
+                        )
                 ) {
-                    Text(
-                        text = "Titre article",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.Black,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                    Text(
-                        text = "Publié par xxx, le jj.mm.annee",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Black,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                    Text(
-                        text = "Lorem Elsass ipsum Heineken siuglopf aabitant ornare geht's quam. réchime eget météor hopla id, gewurztraminer schneck Racing. Kabinetpapier turpis...",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Black,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        Button(
-                            onClick = {},
-                            //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
-                            modifier = Modifier.padding(start = 8.dp)
-                        ) {
-                            Text(text = "Show more", color = Color.White)
+                    Column(
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Titre article",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.Black,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                        Text(
+                            text = "Publié par xxx, le jj.mm.annee",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Black,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                        Text(
+                            text = "Lorem Elsass ipsum Heineken siuglopf aabitant ornare geht's quam. réchime eget météor hopla id, gewurztraminer schneck Racing. Kabinetpapier turpis...",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Black,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            Button(
+                                onClick = {},
+                                //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
+                                modifier = Modifier.padding(start = 8.dp)
+                            ) {
+                                Text(text = "Show more", color = Color.White)
+                            }
                         }
+
                     }
-
                 }
-            }
 
-
-
-
-                }
             }
         }
+        }
+    }
 
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewApp() {
-    PostView()
+    FavsView(Modifier.fillMaxSize())
 }

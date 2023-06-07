@@ -30,8 +30,10 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostView() {
-    Surface(color = Color.LightGray) {
+fun PostView(modifier: Modifier) {
+    Surface(modifier,
+        color = Color.LightGray
+    ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -178,5 +180,5 @@ fun PostView() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewApp() {
-    PostView()
+    PostView(Modifier.fillMaxSize())
 }
