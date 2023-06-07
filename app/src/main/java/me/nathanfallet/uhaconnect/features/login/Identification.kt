@@ -1,11 +1,7 @@
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,48 +10,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
-class Identification : ComponentActivity() {
-    private var showCreateAccountPage by mutableStateOf(false)
-    private var showResetPasswordPage by mutableStateOf(false)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            UHAConnectTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    if (showCreateAccountPage) {
-                        CreateAccountPage()
-                    } else if (showResetPasswordPage) {
-                        ResetPasswordPage()
-                    } else {
-                        LoginPage(
-                            onCreateAccountClick = { showCreateAccountPage = true },
-                            onResetPasswordClick = { showResetPasswordPage = true }
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage(
+    navigate: (String) -> Unit,
     onCreateAccountClick: () -> Unit,
     onResetPasswordClick: () -> Unit
 ) {
@@ -66,70 +38,106 @@ fun LoginPage(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val customFontFamily = null
-
         Text(
             text = "UHA Connect",
             style = MaterialTheme.typography.headlineLarge.copy(
-                fontFamily = customFontFamily,
+                fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
             ),
             modifier = Modifier.padding(vertical = 120.dp)
         )
 
+
         var username by remember { mutableStateOf("") }
 
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Nom d'utilisateur") },
+            label = { Text("Username") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .padding(vertical = 8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            keyboardActions = KeyboardActions(),
+            textStyle = LocalTextStyle.current.copy(
+                fontFamily = FontFamily.Default,
+                fontSize = 14.sp
+            ),
+            singleLine = true,
+            maxLines = 1,
+            visualTransformation = PasswordVisualTransformation()
         )
 
         OutlinedTextField(
             value = "",
             onValueChange = {},
-            label = { Text("Mot de passe") },
+            label = { Text("Password") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 5.dp)
-                .background(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(top = 0.dp, bottom = 0.dp)
+                .padding(top = 0.dp, bottom = 0.dp),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
 
-        ClickableText(
-            text = AnnotatedString("Mot de passe oublié?"),
-            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline),
-            modifier = Modifier.padding(top = 8.dp),
-            onClick = { onResetPasswordClick() }
-        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            ClickableText(
+                text = AnnotatedString("Forgotten your password?"),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                    textAlign = TextAlign.Center
+                ),
+                onClick = { onResetPasswordClick() }
+            )
+        }
+
+
+
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+
+                .padding(vertical = 33.dp, horizontal = 2.dp)
+        ) {
+            Text(
+                text = "Log in",
+                color = Color.Black
+            )
+        }
 
         ClickableText(
-            text = AnnotatedString("Créer un compte"),
-            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline),
-            modifier = Modifier.padding(top = 20.dp),
+            text = AnnotatedString.Builder().apply {
+                pushStyle(style = SpanStyle(color = Color.Black))
+                append("You don't have an account? ")
+                pushStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline))
+                append("Join us")
+                pop()
+            }.toAnnotatedString(),
+            modifier = Modifier.padding(top = 20.dp,bottom = 40.dp),
             onClick = { offset ->
-                if (offset != null) {
+                if (offset >= 27) {
                     onCreateAccountClick()
                 }
             }
         )
+
+
+
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateAccountPage() {
+fun CreateAccountPage(navigate: Any) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -138,30 +146,54 @@ fun CreateAccountPage() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Créer un compte",
+            text = "Sign up",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
             ),
             modifier = Modifier.padding(vertical = 50.dp)
         )
+        var firstname by remember { mutableStateOf("") }
+        var lastname by remember { mutableStateOf("") }
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
-        var confirmPassword by remember { mutableStateOf("") }
         var mail by remember { mutableStateOf("") }
-        var confirmMail by remember { mutableStateOf("") }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            OutlinedTextField(
+                value = firstname,
+                onValueChange = { firstname = it },
+                label = { Text("First Name") },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+
+
+
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            OutlinedTextField(
+                value = lastname,
+                onValueChange = { lastname = it },
+                label = { Text("Last Name") },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp)
+
+            )
+        }
 
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Nom d'utilisateur") },
+            label = { Text("Username") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
-                .background(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
+
 
         )
 
@@ -171,73 +203,58 @@ fun CreateAccountPage() {
             label = { Text("Mail") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .padding(vertical = 8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
 
+
+
+
         OutlinedTextField(
-            value = confirmMail,
-            onValueChange = { confirmMail = it },
-            label = { Text("Confirmez le mail") },
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .padding(vertical = 8.dp),
+            visualTransformation = PasswordVisualTransformation()
         )
 
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Mot de passe") },
+            label = { Text("Confirm password") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .padding(vertical = 8.dp),
+            visualTransformation = PasswordVisualTransformation()
         )
-
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirmez le mot de passe") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
-        )
-
         Button(
             onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = Color.Blue.copy(alpha = 0.75f),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(vertical = 0.dp, horizontal = 0.dp)
+                .padding(vertical = 33.dp, horizontal = 2.dp)
+
         ) {
             Text(
-                text = "Créer votre compte",
+                text = "Create your account",
                 color = Color.Black
             )
         }
+
     }
 }
 
+
+
+
+
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResetPasswordPage() {
+fun ResetPasswordPage(navigate: Any) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -246,40 +263,43 @@ fun ResetPasswordPage() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Réinitialisation du mot de passe",
+            text = "Find your account",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp
             ),
             modifier = Modifier.padding(vertical = 130.dp)
         )
+
+        Text(
+            text = "If you have an account, you will receive a verification mail.",
+            color = Color.Black,
+            modifier = Modifier.padding(top = 0.dp, start = 0.dp)
+        )
+
+
         var email by remember { mutableStateOf("") }
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Adresse e-mail") },
+            label = { Text("Email") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(
-                    color = Color.Gray.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .padding(vertical = 8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
+
 
         Button(
             onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = Color.Blue.copy(alpha = 0.75f),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(vertical = 1.dp, horizontal = 0.dp)
+                .padding(vertical = 33.dp, horizontal = 2.dp)
+
         ) {
             Text(
-                text = "Réinitialiser le mot de passe",
+                text = "Send verification email",
                 color = Color.Black
             )
         }
@@ -290,7 +310,12 @@ fun ResetPasswordPage() {
 @Composable
 fun LoginPagePreview() {
     UHAConnectTheme {
-        LoginPage({}, {})
+        LoginPage(
+            navigate = {},
+            onCreateAccountClick = {},
+            onResetPasswordClick = {}
+        )
+
     }
 }
 
@@ -298,7 +323,7 @@ fun LoginPagePreview() {
 @Composable
 fun CreateAccountPagePreview() {
     UHAConnectTheme {
-        CreateAccountPage()
+        CreateAccountPage(navigate = {})
     }
 }
 
@@ -306,6 +331,7 @@ fun CreateAccountPagePreview() {
 @Composable
 fun ResetPasswordPagePreview() {
     UHAConnectTheme {
-        ResetPasswordPage()
+        ResetPasswordPage(navigate = {})
     }
 }
+

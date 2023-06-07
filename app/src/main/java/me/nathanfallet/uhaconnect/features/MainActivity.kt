@@ -1,5 +1,9 @@
 package me.nathanfallet.uhaconnect.features
 
+
+import CreateAccountPage
+import LoginPage
+import ResetPasswordPage
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +45,21 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding)
                     )
                 }
+                composable("login") {
+                    LoginPage(
+                        navigate = navController::navigate,
+                        onCreateAccountClick = { navController.navigate("createAccount") },
+                        onResetPasswordClick = { navController.navigate("resetPassword") }
+                    )
+                }
+                composable("createAccount") {
+                    CreateAccountPage(navigate = { destination: String -> navController.navigate(destination) })
+                }
+                composable("resetPassword") {
+                    ResetPasswordPage(navigate = { destination: String -> navController.navigate(destination) })
+
+                }
+
             }
         }
     }
