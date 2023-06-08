@@ -15,27 +15,18 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.LoginPayload
-import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
 
-class APIService(arg: Unit) {
+class APIService {
 
     // Constants
 
-    companion object : SingletonHolder<APIService, Unit>({
-        val arg = Unit
-        APIService(arg)
-    }) {
+    companion object : SingletonHolder<APIService, Unit>({ APIService() }) {
         private const val baseUrl = "https://uhaconnect.nathanfallet.me"
-        private var instance: APIService? = null
-        override fun getInstance(arg: Unit): APIService {
-            return instance ?: synchronized(this) {
-                instance ?: APIService(arg).also { instance = it }
-            }
-        }
     }
 
     // Client
