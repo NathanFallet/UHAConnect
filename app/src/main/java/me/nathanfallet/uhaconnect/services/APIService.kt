@@ -6,12 +6,18 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.request
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
 
 class APIService {
@@ -54,5 +60,21 @@ class APIService {
     suspend fun getMe(token: String): User {
         return createRequest(HttpMethod.Get, "/users/me", token).body()
     }
+
+    suspend fun login(username: String, password: String): UserToken? {
+        val payload = LoginPayload(username, password)
+        val json = Json.encodeToString(payload)
+
+        return try {
+            val response = createRequest(HttpMethod.Post, "/auth/login") {
+                contentType(ContentType.Application.Json)
+                setBody(json)
+            }
+            response.body()
+        } catch (exception: Exception) {
+            null
+        }
+    }
+
 
 }
