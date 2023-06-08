@@ -1,3 +1,5 @@
+package me.nathanfallet.uhaconnect.features.Favs
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers

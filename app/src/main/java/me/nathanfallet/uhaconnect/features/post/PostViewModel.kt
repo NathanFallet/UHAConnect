@@ -42,6 +42,7 @@ class PostViewModel : ViewModel() {
                 _comments.value = comments
                 _user.value = user
             } catch (e: Exception) {
+                null
             }
         }
 

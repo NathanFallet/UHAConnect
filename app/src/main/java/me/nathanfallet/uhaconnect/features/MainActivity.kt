@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
+import me.nathanfallet.uhaconnect.features.Favs.FavsViewModel
 import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
