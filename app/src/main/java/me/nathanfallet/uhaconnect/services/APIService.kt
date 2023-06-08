@@ -11,6 +11,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
 
@@ -53,6 +54,14 @@ class APIService {
     @Throws(Exception::class)
     suspend fun getMe(token: String): User {
         return createRequest(HttpMethod.Get, "/users/me", token).body()
+    }
+
+    suspend fun getPost(token: String, id: Int): Post {
+        return createRequest(HttpMethod.Get, "/posts/$id", token).body()
+    }
+
+    suspend fun getUser(token: String, id: Int): User {
+        return createRequest(HttpMethod.Get, "/users/$id", token).body()
     }
 
 }
