@@ -134,7 +134,7 @@ fun UHAConnectApp() {
         ) { padding ->
             NavHost(
                 navController = navController,
-                // TODO: Change startDestination to "login" when login is implemented
+                // /TODO: Change startDestination to "login" when login is implemented
                 startDestination = if (user != null) "home" else "home"
             ) {
                 composable("home") {
