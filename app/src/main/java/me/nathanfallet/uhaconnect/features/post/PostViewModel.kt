@@ -1,3 +1,5 @@
+package me.nathanfallet.uhaconnect.features.post
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,7 +10,7 @@ import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
-class PostViewModel : ViewModel() {
+class PostViewModel(token : String) : ViewModel() {
 
     private val _post = MutableLiveData<Post>()
     val post: LiveData<Post>
@@ -25,7 +27,7 @@ class PostViewModel : ViewModel() {
 
 
     init {
-        val token = "token"
+//        val token = "token"
 
         viewModelScope.launch {
             try {

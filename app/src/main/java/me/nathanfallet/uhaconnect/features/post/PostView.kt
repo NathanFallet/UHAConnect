@@ -1,6 +1,6 @@
 package me.nathanfallet.uhaconnect.features.post
 
-import PostViewModel
+import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -44,6 +44,7 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 fun PostView(modifier: Modifier, viewModel: PostViewModel) {
     val post by viewModel.post.observeAsState()
     val comments by viewModel.comments.observeAsState()
+    val user by viewModel.user.observeAsState()
 
     Surface(
         modifier = modifier,
@@ -55,7 +56,9 @@ fun PostView(modifier: Modifier, viewModel: PostViewModel) {
                     Text(
                         text = "UHAConnect",
                         color = Color.White,
-                        modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.CenterHorizontally)
                     )
                 },
                 navigationIcon = {
@@ -85,7 +88,10 @@ fun PostView(modifier: Modifier, viewModel: PostViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .border(border = BorderStroke(1.dp, Color.Black), shape = MaterialTheme.shapes.medium)
+                    .border(
+                        border = BorderStroke(1.dp, Color.Black),
+                        shape = MaterialTheme.shapes.medium
+                    )
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
                     post?.let { post ->
@@ -146,7 +152,9 @@ fun PostView(modifier: Modifier, viewModel: PostViewModel) {
                     value = TextFieldValue(""),
                     onValueChange = {},
                     label = { Text("Write a comment") },
-                    modifier = Modifier.weight(1f).padding(end = 8.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
                 )
                 IconButton(onClick = {}) {
                     Icon(

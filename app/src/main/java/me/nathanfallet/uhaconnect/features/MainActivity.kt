@@ -1,7 +1,6 @@
 package me.nathanfallet.uhaconnect.features
 
-import FavsViewModel
-import PostViewModel
+import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -147,7 +146,7 @@ fun UHAConnectApp() {
                     NotificationView()
                 }
                 composable("post") {
-                    val viewModel = PostViewModel()
+                    val viewModel = PostViewModel(token!!)
                     PostView(
                         modifier = Modifier.padding(padding),
                         viewModel = viewModel

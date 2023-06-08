@@ -1,6 +1,5 @@
 package me.nathanfallet.uhaconnect.features.Favs
 
-import FavsViewModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
