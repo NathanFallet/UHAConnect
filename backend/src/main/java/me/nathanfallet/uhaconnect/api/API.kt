@@ -135,9 +135,8 @@ fun Route.api() {
                 call.respond(user)
             }
             put("/me") {
-                // TODO: Update my profile
                 val user = getUser() ?: run {
-                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.response.status(HttpStatusCode.Unauthorized)
                     call.respond(mapOf("error" to "User not found"))
                     return@put
                 }
@@ -179,6 +178,24 @@ fun Route.api() {
                     return@get
                 }
                 call.respond(user)
+            }
+            get("/{id}/posts") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid user id"))
+                    return@get
+                }
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+                val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+                val posts = Database.dbQuery {
+                    Posts
+                        .join(Users, JoinType.INNER)
+                        .select { Posts.user_id eq id }
+                        .orderBy(Posts.date, SortOrder.DESC)
+                        .limit(limit, offset)
+                        .map(Posts::toPost)
+                }
+                call.respond(posts)
             }
         }
         route("/posts") {
@@ -249,7 +266,7 @@ fun Route.api() {
                     return@put
                 }
                 val user = getUser() ?: run {
-                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.response.status(HttpStatusCode.Unauthorized)
                     call.respond(mapOf("error" to "User not found"))
                     return@put
                 }
