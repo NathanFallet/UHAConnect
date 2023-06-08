@@ -7,7 +7,8 @@ import kotlinx.serialization.Serializable
 data class Post(
     val id: Int,
     val user_id: Int,
-    val title: String,
-    val content: String,
-    val date: Instant
+    var title: String,
+    var content: String,
+    val date: Instant,
+    val user: User? = null
 )
