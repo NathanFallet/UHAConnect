@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">UHAConnect</string>
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_identification">identification</string>
+
+    <string name="title_activity_notification_view">NotificationView</string>
+    <string name="profile_logout">Logout</string>
+    <string name="profile_profile">Profile</string>
+    <string name="profile_settings">Settings</string>
+    <string name="title_activity_post_view">PostView</string>
+    <string name="title_activity_favs_view">FavsView</string>
+
 </resources>
