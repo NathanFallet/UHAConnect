@@ -1,5 +1,6 @@
 package me.nathanfallet.uhaconnect.features
 
+import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
+import me.nathanfallet.uhaconnect.features.Favs.FavsViewModel
 import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
@@ -35,7 +37,6 @@ import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
 import me.nathanfallet.uhaconnect.features.profile.ProfileView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -167,13 +168,17 @@ fun UHAConnectApp() {
                     )
                 }
                 composable("post") {
+                    val viewModel = PostViewModel(token!!)
                     PostView(
-                        modifier = Modifier.padding(padding)
+                        modifier = Modifier.padding(padding),
+                        viewModel = viewModel
                     )
                 }
                 composable("favs") {
+                    val viewModel = FavsViewModel(token!!)
                     FavsView(
-                        modifier = Modifier.padding(padding)
+                        modifier = Modifier.padding(padding),
+                        viewModel = viewModel
                     )
                 }
                 composable("profile"){
@@ -181,7 +186,6 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate)
                 }
-
             }
         }
     }
