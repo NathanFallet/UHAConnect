@@ -4,15 +4,15 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 
 object Favorites : Table() {
-    val id_user = reference("id_user", Users)
-    val id_post = reference("id_post", Posts)
+    val user_id = reference("user_id", Users)
+    val post_id = reference("id_post", Posts)
 
-    override val primaryKey = PrimaryKey(id_user, id_post, name = "PK_favorites")
+    override val primaryKey = PrimaryKey(user_id, post_id, name = "PK_favorites")
 
     fun toFavorites(row: ResultRow): Favorite {
         return Favorite(
-            id_user = row[id_user].value,
-            id_post = row[id_post].value
+            user_id = row[user_id].value,
+            post_id = row[post_id].value
         )
     }
 

@@ -55,6 +55,12 @@ class APIService {
     suspend fun getMe(token: String): User {
         return createRequest(HttpMethod.Get, "/users/me", token).body()
     }
+    suspend fun getUser(id:Int, token: String): User {
+        return createRequest(HttpMethod.Get, "/users/$id", token).body()
+    }
+    suspend fun getUserPosts(id:Int, token: String): List<Post> {
+        return createRequest(HttpMethod.Get, "/users/$id/post", token).body()
+    }
 
     suspend fun getPost(token: String, id: Int): Post {
         return createRequest(HttpMethod.Get, "/posts/$id", token).body()
