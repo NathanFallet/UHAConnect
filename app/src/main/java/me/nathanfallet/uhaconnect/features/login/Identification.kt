@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +32,8 @@ import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 fun LoginPage(
     navigate: (String) -> Unit,
     onCreateAccountClick: () -> Unit,
-    onResetPasswordClick: () -> Unit
+    onResetPasswordClick: () -> Unit,
+    login: (UserToken) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -315,11 +317,13 @@ fun LoginPagePreview() {
         LoginPage(
             navigate = {},
             onCreateAccountClick = {},
-            onResetPasswordClick = {}
+            onResetPasswordClick = {},
+            {}
         )
 
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

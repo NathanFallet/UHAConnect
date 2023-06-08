@@ -1,23 +1,19 @@
 package me.nathanfallet.uhaconnect.features.login
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.RegisterPayload
+import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.services.APIService
-import me.nathanfallet.uhaconnect.features.login.ui.theme.UHAConnectTheme
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    val loginUser: (UserToken) -> Unit
+) : ViewModel() {
     var username by mutableStateOf("")
     var password by mutableStateOf("")
     var firstname by mutableStateOf("")
@@ -27,12 +23,16 @@ class LoginViewModel : ViewModel() {
     fun login() {
         if (validateLoginForm()) {
             viewModelScope.launch {
-                // Effectuer l'appel à l'API pour la connexion
-                val result = APIService.getInstance().login(username, password)
-                if (result.success) {
+                APIService.getInstance(Unit).login(
+                    LoginPayload(
+                        username, password
+                    )
+                )?.let {
+                    loginUser(it)
                     println("Connexion réussie pour l'utilisateur : $username")
-                } else {
-                    println("Échec de la connexion : ${result.errorMessage}")
+                } ?: run {
+
+                    println("Échec de la connexion ")
                 }
             }
         } else {
@@ -42,7 +42,20 @@ class LoginViewModel : ViewModel() {
 
     fun createAccount() {
         if (validateCreateAccountForm()) {
-            println("Création de compte réussie : $firstname $lastname")
+            viewModelScope.launch {
+                val userToken =
+                    APIService.getInstance(Unit).createAccount(
+                        RegisterPayload(
+                            firstname, lastname, username, mail, password
+                        )
+                    )
+                userToken?.let {
+                    loginUser(userToken)
+                } ?: run {
+
+                }
+                println("Création de compte réussie : $firstname $lastname")
+            }
         } else {
             println("Impossible de créer le compte : veuillez vérifier les informations fournies")
         }
@@ -75,69 +88,5 @@ class LoginViewModel : ViewModel() {
 
     private fun validateResetPasswordForm(): Boolean {
         return mail.isNotBlank()
-    }
-}
-
-class LoginActivity : ComponentActivity() {
-    private val viewModel: LoginViewModel by viewModel()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            UHAConnectTheme {
-                Surface {
-                    LoginScreen(viewModel)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun LoginScreen(viewModel: LoginViewModel) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var firstname by remember { mutableStateOf("") }
-    var lastname by remember { mutableStateOf("") }
-    var mail by remember { mutableStateOf("") }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        Text(text = "Login Form")
-        // Composants pour la saisie des informations de connexion (username, password)
-        // Utilisez la variable locale "username" et "password" pour la saisie des valeurs
-
-        Button(onClick = {
-            viewModel.username = username
-            viewModel.password = password
-            viewModel.login()
-        }) {
-            Text(text = "Login")
-        }
-
-        Text(text = "Create Account Form")
-        // Composants pour la saisie des informations de création de compte (firstname, lastname, username, password, mail)
-        // Utilisez les variables locales "firstname", "lastname", "username", "password" et "mail" pour la saisie des valeurs
-
-        Button(onClick = {
-            viewModel.firstname = firstname
-            viewModel.lastname = lastname
-            viewModel.username = username
-            viewModel.password = password
-            viewModel.mail = mail
-            viewModel.createAccount()
-        }) {
-            Text(text = "Create Account")
-        }
-
-        Text(text = "Reset Password Form")
-        // Composants pour la saisie des informations de réinitialisation du mot de passe (mail)
-        // Utilisez la variable locale "mail" pour la saisie de la valeur
-
-        Button(onClick = {
-            viewModel.mail = mail
-            viewModel.resetPassword()
-        }) {
-            Text(text = "Reset Password")
-        }
     }
 }

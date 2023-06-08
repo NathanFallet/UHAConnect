@@ -17,13 +17,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
 import me.nathanfallet.uhaconnect.features.home.HomeView
-import me.nathanfallet.uhaconnect.features.notifications.NotificationView
-import me.nathanfallet.uhaconnect.features.post.PostView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
+import me.nathanfallet.uhaconnect.features.notifications.NotificationView
+import me.nathanfallet.uhaconnect.features.post.PostView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
-
 
 
 class MainActivity : ComponentActivity() {
@@ -62,7 +61,8 @@ fun UHAConnectApp() {
                     LoginPage(
                         navigate = navController::navigate,
                         onCreateAccountClick = { navController.navigate("createAccount") },
-                        onResetPasswordClick = { navController.navigate("resetPassword") }
+                        onResetPasswordClick = { navController.navigate("resetPassword") },
+                        viewModel::login
                     )
                 }
                 composable("createAccount") {
