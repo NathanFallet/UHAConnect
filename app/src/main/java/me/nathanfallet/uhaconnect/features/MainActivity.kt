@@ -24,7 +24,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
@@ -135,8 +134,7 @@ fun UHAConnectApp() {
         ) { padding ->
             NavHost(
                 navController = navController,
-                // TODO: Change startDestination to "login" when login is implemented
-                startDestination = if (user != null) "home" else "home"
+                startDestination = if (token != null) "login" else "home"
             ) {
                 composable("home") {
                     HomeView(
@@ -148,7 +146,8 @@ fun UHAConnectApp() {
                     LoginPage(
                         navigate = navController::navigate,
                         onCreateAccountClick = { navController.navigate("createAccount") },
-                        onResetPasswordClick = { navController.navigate("resetPassword") }
+                        onResetPasswordClick = { navController.navigate("resetPassword") },
+                        viewModel::login
                     )
                 }
                 composable("createAccount") {
