@@ -19,8 +19,11 @@ import io.ktor.server.routing.route
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
+import me.nathanfallet.uhaconnect.models.Comments
+import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.Notifications
 import me.nathanfallet.uhaconnect.models.Posts
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.RoleStatus
@@ -150,10 +153,12 @@ fun Route.api() {
                 Database.dbQuery {
                     Users
                         .update({ Users.id eq user.id }) {
-                            it[Users.firstName] = uploadUser.firstName ?: user.firstName!!
-                            it[Users.lastName] = uploadUser.lastName ?: user.lastName!!
-                            it[Users.username] = uploadUser.username ?: user.lastName!!
-                            it[Users.password] = BCrypt.withDefaults().hashToString(12, uploadUser.password?.toCharArray()) ?: user.password!!
+                            it[Users.firstName] = uploadUser.firstName ?: user.firstName
+                            it[Users.lastName] = uploadUser.lastName ?: user.lastName
+                            it[Users.username] = uploadUser.username ?: user.lastName
+                            it[Users.password] = BCrypt.withDefaults()
+                                .hashToString(12, uploadUser.password?.toCharArray())
+                                ?: user.password
                         }
                 }
                 val newUser = getUser() ?: run {
@@ -302,6 +307,82 @@ fun Route.api() {
                     post.content = uploadPost.content
                 }
                 call.respond(post)
+            }
+            get("/{id}/comments") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@get
+                }
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+                val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+                val comments = Database.dbQuery {
+                    Comments
+                        .select { Comments.post_id eq id }
+                        .orderBy(Comments.date, SortOrder.DESC)
+                        .limit(limit, offset)
+                        .map(Comments::toComment)
+                }
+                call.respond(comments)
+            }
+            post("/{id}/comments") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@post
+                }
+                val post =
+                    Database.dbQuery {
+                        Posts
+                            .select { Posts.id eq id }
+                            .map(Posts::toPost)
+                            .singleOrNull()
+                    } ?: run {
+                        call.response.status(HttpStatusCode.InternalServerError)
+                        call.respond(mapOf("error" to "Post not found."))
+                        return@post
+                    }
+                val newComment = try {
+                    call.receive<CreateCommentPayload>()
+                } catch (e: Exception) {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid comment."))
+                    return@post
+                }
+
+                val comment = Database.dbQuery {
+                    Comments.insert {
+                        it[Comments.post_id] = post.id
+                        it[Comments.user_id] = post.user_id
+                        it[Comments.content] = newComment.content
+                        it[Comments.date] = Clock.System.now().toEpochMilliseconds()
+                    }.resultedValues?.map(Comments::toComment)?.singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Error while creating post."))
+                    return@post
+                }
+                call.respond(comment)
+            }
+        }
+        route("/notifications") {
+            get {
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@get
+                }
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+                val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+                val notifications = Database.dbQuery {
+                    Notifications
+                        .join(Users, JoinType.INNER, Notifications.user_id, Users.id)
+                        .select { Notifications.user_id eq user.id }
+                        .orderBy(Notifications.date, SortOrder.DESC)
+                        .limit(limit, offset)
+                        .map(Posts::toPost)
+                }
+                call.respond(notifications)
             }
         }
         // ...
