@@ -1,17 +1,27 @@
 package me.nathanfallet.uhaconnect.services
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.request
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import me.nathanfallet.uhaconnect.models.Notification
+import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
 
 class APIService {
@@ -54,5 +64,51 @@ class APIService {
     suspend fun getMe(token: String): User {
         return createRequest(HttpMethod.Get, "/users/me", token).body()
     }
+    suspend fun getUser(id:Int, token: String): User {
+        return createRequest(HttpMethod.Get, "/users/$id", token).body()
+    }
+    suspend fun getUserPosts(id:Int, token: String): List<Post> {
+        return createRequest(HttpMethod.Get, "/users/$id/post", token).body()
+    }
+
+    @Throws(Exception::class)
+    suspend fun login(payload: LoginPayload): UserToken {
+
+        val r = createRequest(HttpMethod.Post, "/auth/login") {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }
+        Log.d("LoginViewModel", r.bodyAsText())
+        return r.body()
+    }
+
+    @Throws(Exception::class)
+    suspend fun createAccount(payload: RegisterPayload): UserToken {
+        return createRequest(HttpMethod.Post, "/auth/register") {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }.body()
+    }
+
+    /*suspend fun resetPassword(email: String): UserToken? {
+        val payload = ResetPasswordPayload(email)
+        val json = Json.encodeToString(payload)
+
+        return try {
+            val response = createRequest(HttpMethod.Post, "/auth/reset-password") {
+                contentType(ContentType.Application.Json)
+                setBody(json)
+            }
+            response.body()
+        } catch (exception: Exception) {
+            null
+        }
+    }*/
+
+    suspend fun getNotification(token: String): List<Notification> {
+        return createRequest(HttpMethod.Get, "/notifications", token).body()
+    }
 
 }
+
+

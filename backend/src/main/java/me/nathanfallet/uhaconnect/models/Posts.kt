@@ -13,13 +13,15 @@ object Posts : IntIdTable() {
     override val primaryKey = PrimaryKey(id)
 
     fun toPost(row: ResultRow): Post {
-
+        val user = if (row.hasValue(Users.id)) Users.toUser(row)
+                   else null
         return Post(
             id = row[id].value,
             user_id = row[user_id].value,
             title = row[title],
             content = row[content],
-            date = Instant.fromEpochMilliseconds(row[date])
+            date = Instant.fromEpochMilliseconds(row[date]),
+            user = user
         )
     }
 }
