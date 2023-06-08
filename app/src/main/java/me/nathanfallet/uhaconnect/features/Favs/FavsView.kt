@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.features.post.PostView
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
@@ -162,6 +163,6 @@ fun FavsView(modifier: Modifier, viewModel: FavsViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewApp() {
-    val viewModel = remember { FavsViewModel() }
+    val viewModel = viewModel<FavsViewModel>()
     FavsView(Modifier.fillMaxSize(), viewModel)
 }

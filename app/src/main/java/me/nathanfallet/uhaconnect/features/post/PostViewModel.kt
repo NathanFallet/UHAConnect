@@ -27,17 +27,17 @@ class PostViewModel(token : String) : ViewModel() {
 
 
     init {
-//        val token = "token"
 
         viewModelScope.launch {
             try {
+                val instant: kotlinx.datetime.Instant = kotlinx.datetime.Instant.parse("2023-06-07T12:34:56Z")
                 val apiService = APIService.getInstance(Unit)
                 val user = apiService.getUser(token, 78)
                 val post = apiService.getPost(token, 55)
                 val comments = listOf(
-                    Comment(55, 11, "content 1"),
-                    Comment(55, 112, "content 2"),
-                    Comment(55, 74, "content 2")
+                    Comment(55, 11, "content 1",instant),
+                    Comment(55, 112, "content 2",instant),
+                    Comment(55, 74, "content 2",instant)
                 )
 
                 _post.value = post

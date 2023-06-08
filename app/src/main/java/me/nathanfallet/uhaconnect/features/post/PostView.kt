@@ -127,7 +127,7 @@ fun PostView(modifier: Modifier, viewModel: PostViewModel) {
                     ) {
                         Column {
                             Text(
-                                text = comment.id_user.toString(),
+                                text = comment.user_id.toString(),
                                 style = MaterialTheme.typography.titleSmall,
                                 color = Color.Black,
                                 modifier = Modifier.padding(horizontal = 8.dp)

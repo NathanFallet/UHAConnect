@@ -155,7 +155,7 @@ fun UHAConnectApp() {
                     )
                 }
                 composable("favs") {
-                    val viewModel = FavsViewModel()
+                    val viewModel = FavsViewModel(token!!)
                     FavsView(
                         modifier = Modifier.padding(padding),
                         viewModel = viewModel
