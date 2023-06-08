@@ -5,7 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserToken(
     val user: User,
-    val token: String,
-    val success: Boolean,
-    val errorMessage: String
+    val token: String
 )
