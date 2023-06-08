@@ -55,12 +55,3 @@ fun PostCard(post: Post, navigate: (String)->Unit){
         }
     }
 }
-
-val time:Instant = Instant.parse("2023-06-06T23:53:00+00:00")
-val post = Post(1, 1, "Le post", "Trop cool les posts", time)
-
-@Preview
-@Composable
-fun PreviewPostCard(){
-    PostCard(post, {})
-}
