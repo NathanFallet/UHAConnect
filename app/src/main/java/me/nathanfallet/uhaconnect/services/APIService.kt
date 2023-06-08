@@ -11,6 +11,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
 
@@ -55,4 +56,10 @@ class APIService {
         return createRequest(HttpMethod.Get, "/users/me", token).body()
     }
 
+    suspend fun getNotification(token: String): List<Notification> {
+        return createRequest(HttpMethod.Get, "/notifications", token).body()
+    }
+
 }
+
+

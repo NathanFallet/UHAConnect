@@ -6,4 +6,6 @@
     <string name="profile_settings">Settings</string>
     <string name="title_activity_post_view">PostView</string>
     <string name="title_activity_favs_view">FavsView</string>
+    <string name="notifications_like">A aimé votre publication</string>
+    <string name="notifications_comment">A commenté votre publication</string>
 </resources>
