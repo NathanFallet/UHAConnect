@@ -23,6 +23,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,19 +35,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.ui.theme.component.Post
 import me.nathanfallet.uhaconnect.ui.theme.component.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ProfileView(modifier: Modifier){
-    val username = "Username"
-    val role = "role"
-    val post1 = Post("07/06/2023", "Le post", "Trop cool les posts, on adore ça")
-    val posts = listOf(post1, post1, post1)
+fun ProfileView(modifier: Modifier, navigate: (String)->Unit){
+
+    val viewModel: ProfileViewModel = viewModel()
+
+    val user by viewModel.user.observeAsState()
+    val posts by viewModel.posts.observeAsState()
+
+    val token =""
+
+    if (user == null) viewModel.loadData(token)
+    if (posts == null) viewModel.loadData(token)
+
+
     LazyColumn(modifier){
         stickyHeader {
             TopAppBar(
@@ -59,7 +69,7 @@ fun ProfileView(modifier: Modifier){
                             Text(text = stringResource(R.string.profile_logout), color = Color.White, fontSize = 16.sp)
                         }
                         Text(text = stringResource(R.string.profile_profile), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 30.sp)
-                        TextButton(onClick = { /*Logout the user*/ }, modifier = Modifier.padding(end = 8.dp)) {
+                        TextButton(onClick = { navigate("settings") }, modifier = Modifier.padding(end = 8.dp)) {
                             Text(text = stringResource(R.string.profile_settings), color = Color.White, fontSize = 16.sp)
                         }
                     }
@@ -95,33 +105,31 @@ fun ProfileView(modifier: Modifier){
                     )
                     Column(modifier = Modifier.padding(vertical = 12.dp)) {
                         Text(
-                            text = "$username",
+                            text = "$user.username",
                             fontSize = 30.sp,
                             color = Color.Yellow,
                             modifier = Modifier.padding(start = 15.dp)
                         )
                         Text(
-                            text = "$role",
+                            text = "$user.role",
                             modifier = Modifier.padding(start = 15.dp)
                         )
                     }
                 }
             }
         }
-        items(posts) { post ->
-            PostCard(post)
+        items(posts!!) { post ->
+            PostCard(post, navigate)
         }
     }
 }
 
-class Post(pub_date:String, title:String, content:String)
 
 @Composable
 @Preview
 fun PreviewPostView(){
-    ProfileView(modifier = Modifier)
+    ProfileView(modifier = Modifier, {})
 }
-
 
 
 

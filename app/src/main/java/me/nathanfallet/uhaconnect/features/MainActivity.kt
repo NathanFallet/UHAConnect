@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
@@ -33,6 +34,7 @@ import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
+import me.nathanfallet.uhaconnect.features.profile.ProfileView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
 
@@ -170,6 +172,11 @@ fun UHAConnectApp() {
                     FavsView(
                         modifier = Modifier.padding(padding)
                     )
+                }
+                composable("profile"){
+                    ProfileView(
+                        modifier = Modifier.padding(padding),
+                        navigate = navController::navigate)
                 }
 
             }
