@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">UHAConnect</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_identification">identification</string>
     <string name="title_activity_notification_view">NotificationView</string>
     <string name="profile_logout">Logout</string>
     <string name="profile_profile">Profile</string>
@@ -8,4 +10,5 @@
     <string name="title_activity_favs_view">FavsView</string>
     <string name="notifications_like">A aimé votre publication</string>
     <string name="notifications_comment">A commenté votre publication</string>
+    <string name="login_invalid_credentials">Invalid username or password</string>
 </resources>
