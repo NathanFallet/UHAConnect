@@ -24,4 +24,14 @@ class MainViewModel(
         _token.value = userToken.token
     }
 
+    /*fun resetPassword(email: String) {
+        viewModelScope.launch {
+            val userToken = APIService.getInstance().ResetPassword(email)
+            userToken?.let {
+                _user.value = it.user
+                _token.value = it.token
+            }
+        }
+    }*/
+
 }

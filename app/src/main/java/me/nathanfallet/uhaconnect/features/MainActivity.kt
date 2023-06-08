@@ -25,7 +25,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
@@ -98,6 +97,7 @@ fun UHAConnectApp() {
 
         Scaffold(
             bottomBar = {
+                if (token == null) return@Scaffold
                 NavigationBar {
                     val currentRoute = navBackStackEntry?.destination?.route
                     NavigationItem
@@ -136,13 +136,31 @@ fun UHAConnectApp() {
         ) { padding ->
             NavHost(
                 navController = navController,
-                // /TODO: Change startDestination to "login" when login is implemented
-                startDestination = if (user != null) "home" else "home"
+                startDestination = if (token != null) "home" else "login"
             ) {
                 composable("home") {
                     HomeView(
                         modifier = Modifier.padding(padding)
                     )
+                }
+                composable("login") {
+                    LoginPage(
+                        modifier = Modifier.padding(padding),
+                        navigate = navController::navigate
+                    ) { token ->
+                        viewModel.login(token)
+                        navController.navigate("home")
+                    }
+                }
+                composable("createAccount") {
+                    CreateAccountPage(navigate = navController::navigate) { token ->
+                        viewModel.login(token)
+                        navController.navigate("home")
+                    }
+                }
+                composable("resetPassword") {
+                    ResetPasswordPage(navigate = navController::navigate)
+
                 }
                 composable("notifications") {
                     NotificationView()
