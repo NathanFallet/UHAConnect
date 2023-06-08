@@ -1,63 +1,69 @@
 package me.nathanfallet.uhaconnect.features.login
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.services.APIService
 
-class LoginViewModel(
-    val loginUser: (UserToken) -> Unit
-) : ViewModel() {
-    var username by mutableStateOf("")
-    var password by mutableStateOf("")
-    var firstname by mutableStateOf("")
-    var lastname by mutableStateOf("")
-    var mail by mutableStateOf("")
+class LoginViewModel : ViewModel() {
 
-    fun login() {
+    val error = MutableLiveData<Int>()
+    val username = MutableLiveData("")
+    val password = MutableLiveData("")
+    val password2 = MutableLiveData("")
+    val firstname = MutableLiveData("")
+    val lastname = MutableLiveData("")
+    val mail = MutableLiveData("")
+
+    fun login(loginUser: (UserToken) -> Unit) {
         if (validateLoginForm()) {
             viewModelScope.launch {
-                APIService.getInstance(Unit).login(
-                    LoginPayload(
-                        username, password
-                    )
-                )?.let {
-                    loginUser(it)
-                    println("Connexion réussie pour l'utilisateur : $username")
-                } ?: run {
-
-                    println("Échec de la connexion ")
+                try {
+                    APIService.getInstance(Unit).login(
+                        LoginPayload(
+                            username.value ?: "", password.value ?: ""
+                        )
+                    ).let {
+                        loginUser(it)
+                    }
+                } catch (e: Exception) {
+                    Log.d("LoginViewModel", e.toString())
+                    error.value = R.string.login_invalid_credentials
                 }
             }
-        } else {
-            println("Veuillez saisir un nom d'utilisateur et un mot de passe valides")
+        } else null ?: run {
+            Log.d("LoginViewModel", "validateLoginForm")
+            error.value = R.string.login_invalid_credentials
         }
     }
 
-    fun createAccount() {
+    fun createAccount(loginUser: (UserToken) -> Unit) {
         if (validateCreateAccountForm()) {
             viewModelScope.launch {
-                val userToken =
+                try {
                     APIService.getInstance(Unit).createAccount(
                         RegisterPayload(
-                            firstname, lastname, username, mail, password
+                            firstname.value ?: "",
+                            lastname.value ?: "",
+                            username.value ?: "",
+                            mail.value ?: "",
+                            password.value ?: ""
                         )
-                    )
-                userToken?.let {
-                    loginUser(userToken)
-                } ?: run {
-
+                    ).let {
+                        loginUser(it)
+                    }
+                } catch (e: Exception) {
+                    error.value = R.string.login_invalid_credentials
                 }
-                println("Création de compte réussie : $firstname $lastname")
             }
-        } else {
-            println("Impossible de créer le compte : veuillez vérifier les informations fournies")
+        } else null ?: run {
+            error.value = R.string.login_invalid_credentials
         }
     }
 
@@ -75,18 +81,23 @@ class LoginViewModel(
 
     private fun isUsernameValid(): Boolean {
         val usernameRegex = Regex("[a-zA-Z0-9]{4,}")
-        return username.matches(usernameRegex)
+        return username.value?.matches(usernameRegex) ?: false
     }
 
     private fun isPasswordValid(): Boolean {
-        return password.length >= 6
+        return (password.value?.length ?: 0) >= 6
+    }
+
+    private fun isMailValid(): Boolean {
+        val mailRegex = Regex("[a-zA-Z0-9]+\\.[a-zA-Z0-9]+@uha\\.fr")
+        return mail.value?.matches(mailRegex) ?: false
     }
 
     private fun validateCreateAccountForm(): Boolean {
-        return firstname.isNotBlank() && lastname.isNotBlank() && username.isNotBlank() && password.isNotBlank() && mail.isNotBlank()
+        return firstname.value?.isNotBlank() == true && lastname.value?.isNotBlank() == true && isUsernameValid() && isPasswordValid() && isMailValid()
     }
 
     private fun validateResetPasswordForm(): Boolean {
-        return mail.isNotBlank()
+        return mail.value?.isNotBlank() ?: false
     }
 }

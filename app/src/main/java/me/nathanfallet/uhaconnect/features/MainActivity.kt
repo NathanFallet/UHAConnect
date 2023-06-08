@@ -96,6 +96,7 @@ fun UHAConnectApp() {
 
         Scaffold(
             bottomBar = {
+                if (token == null) return@Scaffold
                 NavigationBar {
                     val currentRoute = navBackStackEntry?.destination?.route
                     NavigationItem
@@ -134,31 +135,32 @@ fun UHAConnectApp() {
         ) { padding ->
             NavHost(
                 navController = navController,
-                startDestination = if (token != null) "login" else "home"
+                startDestination = if (token != null) "home" else "login"
             ) {
                 composable("home") {
                     HomeView(
                         modifier = Modifier.padding(padding)
                     )
                 }
-
                 composable("login") {
                     LoginPage(
-                        navigate = navController::navigate,
-                        onCreateAccountClick = { navController.navigate("createAccount") },
-                        onResetPasswordClick = { navController.navigate("resetPassword") },
-                        viewModel::login
-                    )
+                        modifier = Modifier.padding(padding),
+                        navigate = navController::navigate
+                    ) { token ->
+                        viewModel.login(token)
+                        navController.navigate("home")
+                    }
                 }
                 composable("createAccount") {
-                    CreateAccountPage(navigate = { destination: String -> navController.navigate(destination) })
+                    CreateAccountPage(navigate = navController::navigate) { token ->
+                        viewModel.login(token)
+                        navController.navigate("home")
+                    }
                 }
                 composable("resetPassword") {
-                    ResetPasswordPage(navigate = { destination: String -> navController.navigate(destination) })
+                    ResetPasswordPage(navigate = navController::navigate)
 
                 }
-
-
                 composable("notifications") {
                     NotificationView()
                 }

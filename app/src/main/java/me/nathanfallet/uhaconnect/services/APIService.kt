@@ -1,5 +1,6 @@
 package me.nathanfallet.uhaconnect.services
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -8,6 +9,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
@@ -69,15 +71,18 @@ class APIService {
     }
 
     @Throws(Exception::class)
-    suspend fun login(payload: LoginPayload): UserToken? {
-        return createRequest(HttpMethod.Post, "/auth/login") {
+    suspend fun login(payload: LoginPayload): UserToken {
+
+        val r = createRequest(HttpMethod.Post, "/auth/login") {
             contentType(ContentType.Application.Json)
             setBody(payload)
-        }.body()
+        }
+        Log.d("LoginViewModel", r.bodyAsText())
+        return r.body()
     }
 
     @Throws(Exception::class)
-    suspend fun createAccount(payload: RegisterPayload): UserToken? {
+    suspend fun createAccount(payload: RegisterPayload): UserToken {
         return createRequest(HttpMethod.Post, "/auth/register") {
             contentType(ContentType.Application.Json)
             setBody(payload)
