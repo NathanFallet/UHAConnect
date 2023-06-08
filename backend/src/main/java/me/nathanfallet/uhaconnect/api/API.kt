@@ -17,17 +17,27 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import io.ktor.util.pipeline.PipelineContext
+import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
+import me.nathanfallet.uhaconnect.models.Comments
+import me.nathanfallet.uhaconnect.models.CreateCommentPayload
+import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.Posts
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.models.Users
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import java.util.Date
 
 fun Route.api() {
@@ -94,8 +104,7 @@ fun Route.api() {
                     it[Users.username] = payload.username
                     it[Users.email] = payload.email
                     it[Users.role] = RoleStatus.STUDENT.toString()
-                    it[Users.password] =
-                        BCrypt.withDefaults().hashToString(12, payload.password.toCharArray())
+                    it[Users.password] = BCrypt.withDefaults().hashToString(12, payload.password.toCharArray())
 
                 }.resultedValues?.map(Users::toUser)?.singleOrNull()
             } ?: run {
@@ -129,7 +138,36 @@ fun Route.api() {
                 call.respond(user)
             }
             put("/me") {
-                // TODO: Update my profile
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@put
+                }
+                val uploadUser = try {
+                    call.receive<UpdateUserPayload>()
+                } catch (e: Exception) {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid field."))
+                    return@put
+                }
+                Database.dbQuery {
+                    Users
+                        .update({ Users.id eq user.id }) {
+                            it[Users.firstName] = uploadUser.firstName ?: user.firstName
+                            it[Users.lastName] = uploadUser.lastName ?: user.lastName
+                            it[Users.username] = uploadUser.username ?: user.lastName
+                            it[Users.password] = BCrypt.withDefaults()
+                                .hashToString(12, uploadUser.password?.toCharArray())
+                                ?: user.password
+                        }
+                }
+                val newUser = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "Invalid user"))
+                    return@put
+                }
+                call.respond(newUser)
+
             }
             get("/{id}") {
                 val id = call.parameters["id"]?.toIntOrNull() ?: run {
@@ -146,19 +184,205 @@ fun Route.api() {
                 }
                 call.respond(user)
             }
+            get("/{id}/posts") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid user id"))
+                    return@get
+                }
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+                val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+                val posts = Database.dbQuery {
+                    Posts
+                        .join(Users, JoinType.INNER)
+                        .select { Posts.user_id eq id }
+                        .orderBy(Posts.date, SortOrder.DESC)
+                        .limit(limit, offset)
+                        .map(Posts::toPost)
+                }
+                call.respond(posts)
+            }
         }
         route("/posts") {
             get {
-                // TODO: Get posts, paginated
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+                val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+                val posts = Database.dbQuery {
+                    Posts
+                        .join(Users, JoinType.INNER)
+                        .selectAll()
+                        .orderBy(Posts.date, SortOrder.DESC)
+                        .limit(limit, offset)
+                        .map(Posts::toPost)
+
+                }
+                call.respond(posts)
             }
             post {
-                // TODO: Create a post
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "Invalid user"))
+                    return@post
+                }
+                val newPost = try {
+                    call.receive<CreatePostPayload>()
+                } catch (e: Exception) {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid title or content."))
+                    return@post
+                }
+
+                val post = Database.dbQuery {
+                    Posts.insert {
+                        it[Posts.user_id] = user.id
+                        it[Posts.title] = newPost.title
+                        it[Posts.content] = newPost.content
+                        it[Posts.date] = Clock.System.now().toEpochMilliseconds()
+                    }.resultedValues?.map(Posts::toPost)?.singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Error while creating post."))
+                    return@post
+                }
+                call.respond(post)
             }
             get("/{id}") {
-                // TODO: Get a post by id
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@get
+                }
+                val post = Database.dbQuery {
+                    Posts
+                        .select {Posts.id eq id}
+                        .map(Posts::toPost)
+                        .singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Post not found."))
+                    return@get
+                }
+                call.respond(post)
             }
             put("/{id}") {
-                // TODO: Update a post by id, checking author (or admin rights)
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@put
+                }
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@put
+                }
+                val post = Database.dbQuery {
+                    Posts
+                        .select {Posts.id eq id}
+                        .map(Posts::toPost)
+                        .singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Post not found."))
+                    return@put
+                }
+                if (!(post.user_id == user.id || listOf(RoleStatus.ADMINISTRATOR, RoleStatus.MODERATOR).contains(user.role))) {
+                    call.response.status(HttpStatusCode.Forbidden)
+                    call.respond(mapOf("error" to "Cannot update this post."))
+                    return@put
+                }
+                val uploadPost = try {
+                    call.receive<CreatePostPayload>()
+                } catch (e: Exception) {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid title or content."))
+                    return@put
+                }
+                Database.dbQuery {
+                    Posts
+                        .update({ Posts.id eq id }) {
+                            it[Posts.title] = uploadPost.title
+                            it[Posts.content] = uploadPost.content
+                        }
+                    post.title = uploadPost.title
+                    post.content = uploadPost.content
+                }
+                call.respond(post)
+            }
+            get("/{id}/comments") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@get
+                }
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+                val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+                val comments = Database.dbQuery {
+                    Comments
+                        .select { Comments.post_id eq id }
+                        .orderBy(Comments.date, SortOrder.DESC)
+                        .limit(limit, offset)
+                        .map(Comments::toComment)
+                }
+                call.respond(comments)
+            }
+            post("/{id}/comments") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@post
+                }
+                val post =
+                    Database.dbQuery {
+                        Posts
+                            .select { Posts.id eq id }
+                            .map(Posts::toPost)
+                            .singleOrNull()
+                    } ?: run {
+                        call.response.status(HttpStatusCode.InternalServerError)
+                        call.respond(mapOf("error" to "Post not found."))
+                        return@post
+                    }
+                val newComment = try {
+                    call.receive<CreateCommentPayload>()
+                } catch (e: Exception) {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid comment."))
+                    return@post
+                }
+
+                val comment = Database.dbQuery {
+                    Comments.insert {
+                        it[Comments.post_id] = post.id
+                        it[Comments.user_id] = post.user_id
+                        it[Comments.content] = newComment.content
+                        it[Comments.date] = Clock.System.now().toEpochMilliseconds()
+                    }.resultedValues?.map(Comments::toComment)?.singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Error while creating post."))
+                    return@post
+                }
+                call.respond(comment)
+            }
+        }
+        route("/notifications") {
+            get {
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@get
+                }
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+                val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+                val notifications = Database.dbQuery {
+                    Notifications
+                        .join(Users, JoinType.INNER, Notifications.user_id, Users.id)
+                        .select { Notifications.user_id eq user.id }
+                        .orderBy(Notifications.date, SortOrder.DESC)
+                        .limit(limit, offset)
+                        .map(Posts::toPost)
+                }
+                call.respond(notifications)
             }
         }
         // ...

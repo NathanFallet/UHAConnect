@@ -16,6 +16,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.RegisterPayload
+import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
@@ -68,6 +69,12 @@ class APIService(arg: Unit) {
     @Throws(Exception::class)
     suspend fun getMe(token: String): User {
         return createRequest(HttpMethod.Get, "/users/me", token).body()
+    }
+    suspend fun getUser(id:Int, token: String): User {
+        return createRequest(HttpMethod.Get, "/users/$id", token).body()
+    }
+    suspend fun getUserPosts(id:Int, token: String): List<Post> {
+        return createRequest(HttpMethod.Get, "/users/$id/post", token).body()
     }
 
     @Throws(Exception::class)
