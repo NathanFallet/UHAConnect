@@ -162,7 +162,9 @@ fun UHAConnectApp() {
 
                 }
                 composable("notifications") {
-                    NotificationView()
+                    NotificationView(
+                        ""
+                    )
                 }
                 composable("post") {
                     PostView(
