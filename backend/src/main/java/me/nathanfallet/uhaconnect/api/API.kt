@@ -24,6 +24,7 @@ import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Posts
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.models.Users
@@ -141,7 +142,7 @@ fun Route.api() {
                     return@put
                 }
                 val uploadUser = try {
-                    call.receive<RegisterPayload>()
+                    call.receive<UpdateUserPayload>()
                 } catch (e: Exception) {
                     call.response.status(HttpStatusCode.BadRequest)
                     call.respond(mapOf("error" to "Invalid field."))
@@ -153,7 +154,7 @@ fun Route.api() {
                             it[Users.firstName] = uploadUser.firstName ?: user.firstName!!
                             it[Users.lastName] = uploadUser.lastName ?: user.lastName!!
                             it[Users.username] = uploadUser.username ?: user.lastName!!
-                            it[Users.password] = BCrypt.withDefaults().hashToString(12, uploadUser.password.toCharArray()) ?: user.password!!
+                            it[Users.password] = BCrypt.withDefaults().hashToString(12, uploadUser.password?.toCharArray()) ?: user.password!!
                         }
                 }
                 val newUser = getUser() ?: run {
@@ -242,7 +243,6 @@ fun Route.api() {
                 call.respond(post)
             }
             put("/{id}") {
-                // TODO: Update a post by id, checking author (or admin rights)
                 val id = call.parameters["id"]?.toIntOrNull() ?: run {
                     call.response.status(HttpStatusCode.BadRequest)
                     call.respond(mapOf("error" to "Invalid post id"))
