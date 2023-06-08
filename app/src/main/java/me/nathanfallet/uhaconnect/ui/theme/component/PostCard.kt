@@ -20,15 +20,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.datetime.Instant
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.extensions.timeAgo
+import me.nathanfallet.uhaconnect.models.Post
 
-
-//Temporary class
-
-class Post(val pubDate:String, val title:String, val content:String)
 
 @Composable
-fun PostCard(post: Post){
+fun PostCard(post: Post, navigate: (String)->Unit){
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp)
@@ -43,8 +42,8 @@ fun PostCard(post: Post){
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()){
-                Text(text = post.pubDate, fontSize = 12.sp, color = Color.DarkGray)
-                IconButton(onClick = { /*To post*/ }) {
+                Text(text = post.date.timeAgo(), fontSize = 12.sp, color = Color.DarkGray)
+                IconButton(onClick = { navigate("post") }) {
                     Icon(painter = painterResource(R.drawable.ic_launcher_foreground), contentDescription = null)
                 }
             }
@@ -57,10 +56,11 @@ fun PostCard(post: Post){
     }
 }
 
-val post = Post("07/06/2023", "Le post", "Trop cool les posts, on adore ça")
+val time:Instant = Instant.parse("2023-06-06T23:53:00+00:00")
+val post = Post(1, 1, "Le post", "Trop cool les posts", time)
 
 @Preview
 @Composable
 fun PreviewPostCard(){
-    PostCard(post)
+    PostCard(post, {})
 }
