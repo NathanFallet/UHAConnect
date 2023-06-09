@@ -21,11 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
 import me.nathanfallet.uhaconnect.features.home.HomeView
@@ -173,12 +175,13 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding)
                     )
                 }
-                composable("profile"){
+                composable("profile/{userId}",
+                    arguments = listOf(navArgument("userId") { type = NavType.IntType })){
                     ProfileView(
                         modifier = Modifier.padding(padding),
-                        navigate = navController::navigate)
+                        navigate = navController::navigate,
+                        token = token)
                 }
-
             }
         }
     }

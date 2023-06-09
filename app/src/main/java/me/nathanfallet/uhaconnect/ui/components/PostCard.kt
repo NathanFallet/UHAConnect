@@ -1,4 +1,4 @@
-package me.nathanfallet.uhaconnect.ui.theme.component
+package me.nathanfallet.uhaconnect.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,10 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.datetime.Instant
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
 import me.nathanfallet.uhaconnect.models.Post
@@ -55,3 +53,4 @@ fun PostCard(post: Post, navigate: (String)->Unit){
         }
     }
 }
+
