@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.UserToken
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +56,7 @@ fun LoginPage(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "UHA Connect",
+            text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Bold,
@@ -78,7 +79,7 @@ fun LoginPage(
         OutlinedTextField(
             value = username,
             onValueChange = { viewModel.username.value = it },
-            label = { Text("Username") },
+            label = { stringResource(R.string.login_username) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -94,7 +95,7 @@ fun LoginPage(
         OutlinedTextField(
             value = password,
             onValueChange = { viewModel.password.value = it },
-            label = { Text("Password") },
+            label = { stringResource(R.string.login_password) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 5.dp)
@@ -110,9 +111,8 @@ fun LoginPage(
             horizontalArrangement = Arrangement.Center
         ) {
             ClickableText(
-                text = AnnotatedString("Forgotten your password?"),
+                text = AnnotatedString(stringResource(R.string.login_forgot_pw)),
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.primary,
                     textDecoration = TextDecoration.Underline,
                     textAlign = TextAlign.Center
                 ),
@@ -130,16 +130,14 @@ fun LoginPage(
         ) {
             Text(
                 text = "Log in",
-                color = Color.Black
             )
         }
 
         ClickableText(
             text = AnnotatedString.Builder().apply {
-                pushStyle(style = SpanStyle(color = Color.Black))
-                append("You don't have an account? ")
-                pushStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline))
-                append("Join us")
+                append(stringResource(R.string.login_no_account))
+                pushStyle(style = SpanStyle(textDecoration = TextDecoration.Underline))
+                append(stringResource(R.string.login_join_us))
                 pop()
             }.toAnnotatedString(),
             modifier = Modifier.padding(top = 20.dp,bottom = 40.dp),
@@ -181,7 +179,7 @@ fun CreateAccountPage(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Sign up",
+            text = stringResource(R.string.login_sign_up),
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
@@ -208,7 +206,7 @@ fun CreateAccountPage(
             OutlinedTextField(
                 value = firstname,
                 onValueChange = { viewModel.firstname.value = it },
-                label = { Text("First Name") },
+                label = { Text(stringResource(R.string.login_first_name)) },
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 8.dp)
@@ -217,7 +215,7 @@ fun CreateAccountPage(
             OutlinedTextField(
                 value = lastname,
                 onValueChange = { viewModel.lastname.value = it },
-                label = { Text("Last Name") },
+                label = { Text(stringResource(R.string.login_last_name)) },
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 8.dp)
@@ -226,7 +224,7 @@ fun CreateAccountPage(
         OutlinedTextField(
             value = username,
             onValueChange = { viewModel.username.value = it },
-            label = { Text("Username") },
+            label = { Text(stringResource(R.string.login_username)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
@@ -234,7 +232,7 @@ fun CreateAccountPage(
         OutlinedTextField(
             value = mail,
             onValueChange = { viewModel.mail.value = it },
-            label = { Text("Mail") },
+            label = { Text(stringResource(R.string.login_email)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -243,7 +241,7 @@ fun CreateAccountPage(
         OutlinedTextField(
             value = password,
             onValueChange = { viewModel.password.value = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.login_password)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -252,7 +250,7 @@ fun CreateAccountPage(
         OutlinedTextField(
             value = password2,
             onValueChange = { viewModel.password2.value = it },
-            label = { Text("Confirm password") },
+            label = { Text(stringResource(R.string.login_confirm_pw)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -268,8 +266,7 @@ fun CreateAccountPage(
 
         ) {
             Text(
-                text = "Create your account",
-                color = Color.Black
+                text = stringResource(R.string.login_create_acc),
             )
         }
 
@@ -290,7 +287,7 @@ fun ResetPasswordPage(navigate: (String) -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Find your account",
+            text = stringResource(R.string.login_find_acc),
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp
@@ -299,8 +296,7 @@ fun ResetPasswordPage(navigate: (String) -> Unit) {
         )
 
         Text(
-            text = "If you have an account, you will receive a verification mail.",
-            color = Color.Black,
+            text = stringResource(R.string.login_verif_email),
             modifier = Modifier.padding(top = 0.dp, start = 0.dp)
         )
 
@@ -310,7 +306,7 @@ fun ResetPasswordPage(navigate: (String) -> Unit) {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.login_email)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -326,8 +322,7 @@ fun ResetPasswordPage(navigate: (String) -> Unit) {
 
         ) {
             Text(
-                text = "Send verification email",
-                color = Color.Black
+                text = stringResource(R.string.login_send_verif),
             )
         }
     }
