@@ -175,7 +175,7 @@ fun UHAConnectApp() {
                         viewModel = viewModel
                     )
                 }
-                composable("favs") {
+                composable("feed") {
                     FeedView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,

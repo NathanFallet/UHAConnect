@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +34,8 @@ import me.nathanfallet.uhaconnect.models.Post
 
 @Composable
 fun PostCard(post: Post, navigate: (String)->Unit){
+
+    val context = LocalContext.current
 
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -52,7 +55,7 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()){
                 Text(text = post.user?.username ?: "")
-                Text(text = stringResource(R.string.postcard_ago, post.date.timeAgo()), fontSize = 12.sp, color = Color.DarkGray)
+                Text(text = stringResource(R.string.postcard_ago, post.date.timeAgo(context)), fontSize = 12.sp, color = Color.DarkGray)
             }
             Text(text = post.title,
                 modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
