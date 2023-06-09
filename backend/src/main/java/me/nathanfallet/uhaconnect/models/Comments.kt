@@ -13,11 +13,14 @@ object Comments : Table() {
     override val primaryKey = PrimaryKey(post_id, user_id, name = "PK_Comments")
 
     fun toComment(row: ResultRow): Comment {
+        val user = if (row.hasValue(Users.id)) Users.toUser(row)
+        else null
         return Comment(
             post_id = row[post_id].value,
             user_id = row[user_id].value,
             content = row[content],
-            date = Instant.fromEpochMilliseconds(row[date])
+            date = Instant.fromEpochMilliseconds(row[date]),
+            user = user
         )
     }
 

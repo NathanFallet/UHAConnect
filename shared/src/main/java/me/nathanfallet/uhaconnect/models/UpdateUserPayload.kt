@@ -7,5 +7,6 @@ data class UpdateUserPayload(
     var firstName: String?,
     var lastName: String?,
     var username: String?,
+    var role: RoleStatus?,
     var password: String?
 )

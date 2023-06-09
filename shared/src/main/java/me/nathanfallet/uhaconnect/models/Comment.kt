@@ -8,5 +8,6 @@ data class Comment(
     val post_id: Int,
     val user_id: Int,
     val content: String,
-    val date: Instant
+    val date: Instant,
+    val user: User? = null
 )

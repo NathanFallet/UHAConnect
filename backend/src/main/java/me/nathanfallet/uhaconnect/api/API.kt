@@ -12,6 +12,7 @@ import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
@@ -22,6 +23,7 @@ import me.nathanfallet.uhaconnect.database.Database
 import me.nathanfallet.uhaconnect.models.Comments
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
+import me.nathanfallet.uhaconnect.models.Favorites
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Notifications
 import me.nathanfallet.uhaconnect.models.Posts
@@ -32,7 +34,10 @@ import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.models.Users
 import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
@@ -121,6 +126,7 @@ fun Route.api() {
             call.respond(UserToken(newUser, token))
         }
     }
+
     authenticate("api-jwt") {
         route("/users") {
             get {
@@ -150,24 +156,34 @@ fun Route.api() {
                     call.respond(mapOf("error" to "Invalid field."))
                     return@put
                 }
+
                 Database.dbQuery {
                     Users
                         .update({ Users.id eq user.id }) {
                             it[Users.firstName] = uploadUser.firstName ?: user.firstName
                             it[Users.lastName] = uploadUser.lastName ?: user.lastName
-                            it[Users.username] = uploadUser.username ?: user.lastName
-                            it[Users.password] = BCrypt.withDefaults()
-                                .hashToString(12, uploadUser.password?.toCharArray())
+                            it[Users.username] = uploadUser.username ?: user.username
+                            it[Users.password] = uploadUser.password?.let {
+                                BCrypt.withDefaults()
+                                    .hashToString(12, uploadUser.password?.toCharArray())
+                            }
                                 ?: user.password
+                            if (listOf(
+                                    RoleStatus.ADMINISTRATOR,
+                                    RoleStatus.MODERATOR
+                                ).contains(user.role)
+                            ) {
+                                it[Users.role] = (uploadUser.role ?: user.role).toString()
+                            }
                         }
                 }
+
                 val newUser = getUser() ?: run {
                     call.response.status(HttpStatusCode.Unauthorized)
                     call.respond(mapOf("error" to "Invalid user"))
                     return@put
                 }
                 call.respond(newUser)
-
             }
             get("/{id}") {
                 val id = call.parameters["id"]?.toIntOrNull() ?: run {
@@ -203,6 +219,7 @@ fun Route.api() {
                 call.respond(posts)
             }
         }
+
         route("/posts") {
             get {
                 val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
@@ -244,6 +261,7 @@ fun Route.api() {
                     call.respond(mapOf("error" to "Error while creating post."))
                     return@post
                 }
+                call.response.status(HttpStatusCode.Created)
                 call.respond(post)
             }
             get("/{id}") {
@@ -362,6 +380,7 @@ fun Route.api() {
                     call.respond(mapOf("error" to "Error while creating post."))
                     return@post
                 }
+                call.response.status(HttpStatusCode.Created)
                 call.respond(comment)
             }
         }
@@ -376,8 +395,8 @@ fun Route.api() {
                 val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
                 val notifications = Database.dbQuery {
                     Notifications
-                        .join(Users, JoinType.INNER, Notifications.user_id, Users.id)
-                        .select { Notifications.user_id eq user.id }
+                        .join(Users, JoinType.INNER, Notifications.dest_id, Users.id)
+                        .select { Notifications.dest_id eq user.id }
                         .orderBy(Notifications.date, SortOrder.DESC)
                         .limit(limit, offset)
                         .map(Posts::toPost)
@@ -385,6 +404,76 @@ fun Route.api() {
                 call.respond(notifications)
             }
         }
+
+        route("/favorites") {
+            get {
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@get
+                }
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+                val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+                val favorites = Database.dbQuery {
+                    Posts
+                        .join(Favorites, JoinType.INNER)
+                        .select { Favorites.user_id eq user.id }
+                        .orderBy(Posts.date, SortOrder.DESC)
+                        .limit(limit, offset)
+                        .map(Posts::toPost)
+                }
+                call.respond(favorites)
+            }
+
+            post("/{id}") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@post
+                }
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@post
+                }
+                val favorite = Database.dbQuery {
+                    Favorites
+                        .select { Favorites.post_id eq id }
+                        .map(Favorites::toFavorite)
+                        .singleOrNull() ?: Favorites.insert {
+                        it[Favorites.user_id] = user.id
+                        it[Favorites.post_id] = id
+                    }.resultedValues?.map(Favorites::toFavorite)?.singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Error while adding post to favorite."))
+                    return@post
+                }
+                call.response.status(HttpStatusCode.Created)
+                call.respond(favorite)
+            }
+
+            delete("/{id}") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@delete
+                }
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@delete
+                }
+                val favorite = Database.dbQuery {
+                    Favorites.deleteWhere {
+                        Op.build { (Favorites.post_id eq id) and (Favorites.user_id eq user.id) }
+                    }
+                }
+                call.respond(HttpStatusCode.NoContent)
+            }
+
+        }
+
         // ...
     }
 }
