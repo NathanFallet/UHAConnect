@@ -21,22 +21,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.features.Favs.FavsView
-import me.nathanfallet.uhaconnect.features.home.HomeView
+import me.nathanfallet.uhaconnect.features.compose.ComposeView
+import me.nathanfallet.uhaconnect.features.feed.FeedView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
+import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import me.nathanfallet.uhaconnect.features.profile.ProfileView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,8 +54,8 @@ enum class NavigationItem(
     val title: Int
 ) {
 
-    HOME(
-        "home",
+    FEED(
+        "feed",
         Icons.Filled.Home,
         R.string.title_activity_main
     ),
@@ -63,10 +64,10 @@ enum class NavigationItem(
         Icons.Filled.Home,
         R.string.title_activity_favs_view
     ),
-    POST(
-        "post",
+    COMPOSE(
+        "compose",
         Icons.Filled.Home,
-        R.string.title_activity_post_view
+        R.string.title_activity_favs_view
     ),
     POSTS(
         "post",
@@ -97,6 +98,7 @@ fun UHAConnectApp() {
 
         Scaffold(
             bottomBar = {
+                if (token == null) return@Scaffold
                 NavigationBar {
                     val currentRoute = navBackStackEntry?.destination?.route
                     NavigationItem
@@ -135,50 +137,69 @@ fun UHAConnectApp() {
         ) { padding ->
             NavHost(
                 navController = navController,
-                // TODO: Change startDestination to "login" when login is implemented
-                startDestination = if (user != null) "home" else "home"
+                startDestination = if (token != null) "feed" else "login"
             ) {
-                composable("home") {
-                    HomeView(
-                        modifier = Modifier.padding(padding)
-                    )
-                }
-
                 composable("login") {
                     LoginPage(
-                        navigate = navController::navigate,
-                        onCreateAccountClick = { navController.navigate("createAccount") },
-                        onResetPasswordClick = { navController.navigate("resetPassword") }
-                    )
+                        modifier = Modifier.padding(padding),
+                        navigate = navController::navigate
+                    ) { token ->
+                        viewModel.login(token)
+                        navController.navigate("home")
+                    }
                 }
                 composable("createAccount") {
-                    CreateAccountPage(navigate = { destination: String -> navController.navigate(destination) })
+                    CreateAccountPage(navigate = navController::navigate) { token ->
+                        viewModel.login(token)
+                        navController.navigate("home")
+                    }
                 }
                 composable("resetPassword") {
-                    ResetPasswordPage(navigate = { destination: String -> navController.navigate(destination) })
+                    ResetPasswordPage(navigate = navController::navigate)
 
                 }
-
-
                 composable("notifications") {
-                    NotificationView()
+                    NotificationView(
+                        ""
+                    )
                 }
                 composable("post") {
+                    val viewModel = PostViewModel(token!!)
                     PostView(
-                        modifier = Modifier.padding(padding)
+                        modifier = Modifier.padding(padding),
+                        viewModel = viewModel
+                    )
+                }
+                composable("feed") {
+                    FeedView(
+                        modifier = Modifier.padding(padding),
+                        navigate = navController::navigate,
+                        token = token
                     )
                 }
                 composable("favs") {
-                    FavsView(
-                        modifier = Modifier.padding(padding)
+                    // TODO: Make different for favs (from feed)
+                    FeedView(
+                        modifier = Modifier.padding(padding),
+                        navigate = navController::navigate,
+                        token = token
                     )
                 }
-                composable("profile"){
+                composable("compose") {
+                    ComposeView(
+                        modifier = Modifier.padding(padding),
+                        token = token,
+                        navigate = navController::navigate
+                    )
+                }
+                composable("profile/{userId}",
+                    arguments = listOf(navArgument("userId") { type = NavType.IntType })
+                ) {
                     ProfileView(
                         modifier = Modifier.padding(padding),
-                        navigate = navController::navigate)
+                        navigate = navController::navigate,
+                        token = token)
                 }
-
             }
         }
     }

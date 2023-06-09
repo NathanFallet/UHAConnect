@@ -1,18 +1,22 @@
 package me.nathanfallet.uhaconnect.features.login
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -21,24 +25,34 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import me.nathanfallet.uhaconnect.models.UserToken
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage(
+    modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
-    onCreateAccountClick: () -> Unit,
-    onResetPasswordClick: () -> Unit
+    login: (UserToken) -> Unit
 ) {
+
+    val viewModel = viewModel<LoginViewModel>()
+
+    val error by viewModel.error.observeAsState()
+    val username by viewModel.username.observeAsState("")
+    val password by viewModel.password.observeAsState("")
+
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "UHA Connect",
@@ -47,15 +61,23 @@ fun LoginPage(
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
             ),
-            modifier = Modifier.padding(vertical = 120.dp)
+            modifier = Modifier.padding(bottom = 120.dp)
         )
-
-
-        var username by remember { mutableStateOf("") }
-
+        error?.let {
+            Text(
+                text = stringResource(id = it),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Color.Red
+                ),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
         OutlinedTextField(
             value = username,
-            onValueChange = { username = it },
+            onValueChange = { viewModel.username.value = it },
             label = { Text("Username") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -67,13 +89,11 @@ fun LoginPage(
                 fontSize = 14.sp
             ),
             singleLine = true,
-            maxLines = 1,
-            visualTransformation = PasswordVisualTransformation()
+            maxLines = 1
         )
-
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = password,
+            onValueChange = { viewModel.password.value = it },
             label = { Text("Password") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -82,7 +102,6 @@ fun LoginPage(
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
-
 
         Row(
             modifier = Modifier
@@ -97,17 +116,16 @@ fun LoginPage(
                     textDecoration = TextDecoration.Underline,
                     textAlign = TextAlign.Center
                 ),
-                onClick = { onResetPasswordClick() }
+                onClick = { navigate("resetPassword") }
             )
         }
 
-
-
         Button(
-            onClick = {},
+            onClick = {
+                viewModel.login(login)
+            },
             modifier = Modifier
                 .fillMaxWidth()
-
                 .padding(vertical = 33.dp, horizontal = 2.dp)
         ) {
             Text(
@@ -127,22 +145,37 @@ fun LoginPage(
             modifier = Modifier.padding(top = 20.dp,bottom = 40.dp),
             onClick = { offset ->
                 if (offset >= 27) {
-                    onCreateAccountClick()
+                    navigate("createAccount")
                 }
             }
         )
-
-
 
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateAccountPage(navigate: Any) {
+fun CreateAccountPage(
+    navigate: (String) -> Unit,
+    login: (UserToken) -> Unit
+) {
+
+    val viewModel = viewModel<LoginViewModel>()
+
+    val error by viewModel.error.observeAsState()
+    val firstname by viewModel.firstname.observeAsState("")
+    val lastname by viewModel.lastname.observeAsState("")
+    val mail by viewModel.mail.observeAsState("")
+    val username by viewModel.username.observeAsState("")
+    val password by viewModel.password.observeAsState("")
+    val password2 by viewModel.password2.observeAsState("")
+
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -155,76 +188,70 @@ fun CreateAccountPage(navigate: Any) {
             ),
             modifier = Modifier.padding(vertical = 50.dp)
         )
-        var firstname by remember { mutableStateOf("") }
-        var lastname by remember { mutableStateOf("") }
-        var username by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var mail by remember { mutableStateOf("") }
 
+        error?.let {
+            Text(
+                text = stringResource(id = it),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Color.Red
+                ),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             OutlinedTextField(
                 value = firstname,
-                onValueChange = { firstname = it },
+                onValueChange = { viewModel.firstname.value = it },
                 label = { Text("First Name") },
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 8.dp)
-
-
-
             )
             Spacer(modifier = Modifier.width(16.dp))
             OutlinedTextField(
                 value = lastname,
-                onValueChange = { lastname = it },
+                onValueChange = { viewModel.lastname.value = it },
                 label = { Text("Last Name") },
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 8.dp)
-
             )
         }
-
         OutlinedTextField(
             value = username,
-            onValueChange = { username = it },
+            onValueChange = { viewModel.username.value = it },
             label = { Text("Username") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
-
-
         )
-
         OutlinedTextField(
             value = mail,
-            onValueChange = { mail = it },
+            onValueChange = { viewModel.mail.value = it },
             label = { Text("Mail") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
-
-
-
-
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { viewModel.password.value = it },
             label = { Text("Password") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
             visualTransformation = PasswordVisualTransformation()
         )
-
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = password2,
+            onValueChange = { viewModel.password2.value = it },
             label = { Text("Confirm password") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -232,7 +259,9 @@ fun CreateAccountPage(navigate: Any) {
             visualTransformation = PasswordVisualTransformation()
         )
         Button(
-            onClick = {},
+            onClick = {
+                viewModel.createAccount(login)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 33.dp, horizontal = 2.dp)
@@ -247,16 +276,12 @@ fun CreateAccountPage(navigate: Any) {
     }
 }
 
-
-
-
-
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResetPasswordPage(navigate: Any) {
+fun ResetPasswordPage(navigate: (String) -> Unit) {
+
+    val viewModel = viewModel<LoginViewModel>()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -307,33 +332,3 @@ fun ResetPasswordPage(navigate: Any) {
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun LoginPagePreview() {
-    UHAConnectTheme {
-        LoginPage(
-            navigate = {},
-            onCreateAccountClick = {},
-            onResetPasswordClick = {}
-        )
-
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CreateAccountPagePreview() {
-    UHAConnectTheme {
-        CreateAccountPage(navigate = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ResetPasswordPagePreview() {
-    UHAConnectTheme {
-        ResetPasswordPage(navigate = {})
-    }
-}
-
