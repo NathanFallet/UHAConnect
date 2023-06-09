@@ -26,6 +26,7 @@ import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Favorites
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Posts
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.RoleStatus
@@ -92,14 +93,17 @@ fun Route.api() {
                 call.respond(mapOf("error" to "Invalid field."))
                 return@post
             }
-
+            if (!User.isEmailValid(payload.email)) {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid Email."))
+            }
             Database.dbQuery {
                 Users
-                    .select { Users.email eq payload.email }
+                    .select { Users.email eq payload.email or (Users.username eq payload.username) }
                     .singleOrNull()
             }?.let {
                 call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to "Email already used."))
+                call.respond(mapOf("error" to "Email or username already used."))
                 return@post
             }
             val newUser = Database.dbQuery {
@@ -168,11 +172,7 @@ fun Route.api() {
                                     .hashToString(12, uploadUser.password?.toCharArray())
                             }
                                 ?: user.password
-                            if (listOf(
-                                    RoleStatus.ADMINISTRATOR,
-                                    RoleStatus.MODERATOR
-                                ).contains(user.role)
-                            ) {
+                            if (user.role.hasPermission(Permission.USER_UPDATE)) {
                                 it[Users.role] = (uploadUser.role ?: user.role).toString()
                             }
                         }
@@ -303,7 +303,7 @@ fun Route.api() {
                     call.respond(mapOf("error" to "Post not found."))
                     return@put
                 }
-                if (!(post.user_id == user.id || listOf(RoleStatus.ADMINISTRATOR, RoleStatus.MODERATOR).contains(user.role))) {
+                if (!(post.user_id == user.id || user.role.hasPermission(Permission.POST_UPDATE))) {
                     call.response.status(HttpStatusCode.Forbidden)
                     call.respond(mapOf("error" to "Cannot update this post."))
                     return@put
@@ -326,6 +326,46 @@ fun Route.api() {
                 }
                 call.respond(post)
             }
+            delete("/{id}") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@delete
+                }
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@delete
+                }
+                val post = Database.dbQuery {
+                    Posts
+                        .select { Posts.id eq id }
+                        .map(Posts::toPost)
+                        .singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Post not found."))
+                    return@delete
+                }
+                if (!(post.user_id == user.id || user.role.hasPermission(Permission.POST_DELETE))) {
+                    call.response.status(HttpStatusCode.Forbidden)
+                    call.respond(mapOf("error" to "Cannot update this post."))
+                    return@delete
+                }
+                Database.dbQuery {
+                    Favorites.deleteWhere {
+                        Op.build { Favorites.post_id eq id }
+                    }
+                    Comments.deleteWhere {
+                        Op.build { Comments.post_id eq id }
+                    }
+                    Posts.deleteWhere {
+                        Op.build { Posts.id eq id }
+                    }
+                }
+                call.respond(HttpStatusCode.NoContent)
+            }
+
             get("/{id}/comments") {
                 val id = call.parameters["id"]?.toIntOrNull() ?: run {
                     call.response.status(HttpStatusCode.BadRequest)
@@ -383,6 +423,55 @@ fun Route.api() {
                 call.response.status(HttpStatusCode.Created)
                 call.respond(comment)
             }
+            delete("/{id}/comments/{comment_id}") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid post id"))
+                    return@delete
+                }
+                val comment_id = call.parameters["comment_id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid comment id"))
+                    return@delete
+                }
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
+                    return@delete
+                }
+                val post = Database.dbQuery {
+                    Posts
+                        .select { Posts.id eq id }
+                        .map(Posts::toPost)
+                        .singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Post not found."))
+                    return@delete
+                }
+                val comment = Database.dbQuery {
+                    Comments
+                        .select { Comments.id eq comment_id }
+                        .map(Comments::toComment)
+                        .singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.InternalServerError)
+                    call.respond(mapOf("error" to "Comment not found."))
+                    return@delete
+                }
+                if (!(post.user_id == user.id || user.role.hasPermission(Permission.COMMENT_DELETE))) {
+                    call.response.status(HttpStatusCode.Forbidden)
+                    call.respond(mapOf("error" to "Cannot delete this comment."))
+                    return@delete
+                }
+                Database.dbQuery {
+                    Comments.deleteWhere {
+                        Op.build { Comments.post_id eq id }
+                    }
+                }
+                call.respond(HttpStatusCode.NoContent)
+            }
+
         }
         route("/notifications") {
             get {
@@ -464,7 +553,7 @@ fun Route.api() {
                     call.respond(mapOf("error" to "User not found"))
                     return@delete
                 }
-                val favorite = Database.dbQuery {
+                Database.dbQuery {
                     Favorites.deleteWhere {
                         Op.build { (Favorites.post_id eq id) and (Favorites.user_id eq user.id) }
                     }

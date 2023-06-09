@@ -11,4 +11,14 @@ data class User(
     val email: String,
     val role: RoleStatus,
     val password: String,
-)
+) {
+
+    companion object {
+
+        fun isEmailValid(email: String): Boolean {
+            return Regex("[a-zA-Z0-9]+\\.[a-zA-Z0-9]+@uha\\.fr").matches(email)
+        }
+
+    }
+
+}
