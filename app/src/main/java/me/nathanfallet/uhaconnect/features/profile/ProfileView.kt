@@ -96,7 +96,6 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                 modifier = Modifier
                     .fillMaxSize()
                     .height(160.dp)
-                    .background(Color(0xFFE8E8E8))
             ) {
                 Box(
                     modifier = Modifier

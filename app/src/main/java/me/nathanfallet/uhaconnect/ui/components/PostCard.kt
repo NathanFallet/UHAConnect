@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,15 +38,9 @@ fun PostCard(post: Post, navigate: (String)->Unit){
 
     val context = LocalContext.current
 
-    Box(modifier = Modifier
+    Card(modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp)
-        .background(Color(0xFFE8E8E8))
-        .border(
-            border = BorderStroke(1.dp, Color.Black),
-            shape = MaterialTheme.shapes.medium
-        )
-        .size(200.dp)
     ){
         Column(modifier = Modifier
             .fillMaxWidth()
@@ -55,7 +50,7 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()){
                 Text(text = post.user?.username ?: "")
-                Text(text = stringResource(R.string.postcard_ago, post.date.timeAgo(context)), fontSize = 12.sp, color = Color.DarkGray)
+                Text(text = stringResource(R.string.postcard_ago, post.date.timeAgo(context)), fontSize = 12.sp)
             }
             Text(text = post.title,
                 modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
@@ -72,7 +67,7 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                     //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
-                    Text(text = stringResource(R.string.postcard_showmore), color = Color.White)
+                    Text(text = stringResource(R.string.postcard_showmore))
                 }
             }
         }

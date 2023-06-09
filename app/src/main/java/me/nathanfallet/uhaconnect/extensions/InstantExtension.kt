@@ -1,7 +1,6 @@
 package me.nathanfallet.uhaconnect.extensions
 
 import android.content.Context
-import androidx.compose.ui.res.stringResource
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import me.nathanfallet.uhaconnect.R
