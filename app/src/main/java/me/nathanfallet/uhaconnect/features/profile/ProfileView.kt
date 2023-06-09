@@ -37,26 +37,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.ui.theme.component.PostCard
+import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ProfileView(modifier: Modifier, navigate: (String)->Unit){
+fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
 
     val viewModel: ProfileViewModel = viewModel()
 
     val user by viewModel.user.observeAsState()
     val posts by viewModel.posts.observeAsState()
 
-    val token =""
+    if (user == null || posts == null) viewModel.loadData(token)
 
-    if (user == null) viewModel.loadData(token)
-    if (posts == null) viewModel.loadData(token)
-
-
-    LazyColumn(modifier){
+    LazyColumn(modifier) {
         stickyHeader {
             TopAppBar(
                 title = {
@@ -66,11 +61,27 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit){
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         TextButton(onClick = { /*Logout the user*/ }) {
-                            Text(text = stringResource(R.string.profile_logout), color = Color.White, fontSize = 16.sp)
+                            Text(
+                                text = stringResource(R.string.profile_logout),
+                                color = Color.White,
+                                fontSize = 16.sp
+                            )
                         }
-                        Text(text = stringResource(R.string.profile_profile), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 30.sp)
-                        TextButton(onClick = { navigate("settings") }, modifier = Modifier.padding(end = 8.dp)) {
-                            Text(text = stringResource(R.string.profile_settings), color = Color.White, fontSize = 16.sp)
+                        Text(
+                            text = stringResource(R.string.profile_profile),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 30.sp
+                        )
+                        TextButton(
+                            onClick = { navigate("settings") },
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.profile_settings),
+                                color = Color.White,
+                                fontSize = 16.sp
+                            )
                         }
                     }
                 },
@@ -80,16 +91,18 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit){
                 )
             )
         }
-        item{
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .height(160.dp)
-                .background(Color(0xFFE8E8E8))
-            ){
-                Box(modifier = Modifier
-                    .background(darkBlue)
-                    .height(80.dp)
-                    .fillMaxWidth()
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .height(160.dp)
+                    .background(Color(0xFFE8E8E8))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(darkBlue)
+                        .height(80.dp)
+                        .fillMaxWidth()
                 )
                 Row(modifier = Modifier.padding(vertical = 30.dp, horizontal = 16.dp)) {
                     Image(
@@ -118,19 +131,11 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit){
                 }
             }
         }
-        items(posts!!) { post ->
+        items(posts ?: listOf()) { post ->
             PostCard(post, navigate)
         }
     }
 }
-
-
-@Composable
-@Preview
-fun PreviewPostView(){
-    ProfileView(modifier = Modifier, {})
-}
-
 
 
 
