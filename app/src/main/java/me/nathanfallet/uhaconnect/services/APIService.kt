@@ -74,7 +74,7 @@ class APIService {
     
     @Throws(Exception::class)
     suspend fun getUserPosts(id:Int, token: String): List<Post> {
-        return createRequest(HttpMethod.Get, "/users/$id/post", token).body()
+        return createRequest(HttpMethod.Get, "/users/$id/posts", token).body()
     }
 
     @Throws(Exception::class)
@@ -130,8 +130,8 @@ class APIService {
         }
     }*/
 
-    suspend fun getNotification(token: String): List<Notification> {
-        return createRequest(HttpMethod.Get, "/notifications", token).body()
+    suspend fun getNotification(token: String, id:Int): List<Notification> {
+        return createRequest(HttpMethod.Get, "users/$id/notifications/", token).body()
     }
 
     suspend fun getPosts(token: String): List<Post>{

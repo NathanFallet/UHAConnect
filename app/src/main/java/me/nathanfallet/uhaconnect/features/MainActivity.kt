@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -35,7 +35,6 @@ import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
-import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import me.nathanfallet.uhaconnect.features.profile.ProfileView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
@@ -50,36 +49,35 @@ class MainActivity : ComponentActivity() {
 
 enum class NavigationItem(
     val route: String,
-    val icon: ImageVector,
+    val icon: Int,
     val title: Int
 ) {
 
     FEED(
         "feed",
-        Icons.Filled.Home,
+        R.drawable.home,
         R.string.title_activity_main
     ),
     FAVS(
         "favs",
-        Icons.Filled.Home,
+        R.drawable.favorite,
         R.string.title_activity_favs_view
     ),
     COMPOSE(
         "compose",
-        Icons.Filled.Home,
-        R.string.title_activity_favs_view
+        R.drawable.post_add,
+        R.string.title_activity_new_post
     ),
-    POSTS(
-        "post",
-        Icons.Filled.Home,
-        R.string.title_activity_post_view
+    NOTIFICATIONS(
+        "notifications",
+        R.drawable.notification,
+        R.string.title_activity_notification
     ),
     PROFILE(
-        "home",
-        Icons.Filled.Home,
-        R.string.title_activity_post_view
+        "profile",
+        R.drawable.profile,
+        R.string.title_activity_profile_view
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,7 +105,7 @@ fun UHAConnectApp() {
                             NavigationBarItem(
                                 icon = {
                                     Icon(
-                                        item.icon,
+                                        painterResource(item.icon),
                                         contentDescription = stringResource(item.title)
                                     )
                                 },
@@ -160,12 +158,13 @@ fun UHAConnectApp() {
                 }
                 composable("notifications") {
                     NotificationView(
-                        ""
+                        modifier = Modifier.padding(padding),
+                        token = token,
+                        user = user
                     )
                 }
-                composable("post/{postId}/{userId}",
-                    arguments = listOf(navArgument("postId") { type = NavType.IntType },
-                        navArgument("userId") { type = NavType.IntType })) {
+                composable("post/{postId}",
+                    arguments = listOf(navArgument("postId") { type = NavType.IntType })) {
                     PostView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
@@ -194,13 +193,13 @@ fun UHAConnectApp() {
                         navigate = navController::navigate
                     )
                 }
-                composable("profile/{userId}",
-                    arguments = listOf(navArgument("userId") { type = NavType.IntType })
-                ) {
+                composable("profile")
+                {
                     ProfileView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
-                        token = token)
+                        token = token,
+                        user = user)
                 }
             }
         }

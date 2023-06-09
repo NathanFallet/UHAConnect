@@ -3,6 +3,7 @@ package me.nathanfallet.uhaconnect.features.feed
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -26,6 +27,7 @@ import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -38,7 +40,7 @@ fun FeedView(modifier: Modifier, navigate: (String)->Unit, token:String?) {
     if (posts == null) viewModel.loadData(token)
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(bottom = 70.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         stickyHeader{
@@ -58,15 +60,6 @@ fun FeedView(modifier: Modifier, navigate: (String)->Unit, token:String?) {
                         Icon(
                             Icons.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { navigate("profile") }) {
-                        Icon(
-                            Icons.Filled.Person,
-                            contentDescription = "Profile",
                             tint = Color.White
                         )
                     }

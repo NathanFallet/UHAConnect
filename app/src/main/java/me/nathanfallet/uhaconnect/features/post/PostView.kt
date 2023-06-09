@@ -54,11 +54,11 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
 
     val viewModel: PostViewModel = viewModel()
 
+    val username by viewModel.username.observeAsState("")
     val post by viewModel.post.observeAsState()
     val comments by viewModel.comments.observeAsState()
-    val user by viewModel.user.observeAsState()
 
-    if (user == null || comments == null || post == null) viewModel.loadData(token)
+    if (comments == null || post == null) viewModel.loadData(token)
 
     LazyColumn(modifier){
         stickyHeader{
@@ -77,15 +77,6 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { navigate("profile/"+user?.id.toString()) }) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Profile",
                             tint = Color.White
                         )
                     }
@@ -175,8 +166,8 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
 
             ) {
                 TextField(
-                    value = TextFieldValue(""),
-                    onValueChange = {},
+                    value = username,
+                    onValueChange = {viewModel.username.value = it},
                     label = { Text(stringResource(R.string.post_write_comment)) },
                     modifier = Modifier
                         .weight(1f)
@@ -191,11 +182,4 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
             }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewApp() {
-    PostView(modifier = Modifier.fillMaxSize(), {}, "")
 }

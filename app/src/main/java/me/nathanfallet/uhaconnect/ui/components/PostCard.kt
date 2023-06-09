@@ -25,6 +25,7 @@ import me.nathanfallet.uhaconnect.models.Post
 fun PostCard(post: Post, navigate: (String)->Unit){
 
     val context = LocalContext.current
+    val id = post.id.toString()
 
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -51,7 +52,7 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                 horizontalArrangement = Arrangement.End
             ){
                 Button(
-                    onClick = { navigate("post") },
+                    onClick = { navigate("post/$id") },
                     //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
                     modifier = Modifier.padding(start = 8.dp)
                 ) {

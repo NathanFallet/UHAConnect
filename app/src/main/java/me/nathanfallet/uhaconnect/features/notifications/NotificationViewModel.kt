@@ -14,10 +14,10 @@ class NotificationViewModel() : ViewModel() {
     private val _notifications = MutableLiveData<List<Notification>>()
     val notifications: LiveData<List<Notification>> get() = _notifications
 
-    fun loadData(token: String?) {
-        if (token == null) return
+    fun loadData(token: String?, id:Int?) {
+        if (token == null || id == null) return
         viewModelScope.launch {
-            _notifications.value = APIService.getInstance(Unit).getNotification(token)
+            _notifications.value = APIService.getInstance(Unit).getNotification(token, id)
         }
     }
 }

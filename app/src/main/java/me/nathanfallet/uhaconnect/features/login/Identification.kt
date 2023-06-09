@@ -129,7 +129,7 @@ fun LoginPage(
                 .padding(vertical = 33.dp, horizontal = 2.dp)
         ) {
             Text(
-                text = "Log in",
+                text = stringResource(R.string.login_login),
             )
         }
 

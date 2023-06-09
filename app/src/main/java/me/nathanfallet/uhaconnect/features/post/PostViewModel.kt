@@ -1,5 +1,7 @@
 package me.nathanfallet.uhaconnect.features.post
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -11,12 +13,13 @@ import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
-class PostViewModel(token : String,
+class PostViewModel(application: Application,
                     savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : AndroidViewModel(application) {
+
+    val username = MutableLiveData("")
 
     private val postId: Int? = savedStateHandle["postId"]
-    private val userId: Int? = savedStateHandle["userId"]
 
     private val _post = MutableLiveData<Post>()
     val post: LiveData<Post>
@@ -33,12 +36,11 @@ class PostViewModel(token : String,
 
 
     fun loadData(token: String?){
-        if (postId == null || userId == null || token == null)
+        if (postId == null || token == null)
             return
         viewModelScope.launch {
             try {
                 val api = APIService.getInstance(Unit)
-                _user.value = api.getUser(token, userId)
                 _post.value = api.getPost(token, postId)
                 _comments.value = api.getComments(token, postId)
             } catch (e: Exception) {
