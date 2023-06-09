@@ -102,5 +102,5 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
-    detektPlugins files("C:/Users/Matth/Documents/IR 1A/UHAconnect/detekt/dd-detekt-custom-rules-1.0.jar")
+    detektPlugins "com.github.MatthiasZdravkovic:detektcustom:1.0"
 }
