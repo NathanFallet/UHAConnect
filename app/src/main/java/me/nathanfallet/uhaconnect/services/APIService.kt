@@ -123,6 +123,10 @@ class APIService {
         return createRequest(HttpMethod.Get, "/notifications", token).body()
     }
 
+    suspend fun getPosts(token: String): List<Post>{
+        return createRequest(HttpMethod.Get, "/posts", token).body()
+    }
+
 }
 
 

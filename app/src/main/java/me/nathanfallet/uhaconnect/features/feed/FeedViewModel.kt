@@ -1,48 +1,42 @@
-package me.nathanfallet.uhaconnect.features.Favs
+package me.nathanfallet.uhaconnect.features.feed
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
-class FavsViewModel(token : String) : ViewModel() {
+class FeedViewModel(
+    application: Application,
+) : ViewModel() {
 
-    private val _favPosts = MutableLiveData<List<Post>>()
-    val favPosts: LiveData<List<Post>>
-        get() = _favPosts
+
+    private val _posts = MutableLiveData<List<Post>>()
+    val posts: LiveData<List<Post>>
+        get() = _posts
 
     private val _user = MutableLiveData<User>()
     val user: LiveData<User>
         get() = _user
-    init {
 
+    fun loadData(token: String?) {
+        if (token == null) {
+            return
+        }
         viewModelScope.launch {
             try {
-                val instant: kotlinx.datetime.Instant = kotlinx.datetime.Instant.parse("2023-06-07T12:34:56Z")
-                val apiService = APIService.getInstance(Unit)
-                val user = apiService.getUser(token, 78)
-                val favPosts = listOf(
-                    Post(11,11,"TITLE","THIS IS THE CONTENT",instant),
-                    Post(11,11,"TITLE","THIS IS THE CONTENT",instant),
-                    Post(11,11,"TITLE","THIS IS THE CONTENT",instant),
-                    Post(11,11,"TITLE","THIS IS THE CONTENT",instant),
-
-                )
-
-                _favPosts.value = favPosts
-                _user.value = user
-            } catch (e: Exception) {
-                null
+                _posts.value = APIService.getInstance(Unit).getPosts(token)
             }
+            catch (e: Exception){}
         }
-
     }
+
+}
 
     /*fun getFavoritePosts(): List<Post> {
         val instant: kotlinx.datetime.Instant = kotlinx.datetime.Instant.parse("2023-06-07T12:34:56Z")
@@ -66,4 +60,3 @@ class FavsViewModel(token : String) : ViewModel() {
     }*/
 
 
-}

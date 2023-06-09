@@ -29,8 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.features.Favs.FavsView
-import me.nathanfallet.uhaconnect.features.Favs.FavsViewModel
+import me.nathanfallet.uhaconnect.features.feed.FeedView
 import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
@@ -177,10 +176,10 @@ fun UHAConnectApp() {
                     )
                 }
                 composable("favs") {
-                    val viewModel = FavsViewModel(token!!)
-                    FavsView(
+                    FeedView(
                         modifier = Modifier.padding(padding),
-                        viewModel = viewModel
+                        navigate = navController::navigate,
+                        token = token
                     )
                 }
                 composable("profile/{userId}",

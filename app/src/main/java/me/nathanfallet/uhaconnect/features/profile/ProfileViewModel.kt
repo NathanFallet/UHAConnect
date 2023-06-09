@@ -32,8 +32,8 @@ class ProfileViewModel(
         }
         viewModelScope.launch {
             try {
-                APIService.getInstance(Unit).getUser(id, token)
-                APIService.getInstance(Unit).getUserPosts(id, token)
+                _user.value = APIService.getInstance(Unit).getUser(id, token)
+                _posts.value = APIService.getInstance(Unit).getUserPosts(id, token)
             }
             catch (e: Exception){}
         }
