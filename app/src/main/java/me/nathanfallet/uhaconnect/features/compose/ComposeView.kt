@@ -41,10 +41,9 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ComposeView(modifier: Modifier,
-                token : String?,
-                navigate : (String) -> Unit
-    ) {
+fun ComposeView(
+    modifier: Modifier, token: String?, navigate: (String) -> Unit
+) {
 
     val viewModel = viewModel<ComposeViewModel>()
 
@@ -55,125 +54,108 @@ fun ComposeView(modifier: Modifier,
 
     if (id != null) navigate("post/$id")
 
-        Column(
-            modifier = modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "UHAConnect",
-                        color = Color.White,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentWidth(Alignment.CenterHorizontally)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            Icons.Filled.Person,
-                            contentDescription = "Profile",
-                            tint = Color.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = darkBlue,
-                    titleContentColor = Color.White
+    Column(
+        modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TopAppBar(title = {
+            Text(
+                text = "UHAConnect",
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+            )
+        }, navigationIcon = {
+            IconButton(onClick = { }) {
+                Icon(
+                    Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White
                 )
-            )
-
-            /*Buttons and profile photo*/
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .padding(vertical = 20.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(75.dp)
-                        .clip(CircleShape)
-                        .border(
-                            BorderStroke(3.dp, Color.White),
-                            CircleShape
-                        )
-                    )
-
-                Button(
-                    onClick = {},
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text(text = "Add tag", color = Color.White)
-                }
-                Button(
-                    onClick = {
-                              viewModel.post(token)
-                    },
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text(text = "Post", color = Color.White)
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Post",
-                        tint = Color.White,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-                Button(
-                    onClick = {},
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text(text = "File", color = Color.White)
-                }
-
-
-
             }
+        }, actions = {
+            IconButton(onClick = {}) {
+                Icon(
+                    Icons.Filled.Person, contentDescription = "Profile", tint = Color.White
+                )
+            }
+        }, colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = darkBlue, titleContentColor = Color.White
+        )
+        )
 
-            /*Text fields for posting*/
-            TextField(
-                value = titleContent,
-                onValueChange = { viewModel.titleContent.value = it },
-                label = { Text("Title") },
+        /*Buttons and profile photo*/
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+                .padding(vertical = 20.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
 
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 30.dp)
-                    .padding(vertical = 8.dp)
-                    .height(50.dp)
+                    .size(75.dp)
+                    .clip(CircleShape)
+                    .border(
+                        BorderStroke(3.dp, Color.White), CircleShape
+                    )
             )
 
-            TextField(
-                value = postContent,
-                onValueChange = { viewModel.postContent.value = it },
-                label = { Text("What's in your mind ?") },
-
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 30.dp)
-                    .padding(vertical = 8.dp)
-                    .height(300.dp)
-
-            )
+            Button(
+                onClick = {}, modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text(text = "Add tag", color = Color.White)
+            }
+            Button(
+                onClick = {
+                    viewModel.post(token)
+                }, modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text(text = "Post", color = Color.White)
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Post",
+                    tint = Color.White,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+            Button(
+                onClick = {}, modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text(text = "File", color = Color.White)
+            }
 
 
         }
+
+        /*Text fields for posting*/
+        TextField(value = titleContent,
+            onValueChange = { viewModel.titleContent.value = it },
+            label = { Text("Title") },
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp)
+                .padding(vertical = 8.dp)
+                .height(50.dp)
+        )
+
+        TextField(value = postContent,
+            onValueChange = { viewModel.postContent.value = it },
+            label = { Text("What's in your mind ?") },
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp)
+                .padding(vertical = 8.dp)
+                .height(300.dp)
+
+        )
+
+
+    }
 
 }
