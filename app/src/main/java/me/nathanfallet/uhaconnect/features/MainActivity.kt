@@ -163,11 +163,13 @@ fun UHAConnectApp() {
                         ""
                     )
                 }
-                composable("post") {
-                    val viewModel = PostViewModel(token!!)
+                composable("post/{postId}/{userId}",
+                    arguments = listOf(navArgument("postId") { type = NavType.IntType },
+                        navArgument("userId") { type = NavType.IntType })) {
                     PostView(
                         modifier = Modifier.padding(padding),
-                        viewModel = viewModel
+                        navigate = navController::navigate,
+                        token = token
                     )
                 }
                 composable("feed") {

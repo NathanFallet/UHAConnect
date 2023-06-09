@@ -2,6 +2,7 @@ package me.nathanfallet.uhaconnect.features.post
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -10,7 +11,12 @@ import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
-class PostViewModel(token : String) : ViewModel() {
+class PostViewModel(token : String,
+                    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+
+    private val postId: Int? = savedStateHandle["postId"]
+    private val userId: Int? = savedStateHandle["userId"]
 
     private val _post = MutableLiveData<Post>()
     val post: LiveData<Post>
@@ -26,23 +32,15 @@ class PostViewModel(token : String) : ViewModel() {
         get() = _comments
 
 
-    init {
-
+    fun loadData(token: String?){
+        if (postId == null || userId == null || token == null)
+            return
         viewModelScope.launch {
             try {
-                val instant: kotlinx.datetime.Instant = kotlinx.datetime.Instant.parse("2023-06-07T12:34:56Z")
-                val apiService = APIService.getInstance(Unit)
-                val user = apiService.getUser(token, 78)
-                val post = apiService.getPost(token, 55)
-                val comments = listOf(
-                    Comment(55, 11, "content 1",instant),
-                    Comment(55, 112, "content 2",instant),
-                    Comment(55, 74, "content 2",instant)
-                )
-
-                _post.value = post
-                _comments.value = comments
-                _user.value = user
+                val api = APIService.getInstance(Unit)
+                _user.value = api.getUser(token, userId)
+                _post.value = api.getPost(token, postId)
+                _comments.value = api.getComments(token, postId)
             } catch (e: Exception) {
                 null
             }
