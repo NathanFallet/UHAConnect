@@ -16,6 +16,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Post
@@ -78,6 +79,15 @@ class APIService {
     @Throws(Exception::class)
     suspend fun getPost(token: String, id: Int): Post {
         return createRequest(HttpMethod.Get, "/posts/$id", token).body()
+    }
+
+
+    @Throws(Exception::class)
+    suspend fun postPost(token: String, payload: CreatePostPayload): Post {
+        return createRequest(HttpMethod.Post, "/posts", token) {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }.body()
     }
 
     @Throws(Exception::class)

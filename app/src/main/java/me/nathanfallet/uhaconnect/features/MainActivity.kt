@@ -1,6 +1,5 @@
 package me.nathanfallet.uhaconnect.features
 
-import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,13 +28,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.features.compose.ComposeView
 import me.nathanfallet.uhaconnect.features.feed.FeedView
-import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
+import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import me.nathanfallet.uhaconnect.features.profile.ProfileView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
@@ -54,8 +54,8 @@ enum class NavigationItem(
     val title: Int
 ) {
 
-    HOME(
-        "home",
+    FEED(
+        "feed",
         Icons.Filled.Home,
         R.string.title_activity_main
     ),
@@ -64,10 +64,10 @@ enum class NavigationItem(
         Icons.Filled.Home,
         R.string.title_activity_favs_view
     ),
-    POST(
-        "post",
+    COMPOSE(
+        "compose",
         Icons.Filled.Home,
-        R.string.title_activity_post_view
+        R.string.title_activity_favs_view
     ),
     POSTS(
         "post",
@@ -137,13 +137,8 @@ fun UHAConnectApp() {
         ) { padding ->
             NavHost(
                 navController = navController,
-                startDestination = if (token != null) "home" else "login"
+                startDestination = if (token != null) "feed" else "login"
             ) {
-                composable("home") {
-                    HomeView(
-                        modifier = Modifier.padding(padding)
-                    )
-                }
                 composable("login") {
                     LoginPage(
                         modifier = Modifier.padding(padding),
@@ -182,8 +177,24 @@ fun UHAConnectApp() {
                         token = token
                     )
                 }
+                composable("favs") {
+                    // TODO: Make different for favs (from feed)
+                    FeedView(
+                        modifier = Modifier.padding(padding),
+                        navigate = navController::navigate,
+                        token = token
+                    )
+                }
+                composable("compose") {
+                    ComposeView(
+                        modifier = Modifier.padding(padding),
+                        token = token,
+                        navigate = navController::navigate
+                    )
+                }
                 composable("profile/{userId}",
-                    arguments = listOf(navArgument("userId") { type = NavType.IntType })){
+                    arguments = listOf(navArgument("userId") { type = NavType.IntType })
+                ) {
                     ProfileView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
