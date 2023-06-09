@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.services.APIService
 
-class ComposeViewModel(token : String?): ViewModel() {
+class ComposeViewModel : ViewModel() {
 
     val postContent = MutableLiveData("")
     val titleContent = MutableLiveData("")

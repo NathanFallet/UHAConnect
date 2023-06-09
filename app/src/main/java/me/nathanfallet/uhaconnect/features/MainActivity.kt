@@ -1,6 +1,5 @@
 package me.nathanfallet.uhaconnect.features
 
-import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,12 +28,14 @@ import androidx.navigation.compose.rememberNavController
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.features.Favs.FavsView
 import me.nathanfallet.uhaconnect.features.Favs.FavsViewModel
+import me.nathanfallet.uhaconnect.features.compose.ComposeView
 import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
+import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import me.nathanfallet.uhaconnect.features.profile.ProfileView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
@@ -63,16 +64,10 @@ enum class NavigationItem(
         Icons.Filled.Home,
         R.string.title_activity_favs_view
     ),
-    PostPOST(
+    COMPOSE(
         "compose",
         Icons.Filled.Home,
         R.string.title_activity_favs_view
-    ),
-
-    POST(
-        "post",
-        Icons.Filled.Home,
-        R.string.title_activity_post_view
     ),
     POSTS(
         "post",
@@ -187,10 +182,18 @@ fun UHAConnectApp() {
                         viewModel = viewModel
                     )
                 }
-                composable("profile"){
+                composable("profile") {
                     ProfileView(
                         modifier = Modifier.padding(padding),
-                        navigate = navController::navigate)
+                        navigate = navController::navigate
+                    )
+                }
+                composable("compose") {
+                    ComposeView(
+                        modifier = Modifier.padding(padding),
+                        token = token,
+                        navigate = navController::navigate
+                    )
                 }
             }
         }
