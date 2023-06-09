@@ -28,8 +28,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.features.feed.FeedView
 import me.nathanfallet.uhaconnect.features.compose.ComposeView
+import me.nathanfallet.uhaconnect.features.feed.FeedView
 import me.nathanfallet.uhaconnect.features.home.HomeView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
@@ -61,7 +61,7 @@ enum class NavigationItem(
         R.string.title_activity_main
     ),
     FAVS(
-        "favs",
+        "feed",
         Icons.Filled.Home,
         R.string.title_activity_favs_view
     ),
@@ -176,7 +176,7 @@ fun UHAConnectApp() {
                         viewModel = viewModel
                     )
                 }
-                composable("favs") {
+                composable("feed") {
                     FeedView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
