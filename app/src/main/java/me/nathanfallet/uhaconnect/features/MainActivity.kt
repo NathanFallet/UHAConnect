@@ -63,6 +63,12 @@ enum class NavigationItem(
         Icons.Filled.Home,
         R.string.title_activity_favs_view
     ),
+    PostPOST(
+        "compose",
+        Icons.Filled.Home,
+        R.string.title_activity_favs_view
+    ),
+
     POST(
         "post",
         Icons.Filled.Home,

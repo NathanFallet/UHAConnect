@@ -2,10 +2,8 @@ package me.nathanfallet.uhaconnect.features.compose
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,12 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,26 +27,36 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.features.Favs.FavsView
-import me.nathanfallet.uhaconnect.features.Favs.FavsViewModel
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ComposeView(modifier: Modifier
+fun ComposeView(modifier: Modifier,
+                token : String?,
+                navigate : (String) -> Unit
     ) {
+
+    val viewModel = viewModel<ComposeViewModel>()
+
+    val postContent by viewModel.postContent.observeAsState("")
+
+    val titleContent by viewModel.titleContent.observeAsState("")
+    val id by viewModel.id.observeAsState()
+
+    if (id != null) navigate("post/$id")
+
     Surface(
         modifier,
         color = Color.LightGray
@@ -94,6 +99,8 @@ fun ComposeView(modifier: Modifier
                     titleContentColor = Color.White
                 )
             )
+
+            /*Buttons and profile photo*/
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,7 +129,9 @@ fun ComposeView(modifier: Modifier
                     Text(text = "Add tag", color = Color.White)
                 }
                 Button(
-                    onClick = {},
+                    onClick = {
+                              viewModel.post(token)
+                    },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text(text = "Post", color = Color.White)
@@ -143,16 +152,30 @@ fun ComposeView(modifier: Modifier
 
 
             }
+
+            /*Text fields for posting*/
             TextField(
-                value = "",
-                onValueChange = {},
+                value = titleContent,
+                onValueChange = { viewModel.titleContent.value = it },
+                label = { Text("Title") },
+
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 30.dp)
+                    .padding(vertical = 8.dp)
+                    .height(50.dp)
+            )
+
+            TextField(
+                value = postContent,
+                onValueChange = { viewModel.postContent.value = it },
                 label = { Text("What's in your mind ?") },
 
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 30.dp)
                     .padding(vertical = 8.dp)
-                    .height(500.dp)
+                    .height(300.dp)
 
             )
 
@@ -165,5 +188,7 @@ fun ComposeView(modifier: Modifier
 @Preview(showBackground = true)
 @Composable
 fun PreviewApp() {
-    ComposeView(Modifier.fillMaxSize())
+    ComposeView(Modifier.fillMaxSize(),
+        token = "", {}
+    )
 }

@@ -88,7 +88,7 @@ fun FavsView(modifier: Modifier, viewModel: FavsViewModel) {
             ) {
                 OutlinedTextField(
                     value = "",
-                    onValueChange = { /* Handle search query change */ },
+                    onValueChange = {},
                     modifier = Modifier.weight(1f),
                     placeholder = {
                         Text(
