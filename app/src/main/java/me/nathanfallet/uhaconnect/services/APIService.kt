@@ -131,7 +131,7 @@ class APIService {
     }*/
 
     suspend fun getNotification(token: String, id:Int): List<Notification> {
-        return createRequest(HttpMethod.Get, "users/$id/notifications/", token).body()
+        return createRequest(HttpMethod.Get, "/notifications", token).body()
     }
 
     suspend fun getPosts(token: String): List<Post>{

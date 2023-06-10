@@ -13,7 +13,10 @@ import me.nathanfallet.uhaconnect.services.APIService
 
 class ProfileViewModel(
     application: Application,
+    savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
+
+    private val id: Int? = savedStateHandle["userId"]
 
     private val _user = MutableLiveData<User>()
     val user: LiveData<User>
@@ -23,12 +26,13 @@ class ProfileViewModel(
     val posts: LiveData<List<Post>>
         get() = _posts
 
-    fun loadData(token: String?, id: Int?) {
+    fun loadData(token: String?) {
         if (token == null || id == null) {
             return
         }
         viewModelScope.launch {
             try {
+                _user.value = APIService.getInstance(Unit).getUser(id, token)
                 _posts.value = APIService.getInstance(Unit).getUserPosts(id, token)
             }
             catch (e: Exception){}

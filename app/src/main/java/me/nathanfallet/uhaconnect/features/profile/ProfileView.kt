@@ -37,19 +37,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, user: User?) {
+fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
 
     val viewModel: ProfileViewModel = viewModel()
 
     val posts by viewModel.posts.observeAsState()
+    val user by viewModel.user.observeAsState()
 
-    if (posts == null) viewModel.loadData(token, user?.id)
+    if (posts == null || user == null) viewModel.loadData(token)
 
     LazyColumn(modifier) {
         stickyHeader {

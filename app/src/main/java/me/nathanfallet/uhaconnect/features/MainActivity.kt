@@ -21,10 +21,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import me.nathanfallet.uhaconnect.R
@@ -74,7 +76,7 @@ enum class NavigationItem(
         R.string.title_activity_notification
     ),
     PROFILE(
-        "profile",
+        "self_profile",
         R.drawable.profile,
         R.string.title_activity_profile_view
     )
@@ -193,13 +195,19 @@ fun UHAConnectApp() {
                         navigate = navController::navigate
                     )
                 }
-                composable("profile")
+                dialog("self_profile")
                 {
+                    val userId = user?.id ?: ""
+                    navController.navigate("profile/$userId")
+                }
+                composable("profile/{userId}",
+                    arguments = listOf(navArgument("userId") { type = NavType.IntType })
+                ) {
                     ProfileView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
-                        token = token,
-                        user = user)
+                        token = token
+                    )
                 }
             }
         }

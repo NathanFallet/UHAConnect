@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.Comment
@@ -17,7 +16,7 @@ class PostViewModel(application: Application,
                     savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-    val username = MutableLiveData("")
+    val newComment = MutableLiveData("")
 
     private val postId: Int? = savedStateHandle["postId"]
 
