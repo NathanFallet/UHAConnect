@@ -56,6 +56,7 @@ import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.ui.components.DropDownMenu
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 import java.util.Date
 
@@ -160,11 +161,18 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                             .padding(vertical = 8.dp)
                     ) {
                         Column {
-                            Text(
-                                text = comment.user_id.toString(),
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            )
+                            Row(horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()){
+                                Text(
+                                    text = comment.user_id.toString(),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                )
+                                /*if user.role = Admin*/
+                                DropDownMenu_comment()
+
+                            }
                             Text(
                                 text = comment.content,
                                 style = MaterialTheme.typography.bodySmall,
@@ -213,3 +221,34 @@ fun PreviewApp() {
     PostView(modifier = Modifier.fillMaxSize(), {}, "")
 }
 
+@Composable
+fun DropDownMenu_comment() {
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentSize(Alignment.TopEnd)
+    ) {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "More"
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Remove comment") },
+                onClick = { Toast.makeText(context, "Comment has been removed", Toast.LENGTH_SHORT).show() }
+            )
+            DropdownMenuItem(
+                text = { Text("Ban user") },
+                onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
+            )
+        }
+    }
+}
