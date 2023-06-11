@@ -138,6 +138,7 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                             text = "$user.role",
                             modifier = Modifier.padding(start = 15.dp)
                         )
+                        /*if user.role = admin*/
                         DropDownMenu()
                     }
 

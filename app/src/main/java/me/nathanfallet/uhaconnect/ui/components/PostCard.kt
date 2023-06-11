@@ -60,6 +60,7 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                     modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
                     fontSize = 24.sp,
                 )
+                /*if user.role = admin*/
                 DropDownMenu()
 
             }
