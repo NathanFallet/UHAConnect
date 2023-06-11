@@ -1,8 +1,11 @@
 package me.nathanfallet.uhaconnect.features.feed
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -26,6 +29,12 @@ import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -78,8 +87,40 @@ fun FeedView(modifier: Modifier, navigate: (String)->Unit, token:String?) {
             )}
         items(posts ?: listOf()) { post ->
             PostCard(post = post, navigate = navigate)
+
         }
     }
 }
 
+@Composable
+fun DropDownMenu() {
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .wrapContentSize(Alignment.TopEnd)
+    ) {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "More"
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Load") },
+                onClick = { Toast.makeText(context, "Load", Toast.LENGTH_SHORT).show() }
+            )
+            DropdownMenuItem(
+                text = { Text("Save") },
+                onClick = { Toast.makeText(context, "Save", Toast.LENGTH_SHORT).show() }
+            )
+        }
+    }
+}
 
