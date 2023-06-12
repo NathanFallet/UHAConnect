@@ -56,7 +56,6 @@ import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.User
-import me.nathanfallet.uhaconnect.ui.components.DropDownMenu
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 import java.util.Date
 
@@ -69,6 +68,8 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
     val post by viewModel.post.observeAsState()
     val comments by viewModel.comments.observeAsState()
     val user by viewModel.user.observeAsState()
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
 
 
     if (user == null || comments == null || post == null) viewModel.loadData(token)
@@ -169,8 +170,48 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier.padding(horizontal = 8.dp)
                                 )
-                                /*if user.role = Admin*/
-                                DropDownMenu_comment()
+                                // TODO: Use logged user instead
+                                if (user?.role  == RoleStatus.ADMINISTRATOR) {
+
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth()
+                                            .wrapContentSize(Alignment.TopEnd)
+                                    ) {
+                                        IconButton(onClick = { expanded = !expanded }) {
+                                            Icon(
+                                                imageVector = Icons.Default.MoreVert,
+                                                contentDescription = "More"
+                                            )
+                                        }
+
+                                        DropdownMenu(
+                                            expanded = expanded,
+                                            onDismissRequest = { expanded = false }
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = { Text("Remove comment") },
+                                                onClick = {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Comment has been removed",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text("Ban user") },
+                                                onClick = {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "User has been banned",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+
 
                             }
                             Text(
@@ -221,34 +262,3 @@ fun PreviewApp() {
     PostView(modifier = Modifier.fillMaxSize(), {}, "")
 }
 
-@Composable
-fun DropDownMenu_comment() {
-    val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier.fillMaxWidth()
-            .wrapContentSize(Alignment.TopEnd)
-    ) {
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "More"
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text("Remove comment") },
-                onClick = { Toast.makeText(context, "Comment has been removed", Toast.LENGTH_SHORT).show() }
-            )
-            DropdownMenuItem(
-                text = { Text("Ban user") },
-                onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
-            )
-        }
-    }
-}

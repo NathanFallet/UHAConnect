@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,15 +30,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
+import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.RoleStatus
 
 
 @Composable
 fun PostCard(post: Post, navigate: (String)->Unit){
+    val viewModel: PostViewModel = viewModel()
 
     val context = LocalContext.current
+    val user by viewModel.user.observeAsState()
+    var expanded by remember { mutableStateOf(false) }
 
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -60,8 +67,36 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                     modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
                     fontSize = 24.sp,
                 )
-                /*if user.role = admin*/
-                DropDownMenu()
+                // TODO: Use logged user instead
+                if (user?.role  == RoleStatus.ADMINISTRATOR) {
+
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                            .wrapContentSize(Alignment.TopEnd)
+                    ) {
+                        IconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More"
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Remove post") },
+                                onClick = { Toast.makeText(context, "Post has been removed", Toast.LENGTH_SHORT).show() }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Ban user") },
+                                onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
+                            )
+                        }
+                    }
+
+                }
 
             }
             Text(text = post.content)
@@ -78,37 +113,6 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                     Text(text = stringResource(R.string.postcard_showmore))
                 }
             }
-        }
-    }
-}
-@Composable
-fun DropDownMenu() {
-    val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier.fillMaxWidth()
-            .wrapContentSize(Alignment.TopEnd)
-    ) {
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "More"
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text("Remove post") },
-                onClick = { Toast.makeText(context, "Post has been removed", Toast.LENGTH_SHORT).show() }
-            )
-            DropdownMenuItem(
-                text = { Text("Ban user") },
-                onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
-            )
         }
     }
 }

@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
@@ -60,6 +61,8 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
 
     val user by viewModel.user.observeAsState()
     val posts by viewModel.posts.observeAsState()
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
 
     if (user == null || posts == null) viewModel.loadData(token)
 
@@ -138,8 +141,31 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                             text = "$user.role",
                             modifier = Modifier.padding(start = 15.dp)
                         )
-                        /*if user.role = admin*/
-                        DropDownMenu()
+                        //TODO: use current user instead
+                        if (user?.role==RoleStatus.ADMINISTRATOR){
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                                    .wrapContentSize(Alignment.TopEnd)
+                            ) {
+                                IconButton(onClick = { expanded = !expanded }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = "More"
+                                    )
+                                }
+
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Ban user") },
+                                        onClick = { Toast.makeText(context, "Save", Toast.LENGTH_SHORT).show() }
+                                    )
+                                }
+                            }
+                        }
+
                     }
 
                 }
@@ -150,37 +176,3 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
         }
     }
 }
-@Composable
-fun DropDownMenu() {
-    val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier.fillMaxWidth()
-            .wrapContentSize(Alignment.TopEnd)
-    ) {
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "More"
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text("Remove post") },
-                onClick = { Toast.makeText(context, "Load", Toast.LENGTH_SHORT).show() }
-            )
-            DropdownMenuItem(
-                text = { Text("Ban user") },
-                onClick = { Toast.makeText(context, "Save", Toast.LENGTH_SHORT).show() }
-            )
-        }
-    }
-}
-
-
-
