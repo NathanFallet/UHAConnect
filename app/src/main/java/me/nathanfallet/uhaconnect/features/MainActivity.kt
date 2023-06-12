@@ -181,8 +181,7 @@ fun UHAConnectApp() {
                 composable("notifications") {
                     NotificationView(
                         modifier = Modifier.padding(padding),
-                        token = token,
-                        user = user
+                        token = token
                     )
                 }
                 composable("post/{postId}",

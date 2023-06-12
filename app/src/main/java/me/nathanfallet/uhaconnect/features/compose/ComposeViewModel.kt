@@ -1,5 +1,9 @@
 package me.nathanfallet.uhaconnect.features.compose
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,6 +21,11 @@ class ComposeViewModel : ViewModel() {
     val id: LiveData<Int>
         get() = _id
 
+
+    private val _image = MutableLiveData<Bitmap>()
+    val image: LiveData<Bitmap>
+        get() = _image
+
     fun post(token: String?) {
         val title = titleContent.value
         val content = postContent.value
@@ -25,10 +34,26 @@ class ComposeViewModel : ViewModel() {
             return
         }
         viewModelScope.launch {
-            _id.value = APIService.getInstance(Unit).postPost(token, CreatePostPayload(
-                title, content ?: ""
-            )).id
+            _id.value = APIService.getInstance(Unit).postPost(
+                token, CreatePostPayload(title, content)
+            ).id
         }
     }
+
+    fun selectImage(token: String, uri: Uri, context: Context) {
+        viewModelScope.launch {
+            try {
+                val bytes = context.contentResolver.openInputStream(uri)?.use {
+                    it.readBytes()
+                } ?: ByteArray(0)
+                APIService.getInstance(Unit).selectImage(token, bytes)
+
+                _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
 }
