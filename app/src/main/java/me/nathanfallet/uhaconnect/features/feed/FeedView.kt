@@ -72,7 +72,7 @@ fun FeedView(modifier: Modifier, navigate: (String)->Unit, token:String?) {
                 )
             )}
         items(posts ?: listOf()) { post ->
-            PostCard(post = post, navigate = navigate)
+            PostCard(post = post, navigate = navigate,token)
 
         }
     }

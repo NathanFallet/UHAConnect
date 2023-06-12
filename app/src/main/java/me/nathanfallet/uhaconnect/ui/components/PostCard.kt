@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
 import me.nathanfallet.uhaconnect.features.post.PostViewModel
@@ -39,10 +41,12 @@ import me.nathanfallet.uhaconnect.models.RoleStatus
 
 
 @Composable
-fun PostCard(post: Post, navigate: (String)->Unit){
+fun PostCard(post: Post, navigate: (String)->Unit, token: String?){
 
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val viewModel: PostViewModel = viewModel()
 
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -85,7 +89,16 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                         ) {
                             DropdownMenuItem(
                                 text = { Text("Remove post") },
-                                onClick = { Toast.makeText(context, "Post has been removed", Toast.LENGTH_SHORT).show() }
+                                onClick = {
+                                    scope.launch {
+                                        viewModel.deletePost(token, idPost=post.id)
+                                        Toast.makeText(
+                                            context,
+                                            "Post has been removed",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
                             )
                             DropdownMenuItem(
                                 text = { Text("Ban user") },

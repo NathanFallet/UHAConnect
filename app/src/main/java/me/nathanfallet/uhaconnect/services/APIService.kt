@@ -162,6 +162,15 @@ class APIService {
     suspend fun getComments(token: String, id: Int): List<Comment>{
         return createRequest(HttpMethod.Get, "/posts/$id/comments", token).body()
     }
+    @Throws(Exception::class)
+    suspend fun deletePost(token: String, id: Int): List<Comment>{
+        return createRequest(HttpMethod.Delete, "/posts/$id", token).body()
+    }
+
+    @Throws(Exception::class)
+    suspend fun deleteComment(token: String?, idPost: Int,idComment : Int): List<Comment>{
+        return createRequest(HttpMethod.Delete, "/posts/$idPost/comments/$idComment", token).body()
+    }
 
 }
 
