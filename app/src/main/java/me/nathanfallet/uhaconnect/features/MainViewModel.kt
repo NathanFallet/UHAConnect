@@ -4,10 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
+import me.nathanfallet.uhaconnect.services.APIService
 import me.nathanfallet.uhaconnect.services.StorageService
 
 class MainViewModel(
@@ -31,6 +35,30 @@ class MainViewModel(
         prefs.getString("token", null)?.let {
             _token.value = it
         }
+
+        // Setup firebase messaging
+        setupFirebaseMessaging()
+    }
+
+    fun setupFirebaseMessaging() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if (it.isSuccessful) {
+                token.value?.let { token ->
+                    it.result?.let { fcmToken ->
+                        viewModelScope.launch {
+                            try {
+                                APIService.getInstance(Unit).sendNotificationToken(
+                                    token, fcmToken
+                                )
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        FirebaseMessaging.getInstance().subscribeToTopic("broadcast")
     }
 
     fun login(userToken: UserToken?) {
