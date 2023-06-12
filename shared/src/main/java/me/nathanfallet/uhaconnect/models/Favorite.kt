@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Favorite(
     val user_id: Int,
-    val post_id: Int,
-    val post: Post? = null
+    val post_id: Int
 )
