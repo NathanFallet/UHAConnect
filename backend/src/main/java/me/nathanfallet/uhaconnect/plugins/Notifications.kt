@@ -16,7 +16,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.database.Database
+import me.nathanfallet.uhaconnect.models.Follows
 import me.nathanfallet.uhaconnect.models.NotificationsTokens
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.select
 import java.io.FileInputStream
 import java.nio.file.Files
@@ -65,6 +67,24 @@ object Notifications {
             Database.dbQuery {
                 NotificationsTokens
                     .select { NotificationsTokens.userId eq userId }
+                    .map { it[NotificationsTokens.token] }
+            }.forEach { token ->
+                sendNotification(
+                    NotificationPayload(
+                        token = token,
+                        notification = notification
+                    )
+                )
+            }
+        }
+    }
+
+    fun sendNotificationToFollowers(userId: Int, notification: NotificationData) {
+        CoroutineScope(Job()).launch {
+            Database.dbQuery {
+                NotificationsTokens
+                    .join(Follows, JoinType.INNER, Follows.id_follower, NotificationsTokens.userId)
+                    .select { Follows.id_user eq userId }
                     .map { it[NotificationsTokens.token] }
             }.forEach { token ->
                 sendNotification(

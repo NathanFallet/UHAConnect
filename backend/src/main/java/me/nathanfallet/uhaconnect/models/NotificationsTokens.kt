@@ -6,7 +6,7 @@ object NotificationsTokens : Table() {
 
     val token = varchar("token", 255)
     val userId = reference("id_user", Users)
-    val expiration = Posts.long("expiration")
+    val expiration = long("expiration")
 
     override val primaryKey = PrimaryKey(token)
 

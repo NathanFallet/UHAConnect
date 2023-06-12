@@ -9,18 +9,56 @@ import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
+import io.ktor.server.http.content.staticFiles
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveStream
 import io.ktor.server.response.respond
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.put
+import io.ktor.server.routing.route
 import io.ktor.util.pipeline.PipelineContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.*
-import org.jetbrains.exposed.sql.*
+import me.nathanfallet.uhaconnect.models.Comments
+import me.nathanfallet.uhaconnect.models.CreateCommentPayload
+import me.nathanfallet.uhaconnect.models.CreatePostPayload
+import me.nathanfallet.uhaconnect.models.Favorites
+import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
+import me.nathanfallet.uhaconnect.models.NotificationsTokens
+import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.Posts
+import me.nathanfallet.uhaconnect.models.RegisterPayload
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
+import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.UserToken
+import me.nathanfallet.uhaconnect.models.Users
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.Date
+import java.util.UUID
+
 
 fun Route.api() {
     val secret = this.environment!!.config.property("jwt.secret").getString()
@@ -212,6 +250,7 @@ fun Route.api() {
                 val posts = Database.dbQuery {
                     Posts
                         .join(Users, JoinType.INNER)
+                        .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                         .select { Posts.user_id eq id }
                         .orderBy(Posts.date, SortOrder.DESC)
                         .limit(limit, offset)
@@ -228,6 +267,7 @@ fun Route.api() {
                 val posts = Database.dbQuery {
                     Posts
                         .join(Users, JoinType.INNER)
+                        .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                         .select { Posts.validated eq true }
                         .orderBy(Posts.date, SortOrder.DESC)
                         .limit(limit, offset)
@@ -499,6 +539,40 @@ fun Route.api() {
             }
 
         }
+
+        route("/media") {
+            post {
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "Invalid user"))
+                    return@post
+                }
+
+                val uploadsFolder = Paths.get("media")
+                if (!Files.exists(uploadsFolder)) {
+                    Files.createDirectory(uploadsFolder)
+                }
+
+                call.receiveStream().use { input ->
+                    val fileName = generateRandomName()
+                    val file = File("media/$fileName")
+                    withContext(Dispatchers.IO) {
+                        file.outputStream().buffered().use {
+                            input.copyTo(it)
+                        }
+                    }
+                    call.respond(mapOf("fileName" to fileName)) // Include fileName in the response
+                }
+
+                call.response.status(HttpStatusCode.Created)
+            }
+
+            staticFiles("", File("media"))
+
+            // Add more media-related routes as needed
+        }
+
+
         route("/notifications") {
             get {
                 val user = getUser() ?: run {
@@ -624,6 +698,11 @@ fun Route.api() {
 
         // ...
     }
+}
+
+fun generateRandomName(): String {
+    val uuid = UUID.randomUUID()
+    return uuid.toString().substring(0, 8)
 }
 
 suspend fun PipelineContext<Unit, ApplicationCall>.getUser(): User? {

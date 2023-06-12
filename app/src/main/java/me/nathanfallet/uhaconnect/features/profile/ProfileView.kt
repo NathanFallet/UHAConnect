@@ -172,9 +172,16 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, di
             }
         }
         items(posts ?: listOf()) { post ->
-            PostCard(post, navigate) {
-                // TODO: Delete
-            }
+            PostCard(
+              post,
+              navigate,
+              favoriteCheck = {
+                viewModel.favoritesHandle(token, post.id, it)
+              },
+              deletePost = {
+                // TODO: Delete post
+              }
+            )
         }
     }
 }
