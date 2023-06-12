@@ -14,6 +14,9 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import me.nathanfallet.uhaconnect.database.Database
 import me.nathanfallet.uhaconnect.models.*
 import org.jetbrains.exposed.sql.*
@@ -514,6 +517,39 @@ fun Route.api() {
                         .map(Posts::toPost)
                 }
                 call.respond(notifications)
+            }
+            post {
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "Invalid user"))
+                    return@post
+                }
+                val token = try {
+                    call.receive<NotificationsTokenPayload>()
+                } catch (e: Exception) {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Missing data"))
+                    return@post
+                }
+                val expire =
+                    Clock.System.now().plus(1, DateTimeUnit.YEAR, TimeZone.currentSystemDefault())
+                Database.dbQuery {
+                    try {
+                        NotificationsTokens.insert {
+                            it[NotificationsTokens.token] = token.token
+                            it[NotificationsTokens.userId] = user.id
+                            it[NotificationsTokens.expiration] = expire.toEpochMilliseconds()
+                        }
+                    } catch (e: Exception) {
+                        NotificationsTokens.update({
+                            NotificationsTokens.token eq token.token
+                        }) {
+                            it[NotificationsTokens.userId] = user.id
+                            it[NotificationsTokens.expiration] = expire.toEpochMilliseconds()
+                        }
+                    }
+                }
+                call.response.status(HttpStatusCode.Created)
             }
         }
 

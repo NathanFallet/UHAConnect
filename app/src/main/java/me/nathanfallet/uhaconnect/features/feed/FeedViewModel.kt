@@ -20,8 +20,6 @@ class FeedViewModel(
         get() = _posts
 
     private val _user = MutableLiveData<User>()
-    val user: LiveData<User>
-        get() = _user
 
     fun loadData(token: String?) {
         if (token == null) {

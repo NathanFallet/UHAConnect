@@ -1,27 +1,21 @@
 package me.nathanfallet.uhaconnect.features.post
 
-import me.nathanfallet.uhaconnect.features.post.PostViewModel
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -32,29 +26,33 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
+import androidx.compose.foundation.lazy.items
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun PostView(modifier: Modifier, viewModel: PostViewModel) {
-    val post by viewModel.post.observeAsState()
-    val comments by viewModel.comments.observeAsState()
-    val user by viewModel.user.observeAsState()
+fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
 
-    Surface(
-        modifier = modifier,
-        color = Color.LightGray
-    ) {
-        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+    val viewModel: PostViewModel = viewModel()
+
+    val newComment by viewModel.newComment.observeAsState("")
+
+    val post by viewModel.post.observeAsState()
+    val comments by viewModel.comments.observeAsState(listOf())
+
+    if (post == null) viewModel.loadData(token)
+
+    LazyColumn(modifier){
+        stickyHeader{
             TopAppBar(
                 title = {
                     Text(
-                        text = "UHAConnect",
+                        text = stringResource(R.string.app_name),
                         color = Color.White,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -62,7 +60,7 @@ fun PostView(modifier: Modifier, viewModel: PostViewModel) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = { navigate("feed") }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
@@ -70,107 +68,100 @@ fun PostView(modifier: Modifier, viewModel: PostViewModel) {
                         )
                     }
                 },
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Profile",
-                            tint = Color.White
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = darkBlue,
                     titleContentColor = Color.White
-                )            )
-
-            Box(
+                )
+            )
+        }
+        item{
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .border(
-                        border = BorderStroke(1.dp, Color.Black),
-                        shape = MaterialTheme.shapes.medium
-                    )
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
                     post?.let { post ->
-                        Text(
-                            text = post.title,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Black,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                        Text(
-                            text = "Author :  ${post.user_id}, date : ${post.date}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Black,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ){
+                            Text(
+                                text = post.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ){
+                            Text(
+                                text = stringResource(R.string.post_author, post.user_id.toString()),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.post_date, post.date.toString()),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
                         Text(
                             text = post.content,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.Black,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
                 }
             }
-
-            Column(modifier = Modifier.padding(horizontal = 8.dp)) {
-                comments?.forEach { comment ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .background(color = Color.White, shape = MaterialTheme.shapes.medium)
-                    ) {
-                        Column {
-                            Text(
-                                text = comment.user_id.toString(),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = Color.Black,
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            )
-                            Text(
-                                text = comment.content,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.Black,
-                                modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 8.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+
             ) {
                 TextField(
-                    value = TextFieldValue(""),
-                    onValueChange = {},
-                    label = { Text("Write a comment") },
+                    value = newComment,
+                    onValueChange = {viewModel.newComment.value = it},
+                    label = { Text(stringResource(R.string.post_write_comment)) },
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 8.dp)
                 )
-                IconButton(onClick = {}) {
+                IconButton(onClick = { viewModel.sendComment(token) }) {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
-                        tint = Color.Black
+                    )
+                }
+            }
+        }
+        items(comments){comment ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Column {
+                    Text(
+                        text = comment.user_id.toString(),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    Text(
+                        text = comment.content,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(
+                            start = 8.dp,
+                            top = 4.dp,
+                            end = 8.dp,
+                            bottom = 8.dp
+                        )
                     )
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewApp() {
-    val viewModel = viewModel<PostViewModel>()
-    PostView(modifier = Modifier.fillMaxSize(), viewModel = viewModel)
 }
