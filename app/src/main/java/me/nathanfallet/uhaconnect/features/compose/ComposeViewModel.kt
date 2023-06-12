@@ -8,9 +8,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.isSuccess
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
+import me.nathanfallet.uhaconnect.models.MediaPayload
+import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.services.APIService
+
 
 class ComposeViewModel : ViewModel() {
 
@@ -21,22 +27,29 @@ class ComposeViewModel : ViewModel() {
     val id: LiveData<Int>
         get() = _id
 
-
     private val _image = MutableLiveData<Bitmap>()
     val image: LiveData<Bitmap>
         get() = _image
 
+    private val _fileName = MutableLiveData<String>()
+    val fileName: LiveData<String>
+        get() = _fileName
+
     fun post(token: String?) {
         val title = titleContent.value
         val content = postContent.value
+        val filename = _fileName.value
 
         if (token == null || title.isNullOrBlank() || content.isNullOrBlank()) {
             return
         }
         viewModelScope.launch {
-            _id.value = APIService.getInstance(Unit).postPost(
+            val postId = APIService.getInstance(Unit).postPost(
                 token, CreatePostPayload(title, content)
             ).id
+
+            val updatedPost = Post(postId, token, title, content, filename)
+            // Faites ce que vous voulez avec le post mis à jour, par exemple, le stocker ou l'envoyer à un autre service
         }
     }
 
@@ -50,14 +63,20 @@ class ComposeViewModel : ViewModel() {
                     .contentResolver
                     .getType(uri)
                     ?.startsWith("video/") ?: false
-                APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
+                val response = APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
 
-                _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                if (response.status.isSuccess()) {
+                    val responseData = Json.decodeFromString<MediaPayload>(response.bodyAsText())
+                    val fileName = responseData.fileName
+                    _fileName.value = fileName
+                    _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                } else {
+                    // error message
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
+                // Handle the exception, e.g., show an error message or retry
             }
         }
     }
-
-
 }
