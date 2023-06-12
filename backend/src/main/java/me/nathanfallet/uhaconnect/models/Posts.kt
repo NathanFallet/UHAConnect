@@ -9,7 +9,7 @@ object Posts : IntIdTable() {
     val title = varchar("title", 32)
     val content = text("content")
     val date = long("date")
-    val validated = bool("validate").default(false)
+    val validated = bool("validated").default(false)
 
     override val primaryKey = PrimaryKey(id)
 
