@@ -17,8 +17,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
-import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.User
@@ -32,6 +32,7 @@ class APIService {
     companion object : SingletonHolder<APIService, Unit>({ APIService() }) {
         private const val baseUrl = "https://uhaconnect.nathanfallet.me"
     }
+
 
     // Client
 
@@ -129,11 +130,22 @@ class APIService {
         }
     }*/
 
+    @Throws(Exception::class)
+    suspend fun selectImage(
+        token: String,
+        picture: ByteArray
+    ): HttpResponse {
+        return createRequest(HttpMethod.Post, "/media", token) {
+            contentType(ContentType.Image.JPEG)
+            setBody(picture)
+        }
+    }
+
     suspend fun getNotification(token: String): List<Notification> {
         return createRequest(HttpMethod.Get, "/notifications", token).body()
     }
 
-    suspend fun getPosts(token: String): List<Post>{
+    suspend fun getPosts(token: String): List<Post> {
         return createRequest(HttpMethod.Get, "/posts", token).body()
     }
 

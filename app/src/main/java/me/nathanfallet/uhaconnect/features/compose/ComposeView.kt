@@ -1,5 +1,8 @@
 package me.nathanfallet.uhaconnect.features.compose
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -32,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,28 +43,44 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComposeView(
-    modifier: Modifier, token: String?, navigate: (String) -> Unit
+    modifier: Modifier, token: String?, navigate: (String) -> Unit, viewModel: ComposeViewModel
 ) {
 
     val viewModel = viewModel<ComposeViewModel>()
+    val context = LocalContext.current
 
     val postContent by viewModel.postContent.observeAsState("")
 
     val titleContent by viewModel.titleContent.observeAsState("")
     val id by viewModel.id.observeAsState()
 
+    val activity = LocalContext.current as? Activity
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (token != null) {
+                if (uri != null) {
+                    viewModel.selectImage(token, uri, context)
+                }
+            }
+        }
+    )
+
+
     if (id != null) navigate("post/$id")
 
     Column(
         modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopAppBar(title = {
-            Text(
-                text = "UHAConnect",
-                color = Color.White,
+        TopAppBar(
+            title = {
+                Text(
+                    text = "UHAConnect",
+                    color = Color.White,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,12 +143,20 @@ fun ComposeView(
                 )
             }
             Button(
-                onClick = {}, modifier = Modifier.padding(start = 8.dp)
+                onClick = { imagePickerLauncher.launch("image/*") }
             ) {
-                Text(text = "File", color = Color.White)
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add Image",
+                    tint = Color.White,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Text(
+                    text = "Add Image",
+                    color = Color.White,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
             }
-
-
         }
 
         /*Text fields for posting*/
@@ -154,7 +182,6 @@ fun ComposeView(
                 .height(300.dp)
 
         )
-
 
     }
 
