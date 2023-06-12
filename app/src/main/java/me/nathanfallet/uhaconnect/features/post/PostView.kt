@@ -2,11 +2,8 @@ package me.nathanfallet.uhaconnect.features.post
 
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,10 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
@@ -44,8 +41,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
-import androidx.compose.foundation.lazy.items
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -58,7 +55,6 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
 
     val post by viewModel.post.observeAsState()
     val comments by viewModel.comments.observeAsState(listOf())
-    val user by viewModel.user.observeAsState()
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
@@ -152,10 +148,11 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                                     modifier = Modifier.padding(horizontal = 8.dp)
                                 )
                                 // TODO: Use logged user instead
-                                if (user?.role  == RoleStatus.ADMINISTRATOR) {
+                                if (post?.user?.role == RoleStatus.ADMINISTRATOR) {
 
                                     Box(
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier
+                                            .fillMaxWidth()
                                             .wrapContentSize(Alignment.TopEnd)
                                     ) {
                                         IconButton(onClick = { expanded = !expanded }) {

@@ -44,15 +44,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.RoleStatus
-import me.nathanfallet.uhaconnect.models.Post
-import me.nathanfallet.uhaconnect.models.User
-import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
@@ -63,11 +59,12 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, di
     val viewModel: ProfileViewModel = viewModel()
 
     val posts by viewModel.posts.observeAsState()
-    
-    val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
+    val user by viewModel.user.observeAsState()
 
     if (posts == null || user == null) viewModel.loadData(token)
+
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
 
     LazyColumn(modifier) {
         stickyHeader {
@@ -145,9 +142,10 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, di
                             modifier = Modifier.padding(start = 15.dp)
                         )
                         //TODO: use current user instead
-                        if (post.user?.role==RoleStatus.ADMINISTRATOR){
+                        if (user?.role == RoleStatus.ADMINISTRATOR) {
                             Box(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .wrapContentSize(Alignment.TopEnd)
                             ) {
                                 IconButton(onClick = { expanded = !expanded }) {
