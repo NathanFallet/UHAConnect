@@ -44,14 +44,13 @@ class PostViewModel(application: Application,
     fun sendComment(token: String?) {
 
         val content = newComment.value
-        val api = APIService.getInstance(Unit)
 
         if (token == null || postId == null || content.isNullOrBlank()) {
             return
         }
         viewModelScope.launch {
             _comments.value = _comments.value?.plus(
-                api.postComment(
+                APIService.getInstance(Unit).postComment(
                     token,
                     postId,
                     CreateCommentPayload(content)
@@ -61,23 +60,20 @@ class PostViewModel(application: Application,
     }
 
     fun deleteComment(token: String?, idPost: Int, idComment: Int) {
+        if (token == null) return
         viewModelScope.launch {
             try {
-                val api = APIService.getInstance(Unit)
-
-                val updatedComments = api.deleteComment(token, idPost, idComment)
-                _comments.value = updatedComments
+                APIService.getInstance(Unit).deleteComment(token, idPost, idComment)
             } catch (e: Exception) {
                 //TODO: ERRORS
             }
         }
     }
     fun deletePost(token: String?, idPost: Int) {
+        if (token == null) return
         viewModelScope.launch {
             try {
-                val api = APIService.getInstance(Unit)
-                api.deletePost(token!!, idPost)
-
+                APIService.getInstance(Unit).deletePost(token, idPost)
             } catch (e: Exception) {
                 //TODO: ERRORS
             }

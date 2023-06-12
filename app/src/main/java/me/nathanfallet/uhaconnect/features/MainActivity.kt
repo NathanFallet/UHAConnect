@@ -76,12 +76,12 @@ enum class NavigationItem(
 ) {
 
     FEED(
-        "homefeed",
+        "feed",
         R.drawable.home,
         R.string.title_activity_main
     ),
-    FAVS(
-        "favs",
+    FAVORITES(
+        "favorites",
         R.drawable.favorite,
         R.string.title_activity_favs_view
     ),
@@ -157,7 +157,7 @@ fun UHAConnectApp() {
         ) { padding ->
             NavHost(
                 navController = navController,
-                startDestination = if (token != null) "homefeed" else "login"
+                startDestination = if (token != null) "feed" else "login"
             ) {
                 composable("login") {
                     LoginPage(
@@ -185,28 +185,33 @@ fun UHAConnectApp() {
                     )
                 }
                 composable("post/{postId}",
-                    arguments = listOf(navArgument("postId") { type = NavType.IntType })) {
+                    arguments = listOf(navArgument("postId") { type = NavType.IntType })
+                ) {
                     PostView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
                         token = token
                     )
                 }
-                composable("feed/{isFavorite}",
-                    arguments = listOf(navArgument("isFavorite") { type = NavType.BoolType }))
-                 {
+                composable("feed/{loader}",
+                    arguments = listOf(navArgument("loader") { type = NavType.StringType })
+                )
+                {
                     FeedView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
-                        token = token
+                        token = token,
+                        user = user
                     )
                 }
-                dialog("homefeed"){
-                    navController.navigate("feed/false")
+                dialog("feed") {
+                    navController.navigate("feed/posts")
                 }
-                dialog("favs") {
-                    // TODO: Make different for favs (from feed)
-                    navController.navigate("feed/true")
+                dialog("favorites") {
+                    navController.navigate("feed/favorites")
+                }
+                dialog("validation") {
+                    navController.navigate("feed/validation")
                 }
                 composable("compose") {
                     ComposeView(
@@ -226,11 +231,13 @@ fun UHAConnectApp() {
                     ProfileView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
-                        token = token
-                    ) {
-                        viewModel.login(null)
-                        navController.navigate("login")
-                    }
+                        token = token,
+                        disconnect = {
+                            viewModel.login(null)
+                            navController.navigate("login")
+                        },
+                        viewedBy = user
+                    )
                 }
             }
         }

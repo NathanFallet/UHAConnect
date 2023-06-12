@@ -49,12 +49,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, disconnect: ()->Unit) {
+fun ProfileView(
+    modifier: Modifier,
+    navigate: (String) -> Unit,
+    token: String?,
+    disconnect: () -> Unit,
+    viewedBy: User?
+) {
 
     val viewModel: ProfileViewModel = viewModel()
 
@@ -173,14 +180,18 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, di
         }
         items(posts ?: listOf()) { post ->
             PostCard(
-              post,
-              navigate,
-              favoriteCheck = {
-                viewModel.favoritesHandle(token, post.id, it)
-              },
-              deletePost = {
-                // TODO: Delete post
-              }
+                post,
+                navigate,
+                favoriteCheck = {
+                    viewModel.favoritesHandle(token, post.id, it)
+                },
+                updatePost = {
+                    // TODO: Update post
+                },
+                deletePost = {
+                    // TODO: Delete post
+                },
+                viewedBy = viewedBy
             )
         }
     }

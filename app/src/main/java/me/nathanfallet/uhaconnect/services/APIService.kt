@@ -25,6 +25,7 @@ import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
@@ -104,11 +105,6 @@ class APIService {
     }
 
     @Throws(Exception::class)
-    suspend fun getUser(token: String, id: Int): User {
-        return createRequest(HttpMethod.Get, "/users/$id", token).body()
-    }
-
-    @Throws(Exception::class)
     suspend fun login(payload: LoginPayload): UserToken {
 
         val r = createRequest(HttpMethod.Post, "/auth/login") {
@@ -173,25 +169,39 @@ class APIService {
     }
 
     @Throws(Exception::class)
-    suspend fun getComments(token: String, id: Int): List<Comment>{
+    suspend fun getPostsRequests(token: String): List<Post> {
+        return createRequest(HttpMethod.Get, "/posts/requests", token).body()
+    }
+
+    @Throws(Exception::class)
+    suspend fun getComments(token: String, id: Int): List<Comment> {
         return createRequest(HttpMethod.Get, "/posts/$id/comments", token).body()
     }
+
     @Throws(Exception::class)
-    suspend fun deletePost(token: String, id: Int): List<Comment>{
-        return createRequest(HttpMethod.Delete, "/posts/$id", token).body()
+    suspend fun updatePost(token: String, id: Int, payload: UpdatePostPayload): List<Comment> {
+        return createRequest(HttpMethod.Put, "/posts/$id", token) {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }.body()
     }
 
     @Throws(Exception::class)
-    suspend fun deleteComment(token: String?, idPost: Int,idComment : Int): List<Comment>{
-        return createRequest(HttpMethod.Delete, "/posts/$idPost/comments/$idComment", token).body()
+    suspend fun deletePost(token: String, id: Int) {
+        createRequest(HttpMethod.Delete, "/posts/$id", token)
     }
 
     @Throws(Exception::class)
-    suspend fun getFavorites(token: String): List<Post>{
+    suspend fun deleteComment(token: String, idPost: Int, idComment: Int) {
+        createRequest(HttpMethod.Delete, "/posts/$idPost/comments/$idComment", token)
+    }
+
+    @Throws(Exception::class)
+    suspend fun getFavorites(token: String): List<Post> {
         return createRequest(HttpMethod.Get, "/favorites", token).body()
     }
 
-    suspend fun addToFavorites(token: String, id: Int): Favorite{
+    suspend fun addToFavorites(token: String, id: Int): Favorite {
         return createRequest(HttpMethod.Post, "/favorites/$id", token).body()
     }
 

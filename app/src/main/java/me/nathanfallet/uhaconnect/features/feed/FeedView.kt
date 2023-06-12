@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -17,19 +19,25 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun FeedView(modifier: Modifier,
-             navigate: (String)->Unit,
-             token:String?) {
+fun FeedView(
+    modifier: Modifier,
+    navigate: (String) -> Unit,
+    token: String?,
+    user: User?
+) {
 
     val viewModel: FeedViewModel = viewModel()
 
@@ -38,7 +46,7 @@ fun FeedView(modifier: Modifier,
     if (posts == null) viewModel.loadData(token)
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(bottom = 70.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -55,6 +63,27 @@ fun FeedView(modifier: Modifier,
                             .wrapContentWidth(Alignment.CenterHorizontally)
                     )
                 },
+                actions = {
+                    if (viewModel.loader == "posts" && user?.role?.hasPermission(Permission.POST_UPDATE) == true) {
+                        IconButton(onClick = {
+                            navigate("validation")
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_drafts_24),
+                                contentDescription = "Requests"
+                            )
+                        }
+                    } else if (viewModel.loader == "validation") {
+                        IconButton(onClick = {
+                            navigate("feed")
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.home),
+                                contentDescription = "Home"
+                            )
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = darkBlue,
                     titleContentColor = Color.White
@@ -62,14 +91,18 @@ fun FeedView(modifier: Modifier,
             )}
         items(posts ?: listOf()) { post ->
             PostCard(
-              post = post,
-              navigate = navigate,
-              favoriteCheck = {
-                viewModel.favoritesHandle(token, post.id, it)
-              },
-              deletePost = {
-                viewModel.deletePost(token, post.id)
-              }
+                post = post,
+                navigate = navigate,
+                favoriteCheck = {
+                    viewModel.favoritesHandle(token, post.id, it)
+                },
+                updatePost = {
+                    viewModel.updatePost(token, post.id, it)
+                },
+                deletePost = {
+                    viewModel.deletePost(token, post.id)
+                },
+                viewedBy = user
             )
         }
     }
