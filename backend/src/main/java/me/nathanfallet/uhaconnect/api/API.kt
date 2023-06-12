@@ -250,6 +250,7 @@ fun Route.api() {
                 val posts = Database.dbQuery {
                     Posts
                         .join(Users, JoinType.INNER)
+                        .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                         .select { Posts.user_id eq id }
                         .orderBy(Posts.date, SortOrder.DESC)
                         .limit(limit, offset)
@@ -266,6 +267,7 @@ fun Route.api() {
                 val posts = Database.dbQuery {
                     Posts
                         .join(Users, JoinType.INNER)
+                        .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                         .select { Posts.validated eq true }
                         .orderBy(Posts.date, SortOrder.DESC)
                         .limit(limit, offset)

@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.common.api.Api
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.LoginPayload
@@ -30,17 +31,30 @@ class ProfileViewModel(
     val posts: LiveData<List<Post>>
         get() = _posts
 
+    private val api = APIService.getInstance(Unit)
+
     fun loadData(token: String?) {
         if (token == null || id == null) {
             return
         }
         viewModelScope.launch {
             try {
-                _user.value = APIService.getInstance(Unit).getUser(id, token)
-                _posts.value = APIService.getInstance(Unit).getUserPosts(id, token)
+                _user.value = api.getUser(id, token)
+                _posts.value = api.getUserPosts(id, token)
             }
             catch (e: Exception){}
         }
     }
 
+    fun favoritesHandle(token: String?, postId: Int, addOrDelete: Boolean){
+        if (token == null) return
+        viewModelScope.launch {
+            try {
+                if (addOrDelete) api.addToFavorites(token, postId)
+                else api.deleteToFavorites(token, postId)
+                loadData(token)
+            } catch (e: Exception) {
+            }
+        }
+    }
 }

@@ -173,7 +173,9 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, di
             }
         }
         items(posts ?: listOf()) { post ->
-            PostCard(post, navigate)
+            PostCard(post, navigate) {
+                viewModel.favoritesHandle(token, post.id, it)
+            }
         }
     }
 }

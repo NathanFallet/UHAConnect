@@ -19,6 +19,7 @@ import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
+import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
@@ -142,13 +143,14 @@ class APIService {
     }*/
 
     @Throws(Exception::class)
-    suspend fun selectImage(
+    suspend fun uploadMedia(
         token: String,
-        picture: ByteArray
+        media: ByteArray,
+        isVideo: Boolean
     ): HttpResponse {
         return createRequest(HttpMethod.Post, "/media", token) {
-            contentType(ContentType.Image.JPEG)
-            setBody(picture)
+            contentType(if (isVideo) ContentType.Video.MP4 else ContentType.Image.JPEG)
+            setBody(media)
         }
     }
 
@@ -175,6 +177,18 @@ class APIService {
         return createRequest(HttpMethod.Get, "/posts/$id/comments", token).body()
     }
 
+    @Throws(Exception::class)
+    suspend fun getFavorites(token: String): List<Post>{
+        return createRequest(HttpMethod.Get, "/favorites", token).body()
+    }
+
+    suspend fun addToFavorites(token: String, id: Int): Favorite{
+        return createRequest(HttpMethod.Post, "/favorites/$id", token).body()
+    }
+
+    suspend fun deleteToFavorites(token: String, id: Int){
+        createRequest(HttpMethod.Delete, "/favorites/$id", token)
+    }
 }
 
 

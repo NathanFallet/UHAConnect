@@ -40,4 +40,8 @@
     <string name="post_write_comment">Écrire un commentaire</string>
     <string name="login_login">Se connecter</string>
     <string name="notification_notifications">Notifications</string>
+    <string name="compose_post">Publier</string>
+    <string name="compose_mind">Qu\'avez vous à dire?</string>
+    <string name="compose_title">Titre</string>
+    <string name="compose_tag">Tag</string>
 </resources>
