@@ -1,11 +1,13 @@
 package me.nathanfallet.uhaconnect.features
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -16,15 +18,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import me.nathanfallet.uhaconnect.R
@@ -35,51 +39,67 @@ import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.post.PostView
-import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import me.nathanfallet.uhaconnect.features.profile.ProfileView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        askNotificationPermission()
+
         setContent {
             UHAConnectApp()
         }
     }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
 }
 
 enum class NavigationItem(
     val route: String,
-    val icon: ImageVector,
+    val icon: Int,
     val title: Int
 ) {
 
     FEED(
         "feed",
-        Icons.Filled.Home,
+        R.drawable.home,
         R.string.title_activity_main
     ),
     FAVS(
         "favs",
-        Icons.Filled.Home,
+        R.drawable.favorite,
         R.string.title_activity_favs_view
     ),
     COMPOSE(
         "compose",
-        Icons.Filled.Home,
-        R.string.title_activity_favs_view
+        R.drawable.post_add,
+        R.string.title_activity_new_post
     ),
-    POSTS(
-        "post",
-        Icons.Filled.Home,
-        R.string.title_activity_post_view
+    NOTIFICATIONS(
+        "notifications",
+        R.drawable.notification,
+        R.string.title_activity_notification
     ),
     PROFILE(
-        "home",
-        Icons.Filled.Home,
-        R.string.title_activity_post_view
+        "self_profile",
+        R.drawable.profile,
+        R.string.title_activity_profile_view
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,7 +127,7 @@ fun UHAConnectApp() {
                             NavigationBarItem(
                                 icon = {
                                     Icon(
-                                        item.icon,
+                                        painterResource(item.icon),
                                         contentDescription = stringResource(item.title)
                                     )
                                 },
@@ -160,14 +180,17 @@ fun UHAConnectApp() {
                 }
                 composable("notifications") {
                     NotificationView(
-                        ""
+                        modifier = Modifier.padding(padding),
+                        token = token,
+                        user = user
                     )
                 }
-                composable("post") {
-                    val viewModel = PostViewModel(token!!)
+                composable("post/{postId}",
+                    arguments = listOf(navArgument("postId") { type = NavType.IntType })) {
                     PostView(
                         modifier = Modifier.padding(padding),
-                        viewModel = viewModel
+                        navigate = navController::navigate,
+                        token = token
                     )
                 }
                 composable("feed") {
@@ -192,13 +215,22 @@ fun UHAConnectApp() {
                         navigate = navController::navigate
                     )
                 }
+                dialog("self_profile")
+                {
+                    val userId = user?.id ?: ""
+                    navController.navigate("profile/$userId")
+                }
                 composable("profile/{userId}",
                     arguments = listOf(navArgument("userId") { type = NavType.IntType })
                 ) {
                     ProfileView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
-                        token = token)
+                        token = token
+                    ) {
+                        viewModel.login(null)
+                        navController.navigate("login")
+                    }
                 }
             }
         }

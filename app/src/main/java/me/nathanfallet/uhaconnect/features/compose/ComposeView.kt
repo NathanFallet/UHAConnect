@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -124,11 +126,11 @@ fun ComposeView(
                     )
             )
 
-            Button(
+            /*Button(
                 onClick = {}, modifier = Modifier.padding(start = 8.dp)
             ) {
                 Text(text = "Add tag", color = Color.White)
-            }
+            }*/
             Button(
                 onClick = {
                     viewModel.post(token)
@@ -145,17 +147,10 @@ fun ComposeView(
             Button(
                 onClick = { imagePickerLauncher.launch("image/*") }
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Add Image",
-                    tint = Color.White,
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Text(
-                    text = "Add Image",
-                    color = Color.White,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
+                Image(
+                        painter = painterResource(R.drawable.round_file_present_24),
+                        contentDescription = "My Icon"
+                    )
             }
         }
 

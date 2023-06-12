@@ -9,6 +9,7 @@ object Posts : IntIdTable() {
     val title = varchar("title", 32)
     val content = text("content")
     val date = long("date")
+    val validated = bool("validated").default(false)
 
     override val primaryKey = PrimaryKey(id)
 
@@ -21,6 +22,7 @@ object Posts : IntIdTable() {
             title = row[title],
             content = row[content],
             date = Instant.fromEpochMilliseconds(row[date]),
+            validated = row[validated],
             user = user
         )
     }

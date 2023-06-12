@@ -6,9 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.models.LoginPayload
-import me.nathanfallet.uhaconnect.models.RegisterPayload
-import me.nathanfallet.uhaconnect.models.UserToken
+import me.nathanfallet.uhaconnect.models.*
 import me.nathanfallet.uhaconnect.services.APIService
 
 class LoginViewModel : ViewModel() {
@@ -80,8 +78,7 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun isUsernameValid(): Boolean {
-        val usernameRegex = Regex("[a-zA-Z0-9]{4,}")
-        return username.value?.matches(usernameRegex) ?: false
+        return User.isUsernameValid(username.value ?: "")
     }
 
     private fun isPasswordValid(): Boolean {
@@ -89,8 +86,7 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun isMailValid(): Boolean {
-        val mailRegex = Regex("[a-zA-Z0-9]+\\.[a-zA-Z0-9]+@uha\\.fr")
-        return mail.value?.matches(mailRegex) ?: false
+        return User.isEmailValid(mail.value ?: "")
     }
 
     private fun validateCreateAccountForm(): Boolean {
