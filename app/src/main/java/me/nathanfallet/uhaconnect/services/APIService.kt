@@ -17,6 +17,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.Comment
+import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Notification
@@ -75,7 +76,7 @@ class APIService {
     
     @Throws(Exception::class)
     suspend fun getUserPosts(id:Int, token: String): List<Post> {
-        return createRequest(HttpMethod.Get, "/users/$id/post", token).body()
+        return createRequest(HttpMethod.Get, "/users/$id/posts", token).body()
     }
 
     @Throws(Exception::class)
@@ -87,6 +88,14 @@ class APIService {
     @Throws(Exception::class)
     suspend fun postPost(token: String, payload: CreatePostPayload): Post {
         return createRequest(HttpMethod.Post, "/posts", token) {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }.body()
+    }
+
+    @Throws(Exception::class)
+    suspend fun postComment(token: String, id: Int, payload: CreateCommentPayload): Comment {
+        return createRequest(HttpMethod.Post, "/posts/$id/comments", token) {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }.body()
@@ -131,7 +140,8 @@ class APIService {
         }
     }*/
 
-    suspend fun getNotification(token: String): List<Notification> {
+    @Throws(Exception::class)
+    suspend fun getNotification(token: String, id:Int): List<Notification> {
         return createRequest(HttpMethod.Get, "/notifications", token).body()
     }
 
@@ -143,12 +153,14 @@ class APIService {
         }
     }
 
+    @Throws(Exception::class)
     suspend fun getPosts(token: String): List<Post> {
         return createRequest(HttpMethod.Get, "/posts", token).body()
     }
 
-    suspend fun getComments(token: String, id: Int): List<Comment> {
-        return createRequest(HttpMethod.Get, "/post/$id/comments", token).body()
+    @Throws(Exception::class)
+    suspend fun getComments(token: String, id: Int): List<Comment>{
+        return createRequest(HttpMethod.Get, "/posts/$id/comments", token).body()
     }
 
 }
