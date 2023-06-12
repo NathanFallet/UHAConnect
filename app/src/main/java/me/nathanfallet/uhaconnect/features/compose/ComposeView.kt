@@ -1,5 +1,8 @@
 package me.nathanfallet.uhaconnect.features.compose
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -37,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -53,11 +57,25 @@ fun ComposeView(
 ) {
 
     val viewModel = viewModel<ComposeViewModel>()
+    val context = LocalContext.current
 
     val postContent by viewModel.postContent.observeAsState("")
 
     val titleContent by viewModel.titleContent.observeAsState("")
     val id by viewModel.id.observeAsState()
+
+    val activity = LocalContext.current as? Activity
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (token != null) {
+                if (uri != null) {
+                    viewModel.selectImage(token, uri, context)
+                }
+            }
+        }
+    )
+
 
     if (id != null) navigate("post/$id")
 
@@ -73,12 +91,11 @@ fun ComposeView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentWidth(Alignment.CenterHorizontally)
-                )
-            },
+                )},
                 colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = darkBlue,
-                    titleContentColor = Color.White
-                )
+                containerColor = darkBlue,
+                titleContentColor = Color.White
+            )
             )
         }
 
@@ -117,7 +134,7 @@ fun ComposeView(
                     )
                 }
                 Button(
-                    onClick = {}, modifier = Modifier.padding(start = 8.dp)
+                    onClick = {imagePickerLauncher.launch("image/*")}, modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.round_file_present_24),
@@ -166,5 +183,4 @@ fun ComposeView(
             }
         }
     }
-
 }

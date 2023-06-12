@@ -9,13 +9,15 @@ object Posts : IntIdTable() {
     val title = varchar("title", 32)
     val content = text("content")
     val date = long("date")
-    val validated = bool("validate").default(false)
+    val validated = bool("validated").default(false)
 
     override val primaryKey = PrimaryKey(id)
 
     fun toPost(row: ResultRow): Post {
         val user = if (row.hasValue(Users.id)) Users.toUser(row)
-                   else null
+        else null
+        val favorite = if (row.hasValue(Favorites.post_id)) Favorites.toFavorite(row)
+        else null
         return Post(
             id = row[id].value,
             user_id = row[user_id].value,
@@ -23,7 +25,8 @@ object Posts : IntIdTable() {
             content = row[content],
             date = Instant.fromEpochMilliseconds(row[date]),
             validated = row[validated],
-            user = user
+            user = user,
+            favorite = favorite
         )
     }
 }

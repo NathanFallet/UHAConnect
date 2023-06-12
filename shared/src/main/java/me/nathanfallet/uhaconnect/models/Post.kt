@@ -11,5 +11,6 @@ data class Post(
     var content: String,
     val date: Instant,
     val validated: Boolean,
-    val user: User? = null
+    val user: User? = null,
+    val favorite: Favorite? = null
 )

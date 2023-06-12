@@ -37,6 +37,7 @@ class APIService {
         private const val baseUrl = "https://uhaconnect.nathanfallet.me"
     }
 
+
     // Client
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -142,7 +143,18 @@ class APIService {
     }*/
 
     @Throws(Exception::class)
-    suspend fun getNotification(token: String, id:Int): List<Notification> {
+    suspend fun selectImage(
+        token: String,
+        picture: ByteArray
+    ): HttpResponse {
+        return createRequest(HttpMethod.Post, "/media", token) {
+            contentType(ContentType.Image.JPEG)
+            setBody(picture)
+        }
+    }
+
+    @Throws(Exception::class)
+    suspend fun getNotification(token: String): List<Notification> {
         return createRequest(HttpMethod.Get, "/notifications", token).body()
     }
 
