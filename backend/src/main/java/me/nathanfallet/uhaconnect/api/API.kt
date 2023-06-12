@@ -372,7 +372,7 @@ fun Route.api() {
                 }
                 if (!(post.user_id == user.id || user.role.hasPermission(Permission.POST_DELETE))) {
                     call.response.status(HttpStatusCode.Forbidden)
-                    call.respond(mapOf("error" to "Cannot update this post."))
+                    call.respond(mapOf("error" to "Cannot delete this post."))
                     return@delete
                 }
                 Database.dbQuery {
