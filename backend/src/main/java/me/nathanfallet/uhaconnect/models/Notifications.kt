@@ -1,25 +1,28 @@
 package me.nathanfallet.uhaconnect.models
 
 import kotlinx.datetime.Instant
+import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
 
-object Notifications : Table() {
-    val user_id = reference("user_id", Users)
+object Notifications : IntIdTable() {
+    val dest_id = reference("dest_id", Users)
     val post_id = reference("post_id", Posts)
     val type = varchar("type", 6)
     val origin_id = reference("origin_id", Users)
     val date = long("date")
 
-    override val primaryKey = PrimaryKey(user_id, post_id, name = "PK_follows")
+    override val primaryKey = PrimaryKey(id)
 
     fun toNotifications(row: ResultRow): Notification {
+        val user = if (row.hasValue(Users.id)) Users.toUser(row)
+        else null
         return Notification(
-            user_id = row[user_id].value,
+            dest_id = row[dest_id].value,
             post_id = row[post_id].value,
             type = TypeStatus.valueOf(row[type]),
             origin_id = row[origin_id].value,
-            date = Instant.fromEpochMilliseconds(row[Comments.date])
+            date = Instant.fromEpochMilliseconds(row[Comments.date]),
+            user = user
         )
     }
 

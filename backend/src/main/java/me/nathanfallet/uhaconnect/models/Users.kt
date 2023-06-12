@@ -10,7 +10,7 @@ object Users : IntIdTable() {
     val firstName = varchar("firstName", 64)
     val lastName = varchar("lastName", 64)
     val email = varchar("email", 64)
-    val role = varchar("role", 13)
+    val role = varchar("role", 13).default(RoleStatus.STUDENT.toString())
     val password = varchar("password", 128)
 
     override val primaryKey = PrimaryKey(id)
