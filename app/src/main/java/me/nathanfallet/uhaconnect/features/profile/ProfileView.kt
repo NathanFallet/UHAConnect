@@ -6,7 +6,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -43,7 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -77,34 +74,25 @@ fun ProfileView(
         stickyHeader {
             TopAppBar(
                 title = {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        TextButton(onClick = { disconnect() }) {
-                            Text(
-                                text = stringResource(R.string.profile_logout),
-                                color = Color.White,
-                                fontSize = 16.sp
-                            )
-                        }
-                        Text(
-                            text = stringResource(R.string.profile_profile),
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 30.sp
+                    Text(
+                        text = stringResource(R.string.profile_profile),
+                        color = Color.White
+                    )
+                },
+                actions = {
+                    IconButton(onClick = disconnect) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_logout_24),
+                            contentDescription = "Logout"
                         )
-                        TextButton(
-                            onClick = { navigate("settings") },
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.profile_settings),
-                                color = Color.White,
-                                fontSize = 16.sp
-                            )
-                        }
+                    }
+                    IconButton(onClick = {
+                        navigate("settings")
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_settings_24),
+                            contentDescription = "Settings"
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -186,10 +174,10 @@ fun ProfileView(
                     viewModel.favoritesHandle(token, post.id, it)
                 },
                 updatePost = {
-                    // TODO: Update post
+                    viewModel.updatePost(token, post.id, it)
                 },
                 deletePost = {
-                    // TODO: Delete post
+                    viewModel.deletePost(token, post.id)
                 },
                 viewedBy = viewedBy
             )

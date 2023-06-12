@@ -1,19 +1,15 @@
 package me.nathanfallet.uhaconnect.features.profile
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.common.api.Api
 import kotlinx.coroutines.launch
-import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.models.User
-import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.services.APIService
 
 class ProfileViewModel(
@@ -54,6 +50,32 @@ class ProfileViewModel(
                 else api.deleteToFavorites(token, postId)
                 loadData(token)
             } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun deletePost(token: String?, id: Int) {
+        if (token == null) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                APIService.getInstance(Unit).deletePost(token, id)
+            } catch (e: Exception) {
+                //TODO: ERRORS
+            }
+        }
+    }
+
+    fun updatePost(token: String?, id: Int, payload: UpdatePostPayload) {
+        if (token == null) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                APIService.getInstance(Unit).updatePost(token, id, payload)
+            } catch (e: Exception) {
+                //TODO: ERRORS
             }
         }
     }

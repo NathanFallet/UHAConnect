@@ -80,16 +80,6 @@ enum class NavigationItem(
         R.drawable.home,
         R.string.title_activity_main
     ),
-    FAVORITES(
-        "favorites",
-        R.drawable.favorite,
-        R.string.title_activity_favs_view
-    ),
-    COMPOSE(
-        "compose",
-        R.drawable.post_add,
-        R.string.title_activity_new_post
-    ),
     NOTIFICATIONS(
         "notifications",
         R.drawable.notification,
@@ -184,7 +174,8 @@ fun UHAConnectApp() {
                         token = token
                     )
                 }
-                composable("post/{postId}",
+                composable(
+                    "post/{postId}",
                     arguments = listOf(navArgument("postId") { type = NavType.IntType })
                 ) {
                     PostView(
@@ -193,7 +184,15 @@ fun UHAConnectApp() {
                         token = token
                     )
                 }
-                composable("feed/{loader}",
+                composable("feed/compose") {
+                    ComposeView(
+                        modifier = Modifier.padding(padding),
+                        token = token,
+                        navigate = navController::navigate
+                    )
+                }
+                composable(
+                    "feed/{loader}",
                     arguments = listOf(navArgument("loader") { type = NavType.StringType })
                 )
                 {
@@ -206,19 +205,6 @@ fun UHAConnectApp() {
                 }
                 dialog("feed") {
                     navController.navigate("feed/posts")
-                }
-                dialog("favorites") {
-                    navController.navigate("feed/favorites")
-                }
-                dialog("validation") {
-                    navController.navigate("feed/validation")
-                }
-                composable("compose") {
-                    ComposeView(
-                        modifier = Modifier.padding(padding),
-                        token = token,
-                        navigate = navController::navigate
-                    )
                 }
                 dialog("self_profile")
                 {
