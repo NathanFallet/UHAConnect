@@ -10,5 +10,6 @@ data class Post(
     var title: String,
     var content: String,
     val date: Instant,
+    val validated: Boolean,
     val user: User? = null
 )
