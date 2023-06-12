@@ -40,13 +40,17 @@ class ComposeViewModel : ViewModel() {
         }
     }
 
-    fun selectImage(token: String, uri: Uri, context: Context) {
+    fun selectMedia(token: String, uri: Uri, context: Context) {
         viewModelScope.launch {
             try {
                 val bytes = context.contentResolver.openInputStream(uri)?.use {
                     it.readBytes()
                 } ?: ByteArray(0)
-                APIService.getInstance(Unit).selectImage(token, bytes)
+                val isVideo = context
+                    .contentResolver
+                    .getType(uri)
+                    ?.startsWith("video/") ?: false
+                APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
 
                 _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             } catch (e: Exception) {
