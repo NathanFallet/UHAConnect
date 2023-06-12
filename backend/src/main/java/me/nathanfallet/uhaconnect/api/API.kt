@@ -13,10 +13,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.PipelineContext
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
+import kotlinx.datetime.*
 import me.nathanfallet.uhaconnect.database.Database
 import me.nathanfallet.uhaconnect.models.*
 import org.jetbrains.exposed.sql.*
@@ -72,10 +69,12 @@ fun Route.api() {
             if (!User.isEmailValid(payload.email)) {
                 call.response.status(HttpStatusCode.BadRequest)
                 call.respond(mapOf("error" to "Invalid Email."))
+                return@post
             }
             if (!User.isUsernameValid(payload.username)) {
                 call.response.status(HttpStatusCode.BadRequest)
                 call.respond(mapOf("error" to "Invalid Username."))
+                return@post
             }
             Database.dbQuery {
                 Users
@@ -402,6 +401,7 @@ fun Route.api() {
                 val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
                 val comments = Database.dbQuery {
                     Comments
+                        .join(Users, JoinType.INNER)
                         .select { Comments.post_id eq id }
                         .orderBy(Comments.date, SortOrder.DESC)
                         .limit(limit, offset)
@@ -413,6 +413,11 @@ fun Route.api() {
                 val id = call.parameters["id"]?.toIntOrNull() ?: run {
                     call.response.status(HttpStatusCode.BadRequest)
                     call.respond(mapOf("error" to "Invalid post id"))
+                    return@post
+                }
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "User not found"))
                     return@post
                 }
                 val post =
@@ -437,7 +442,7 @@ fun Route.api() {
                 val comment = Database.dbQuery {
                     Comments.insert {
                         it[Comments.post_id] = post.id
-                        it[Comments.user_id] = post.user_id
+                        it[Comments.user_id] = user.id
                         it[Comments.content] = newComment.content
                         it[Comments.date] = Clock.System.now().toEpochMilliseconds()
                     }.resultedValues?.map(Comments::toComment)?.singleOrNull()
@@ -564,11 +569,12 @@ fun Route.api() {
                 val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
                 val favorites = Database.dbQuery {
                     Posts
-                        .join(Favorites, JoinType.INNER)
+                        .join(Users, JoinType.INNER)
+                        .join(Favorites, JoinType.INNER, Posts.id, Favorites.post_id)
                         .select { Favorites.user_id eq user.id }
                         .orderBy(Posts.date, SortOrder.DESC)
                         .limit(limit, offset)
-                        .map(Posts::toPost)
+                        .map(Favorites::toFavorite)
                 }
                 call.respond(favorites)
             }
@@ -586,7 +592,7 @@ fun Route.api() {
                 }
                 val favorite = Database.dbQuery {
                     Favorites
-                        .select { Favorites.post_id eq id }
+                        .select { Favorites.post_id eq id and (Favorites.user_id eq user.id) }
                         .map(Favorites::toFavorite)
                         .singleOrNull() ?: Favorites.insert {
                         it[Favorites.user_id] = user.id

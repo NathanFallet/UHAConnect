@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.Table
 
 object Favorites : Table() {
     val user_id = reference("user_id", Users)
-    val post_id = reference("id_post", Posts)
+    val post_id = reference("post_id", Posts)
 
     override val primaryKey = PrimaryKey(user_id, post_id, name = "PK_favorites")
 

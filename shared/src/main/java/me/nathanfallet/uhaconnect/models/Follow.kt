@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Follow(
-    val id_user: Int,
-    val id_follower: Int,
+    val user_id: Int,
+    val follower_id: Int,
 )
