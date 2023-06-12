@@ -9,6 +9,7 @@ import me.nathanfallet.uhaconnect.models.Comments
 import me.nathanfallet.uhaconnect.models.Favorites
 import me.nathanfallet.uhaconnect.models.Follows
 import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.NotificationsToken
 import me.nathanfallet.uhaconnect.models.Posts
 import me.nathanfallet.uhaconnect.models.Users
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -46,6 +47,7 @@ object Database {
             SchemaUtils.create(Favorites)
             SchemaUtils.create(Comments)
             SchemaUtils.create(Notifications)
+            SchemaUtils.create(NotificationsToken)
         }
 
         // Launch expiration
