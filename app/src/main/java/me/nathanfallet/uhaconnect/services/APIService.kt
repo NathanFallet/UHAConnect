@@ -143,13 +143,14 @@ class APIService {
     }*/
 
     @Throws(Exception::class)
-    suspend fun selectImage(
+    suspend fun uploadMedia(
         token: String,
-        picture: ByteArray
+        media: ByteArray,
+        isVideo: Boolean
     ): HttpResponse {
         return createRequest(HttpMethod.Post, "/media", token) {
-            contentType(ContentType.Image.JPEG)
-            setBody(picture)
+            contentType(if (isVideo) ContentType.Video.MP4 else ContentType.Image.JPEG)
+            setBody(media)
         }
     }
 

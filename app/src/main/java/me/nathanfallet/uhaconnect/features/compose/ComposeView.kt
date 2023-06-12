@@ -70,7 +70,7 @@ fun ComposeView(
         onResult = { uri ->
             if (token != null) {
                 if (uri != null) {
-                    viewModel.selectImage(token, uri, context)
+                    viewModel.selectMedia(token, uri, context)
                 }
             }
         }
@@ -134,7 +134,7 @@ fun ComposeView(
                     )
                 }
                 Button(
-                    onClick = {imagePickerLauncher.launch("image/*")}, modifier = Modifier.padding(start = 8.dp)
+                    onClick = {imagePickerLauncher.launch("image/*, video/*")}, modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.round_file_present_24),
