@@ -1,9 +1,6 @@
 package me.nathanfallet.uhaconnect.features.post
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.Post
@@ -34,14 +31,9 @@ class PostViewModel(token : String) : ViewModel() {
                 val apiService = APIService.getInstance(Unit)
                 val user = apiService.getUser(token, 78)
                 val post = apiService.getPost(token, 55)
-                val comments = listOf(
-                    Comment(55, 11, "content 1",instant),
-                    Comment(55, 112, "content 2",instant),
-                    Comment(55, 74, "content 2",instant)
-                )
+
 
                 _post.value = post
-                _comments.value = comments
                 _user.value = user
             } catch (e: Exception) {
                 null

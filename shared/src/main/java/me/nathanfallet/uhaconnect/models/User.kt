@@ -15,6 +15,14 @@ data class User(
 
     companion object {
 
+        fun isUsernameValid(username: String): Boolean {
+            return Regex("[a-zA-Z0-9]{4,16}").matches(username)
+            /*
+            val usernameRegex = Regex("[a-zA-Z0-9]{4,}")
+            return username.value?.matches(usernameRegex) ?: false
+            */
+        }
+
         fun isEmailValid(email: String): Boolean {
             return Regex("[a-zA-Z0-9]+\\.[a-zA-Z0-9]+@uha\\.fr").matches(email)
         }
