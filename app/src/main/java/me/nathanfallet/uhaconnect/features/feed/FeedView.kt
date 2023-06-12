@@ -61,9 +61,16 @@ fun FeedView(modifier: Modifier,
                 )
             )}
         items(posts ?: listOf()) { post ->
-            PostCard(post = post, navigate = navigate) {
+            PostCard(
+              post = post,
+              navigate = navigate,
+              favoriteCheck = {
                 viewModel.favoritesHandle(token, post.id, it)
-            }
+              },
+              deletePost = {
+                viewModel.deletePost(token, post.id)
+              }
+            )
         }
     }
 }

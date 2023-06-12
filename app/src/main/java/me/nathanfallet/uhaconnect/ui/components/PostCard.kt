@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,9 @@ fun PostCard(
     post: Post,
     navigate: (String)->Unit,
     favoriteCheck: (Boolean)->Unit,
+    deletePost: () -> Unit
 ){
+  
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
@@ -91,7 +94,7 @@ fun PostCard(
                         ) {
                             DropdownMenuItem(
                                 text = { Text("Remove post") },
-                                onClick = { Toast.makeText(context, "Post has been removed", Toast.LENGTH_SHORT).show() }
+                                onClick = deletePost
                             )
                             DropdownMenuItem(
                                 text = { Text("Ban user") },

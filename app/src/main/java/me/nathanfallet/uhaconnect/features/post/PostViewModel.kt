@@ -59,4 +59,29 @@ class PostViewModel(application: Application,
             )
         }
     }
+
+    fun deleteComment(token: String?, idPost: Int, idComment: Int) {
+        viewModelScope.launch {
+            try {
+                val api = APIService.getInstance(Unit)
+
+                val updatedComments = api.deleteComment(token, idPost, idComment)
+                _comments.value = updatedComments
+            } catch (e: Exception) {
+                //TODO: ERRORS
+            }
+        }
+    }
+    fun deletePost(token: String?, idPost: Int) {
+        viewModelScope.launch {
+            try {
+                val api = APIService.getInstance(Unit)
+                api.deletePost(token!!, idPost)
+
+            } catch (e: Exception) {
+                //TODO: ERRORS
+            }
+        }
+    }
+
 }
