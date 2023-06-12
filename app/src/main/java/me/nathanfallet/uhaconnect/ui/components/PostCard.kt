@@ -112,12 +112,11 @@ fun PostCard(
                 .padding(top = 50.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
-                IconButton(onClick = { favoriteCheck(true) }) {
+                IconButton(onClick = { favoriteCheck(post.favorite != null) }) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Post",
-                        tint = Color.White,
-                        modifier = Modifier.padding(start = 8.dp)
+                        contentDescription = "Like",
+                        tint = if (post.favorite == null) Color.Black else Color.White
                     )
                 }
                 Button(
