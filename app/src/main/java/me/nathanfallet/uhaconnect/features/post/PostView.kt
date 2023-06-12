@@ -74,15 +74,6 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                             .wrapContentWidth(Alignment.CenterHorizontally)
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = { navigate("feed") }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = darkBlue,
                     titleContentColor = Color.White
