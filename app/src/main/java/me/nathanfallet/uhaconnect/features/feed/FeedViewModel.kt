@@ -27,7 +27,7 @@ class FeedViewModel(
         }
         viewModelScope.launch {
             try {
-                _posts.value = APIService.getInstance(Unit).getPosts(token)
+                _posts.value = APIService.getInstance().getPosts(token)
             }
             catch (e: Exception){}
         }

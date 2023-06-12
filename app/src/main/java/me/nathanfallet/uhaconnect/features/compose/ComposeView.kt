@@ -47,7 +47,7 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComposeView(
-    modifier: Modifier, token: String?, navigate: (String) -> Unit, viewModel: ComposeViewModel
+    modifier: Modifier, token: String?, navigate: (String) -> Unit
 ) {
 
     val viewModel = viewModel<ComposeViewModel>()

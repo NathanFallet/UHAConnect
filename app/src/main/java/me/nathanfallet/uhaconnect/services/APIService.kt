@@ -148,7 +148,6 @@ class APIService {
     suspend fun getPosts(token: String): List<Post> {
         return createRequest(HttpMethod.Get, "/posts", token).body()
     }
-
 }
 
 

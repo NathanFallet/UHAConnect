@@ -17,7 +17,7 @@ class NotificationViewModel() : ViewModel() {
     fun loadData(token: String?, id:Int?) {
         if (token == null || id == null) return
         viewModelScope.launch {
-            _notifications.value = APIService.getInstance(Unit).getNotification(token, id)
+            _notifications.value = APIService.getInstance().getNotification(token, id)
         }
     }
 }

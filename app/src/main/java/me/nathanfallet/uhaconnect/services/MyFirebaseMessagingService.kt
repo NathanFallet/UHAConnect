@@ -23,10 +23,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
-        StorageService.getInstance(this).sharedPreferences.getString("token", null)?.let {
+        StorageService.getInstance().sharedPreferences.getString("token", null)?.let {
             CoroutineScope(Job()).launch {
                 try {
-                    APIService.getInstance(Unit).sendNotificationToken(it, token)
+                    APIService.getInstance().sendNotificationToken(it, token)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

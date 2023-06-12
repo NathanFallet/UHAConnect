@@ -28,7 +28,7 @@ class MainViewModel(
 
     init {
         // Load user and token, if connected
-        val prefs = StorageService.getInstance(getApplication()).sharedPreferences
+        val prefs = StorageService.getInstance().sharedPreferences
         prefs.getString("user", null)?.let {
             _user.value = Json.decodeFromString(it)
         }
@@ -47,7 +47,7 @@ class MainViewModel(
                     it.result?.let { fcmToken ->
                         viewModelScope.launch {
                             try {
-                                APIService.getInstance(Unit).sendNotificationToken(
+                                APIService.getInstance().sendNotificationToken(
                                     token, fcmToken
                                 )
                             } catch (e: Exception) {
@@ -67,7 +67,7 @@ class MainViewModel(
 
         // Token is invalid, remove it
         if (userToken == null) {
-            StorageService.getInstance(getApplication()).sharedPreferences
+            StorageService.getInstance().sharedPreferences
                 .edit()
                 .remove("user")
                 .remove("token")
@@ -76,7 +76,7 @@ class MainViewModel(
         }
 
         // Else, save new values
-        StorageService.getInstance(getApplication()).sharedPreferences
+        StorageService.getInstance().sharedPreferences
             .edit()
             .putString("user", Json.encodeToString(userToken.user))
             .putString("token", userToken.token)

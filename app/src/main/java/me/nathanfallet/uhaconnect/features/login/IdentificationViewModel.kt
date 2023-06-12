@@ -25,7 +25,7 @@ class LoginViewModel : ViewModel() {
         if (validateLoginForm()) {
             viewModelScope.launch {
                 try {
-                    APIService.getInstance(Unit).login(
+                    APIService.getInstance().login(
                         LoginPayload(
                             username.value ?: "", password.value ?: ""
                         )
@@ -47,7 +47,7 @@ class LoginViewModel : ViewModel() {
         if (validateCreateAccountForm()) {
             viewModelScope.launch {
                 try {
-                    APIService.getInstance(Unit).createAccount(
+                    APIService.getInstance().createAccount(
                         RegisterPayload(
                             firstname.value ?: "",
                             lastname.value ?: "",

@@ -33,7 +33,7 @@ class PostViewModel(application: Application,
             return
         viewModelScope.launch {
             try {
-                val api = APIService.getInstance(Unit)
+                val api = APIService.getInstance()
                 _post.value = api.getPost(token, postId)
                 _comments.value = api.getComments(token, postId)
             } catch (e: Exception) {
@@ -44,7 +44,7 @@ class PostViewModel(application: Application,
     fun sendComment(token: String?) {
 
         val content = newComment.value
-        val api = APIService.getInstance(Unit)
+        val api = APIService.getInstance()
 
         if (token == null || postId == null || content.isNullOrBlank()) {
             return
