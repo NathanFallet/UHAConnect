@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,11 +107,11 @@ fun ComposeView(
                     )
             )
 
-            Button(
+            /*Button(
                 onClick = {}, modifier = Modifier.padding(start = 8.dp)
             ) {
                 Text(text = "Add tag", color = Color.White)
-            }
+            }*/
             Button(
                 onClick = {
                     viewModel.post(token)
@@ -125,7 +128,11 @@ fun ComposeView(
             Button(
                 onClick = {}, modifier = Modifier.padding(start = 8.dp)
             ) {
-                Text(text = "File", color = Color.White)
+                Image(
+                        painter = painterResource(R.drawable.round_file_present_24),
+                        contentDescription = "My Icon"
+                    )
+
             }
 
 
