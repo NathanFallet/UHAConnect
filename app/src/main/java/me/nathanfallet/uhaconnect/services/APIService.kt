@@ -19,8 +19,9 @@ import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
-import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.Notification
+import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.User
@@ -139,15 +140,26 @@ class APIService {
         }
     }*/
 
+    @Throws(Exception::class)
     suspend fun getNotification(token: String, id:Int): List<Notification> {
         return createRequest(HttpMethod.Get, "/notifications", token).body()
     }
 
-    suspend fun getPosts(token: String): List<Post>{
+    @Throws(Exception::class)
+    suspend fun sendNotificationToken(token: String, notificationToken: String) {
+        createRequest(HttpMethod.Post, "/notifications", token) {
+            contentType(ContentType.Application.Json)
+            setBody(NotificationsTokenPayload(notificationToken))
+        }
+    }
+
+    @Throws(Exception::class)
+    suspend fun getPosts(token: String): List<Post> {
         return createRequest(HttpMethod.Get, "/posts", token).body()
     }
 
-    suspend fun getComments(token: String, id:Int): List<Comment>{
+    @Throws(Exception::class)
+    suspend fun getComments(token: String, id: Int): List<Comment>{
         return createRequest(HttpMethod.Get, "/posts/$id/comments", token).body()
     }
 
