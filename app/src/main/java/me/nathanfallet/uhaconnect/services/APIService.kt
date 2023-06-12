@@ -86,6 +86,17 @@ class APIService {
         return createRequest(HttpMethod.Get, "/posts/$id", token).body()
     }
 
+    /*
+    @Throws(Exception::class)
+suspend fun getPost(token: String, id: Int): Pair<Post, String?> {
+    val post = createRequest(HttpMethod.Get, "/posts/$id", token).body<Post>()
+    val filename = post.filename
+    return post to filename
+}
+
+    */
+
+
 
     @Throws(Exception::class)
     suspend fun postPost(token: String, payload: CreatePostPayload): Post {
