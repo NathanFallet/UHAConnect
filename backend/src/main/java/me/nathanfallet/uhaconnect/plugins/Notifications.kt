@@ -83,8 +83,8 @@ object Notifications {
         CoroutineScope(Job()).launch {
             Database.dbQuery {
                 NotificationsTokens
-                    .join(Follows, JoinType.INNER, Follows.id_follower, NotificationsTokens.userId)
-                    .select { Follows.id_user eq userId }
+                    .join(Follows, JoinType.INNER, Follows.follower_id, NotificationsTokens.userId)
+                    .select { Follows.user_id eq userId }
                     .map { it[NotificationsTokens.token] }
             }.forEach { token ->
                 sendNotification(

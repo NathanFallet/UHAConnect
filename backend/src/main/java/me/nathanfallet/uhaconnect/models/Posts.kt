@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ResultRow
 
 object Posts : IntIdTable() {
-    val user_id = reference("id_user", Users)
+    val user_id = reference("user_id", Users)
     val title = varchar("title", 32)
     val content = text("content")
     val date = long("date")
