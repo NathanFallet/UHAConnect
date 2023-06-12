@@ -50,21 +50,24 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
+fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, disconnect: ()->Unit) {
 
     val viewModel: ProfileViewModel = viewModel()
 
-    val user by viewModel.user.observeAsState()
     val posts by viewModel.posts.observeAsState()
+    
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
-    if (user == null || posts == null) viewModel.loadData(token)
+    if (posts == null || user == null) viewModel.loadData(token)
 
     LazyColumn(modifier) {
         stickyHeader {
@@ -75,7 +78,7 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        TextButton(onClick = { /*Logout the user*/ }) {
+                        TextButton(onClick = { disconnect() }) {
                             Text(
                                 text = stringResource(R.string.profile_logout),
                                 color = Color.White,
@@ -132,17 +135,17 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                     )
                     Column(modifier = Modifier.padding(vertical = 12.dp)) {
                         Text(
-                            text = "$user.username",
+                            text = user?.username ?: "",
                             fontSize = 30.sp,
                             color = Color.Yellow,
                             modifier = Modifier.padding(start = 15.dp)
                         )
                         Text(
-                            text = "$user.role",
+                            text = user?.role.toString(),
                             modifier = Modifier.padding(start = 15.dp)
                         )
                         //TODO: use current user instead
-                        if (user?.role==RoleStatus.ADMINISTRATOR){
+                        if (post.user?.role==RoleStatus.ADMINISTRATOR){
                             Box(
                                 modifier = Modifier.fillMaxWidth()
                                     .wrapContentSize(Alignment.TopEnd)

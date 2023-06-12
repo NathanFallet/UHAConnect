@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">UHAConnect</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Accueil</string>
     <string name="title_activity_identification">identification</string>
     <string name="title_activity_notification_view">NotificationView</string>
+    <string name="title_activity_new_post">Nouveau post</string>
+    <string name="title_activity_notification">Notification</string>
     <string name="profile_logout">Déconnexion</string>
     <string name="profile_profile">Profile</string>
     <string name="profile_settings">Paramètres</string>
     <string name="title_activity_post_view">PostView</string>
-    <string name="title_activity_favs_view">FavsView</string>
+    <string name="title_activity_favs_view">Favoris</string>
+    <string name="title_activity_profile_view">Profile</string>
     <string name="notifications_like">%s a aimé votre publication</string>
     <string name="notifications_comment">%s a commenté votre publication</string>
     <string name="login_invalid_credentials">Mot de passe ou nom d\'utilisateur invalide</string>
@@ -35,5 +38,6 @@
     <string name="post_author">Auteur : %s</string>
     <string name="post_date">Date : %s</string>
     <string name="post_write_comment">Écrire un commentaire</string>
-
+    <string name="login_login">Se connecter</string>
+    <string name="notification_notifications">Notifications</string>
 </resources>

@@ -40,10 +40,8 @@ import me.nathanfallet.uhaconnect.models.RoleStatus
 
 @Composable
 fun PostCard(post: Post, navigate: (String)->Unit){
-    val viewModel: PostViewModel = viewModel()
 
     val context = LocalContext.current
-    val user by viewModel.user.observeAsState()
     var expanded by remember { mutableStateOf(false) }
 
     Card(modifier = Modifier
@@ -68,7 +66,7 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                     fontSize = 24.sp,
                 )
                 // TODO: Use logged user instead
-                if (user?.role  == RoleStatus.ADMINISTRATOR) {
+                if (post.user?.role  == RoleStatus.ADMINISTRATOR) {
 
                     Box(
                         modifier = Modifier.fillMaxWidth()
@@ -106,7 +104,7 @@ fun PostCard(post: Post, navigate: (String)->Unit){
                 horizontalArrangement = Arrangement.End
             ){
                 Button(
-                    onClick = { navigate("post") },
+                    onClick = { navigate("post/${post.id}") },
                     //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
