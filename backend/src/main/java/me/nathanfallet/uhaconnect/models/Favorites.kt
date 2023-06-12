@@ -10,12 +10,9 @@ object Favorites : Table() {
     override val primaryKey = PrimaryKey(user_id, post_id, name = "PK_favorites")
 
     fun toFavorite(row: ResultRow): Favorite {
-        val post = if (row.hasValue(Posts.id)) Posts.toPost(row)
-        else null
         return Favorite(
             user_id = row[user_id].value,
-            post_id = row[post_id].value,
-            post = post
+            post_id = row[post_id].value
         )
     }
 

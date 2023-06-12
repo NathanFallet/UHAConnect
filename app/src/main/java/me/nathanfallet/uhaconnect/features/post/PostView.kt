@@ -111,7 +111,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                             horizontalArrangement = Arrangement.SpaceAround
                         ){
                             Text(
-                                text = stringResource(R.string.post_author, post.user_id.toString()),
+                                text = stringResource(R.string.post_author, post.user?.username.toString()),
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
@@ -126,83 +126,6 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
-                    }
-                }
-            }
-
-            Column(modifier = Modifier.padding(horizontal = 8.dp)) {
-                comments?.forEach { comment ->
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        Column {
-                            Row(horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()){
-                                Text(
-                                    text = comment.user_id.toString(),
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                )
-                                // TODO: Use logged user instead
-                                if (post?.user?.role == RoleStatus.ADMINISTRATOR) {
-
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .wrapContentSize(Alignment.TopEnd)
-                                    ) {
-                                        IconButton(onClick = { expanded = !expanded }) {
-                                            Icon(
-                                                imageVector = Icons.Default.MoreVert,
-                                                contentDescription = "More"
-                                            )
-                                        }
-
-                                        DropdownMenu(
-                                            expanded = expanded,
-                                            onDismissRequest = { expanded = false }
-                                        ) {
-                                            DropdownMenuItem(
-                                                text = { Text("Remove comment") },
-                                                onClick = {
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Comment has been removed",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                            )
-                                            DropdownMenuItem(
-                                                text = { Text("Ban user") },
-                                                onClick = {
-                                                    Toast.makeText(
-                                                        context,
-                                                        "User has been banned",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-
-
-                            }
-                            Text(
-                                text = comment.content,
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(
-                                    start = 8.dp,
-                                    top = 4.dp,
-                                    end = 8.dp,
-                                    bottom = 8.dp
-                                )
-                            )
-                        }
                     }
                 }
             }
@@ -233,14 +156,62 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(8.dp)
             ) {
                 Column {
-                    Text(
-                        text = comment.user_id.toString(),
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
+                    Row(horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()){
+                        Text(
+                            text = comment.user?.username.toString(),
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                        // TODO: Use logged user instead
+                        if (post?.user?.role == RoleStatus.ADMINISTRATOR) {
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentSize(Alignment.TopEnd)
+                            ) {
+                                IconButton(onClick = { expanded = !expanded }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = "More"
+                                    )
+                                }
+
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Remove comment") },
+                                        onClick = {
+                                            Toast.makeText(
+                                                context,
+                                                "Comment has been removed",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Ban user") },
+                                        onClick = {
+                                            Toast.makeText(
+                                                context,
+                                                "User has been banned",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+
+                    }
                     Text(
                         text = comment.content,
                         style = MaterialTheme.typography.bodySmall,
