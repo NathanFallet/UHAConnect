@@ -172,7 +172,9 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, di
             }
         }
         items(posts ?: listOf()) { post ->
-            PostCard(post, navigate,token)
+            PostCard(post, navigate) {
+                // TODO: Delete
+            }
         }
     }
 }

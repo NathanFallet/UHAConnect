@@ -59,7 +59,6 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
     val comments by viewModel.comments.observeAsState(listOf())
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     if (post == null) viewModel.loadData(token)
 
@@ -168,14 +167,12 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                                             DropdownMenuItem(
                                                 text = { Text("Remove comment") },
                                                 onClick = {
-                                                    scope.launch {
                                                         viewModel.deleteComment(token, idPost=comment.post_id, idComment=comment.id)
                                                         Toast.makeText(
                                                             context,
                                                             "Comment has been removed",
                                                             Toast.LENGTH_SHORT
                                                         ).show()
-                                                    }
                                                 }
                                             )
                                             DropdownMenuItem(

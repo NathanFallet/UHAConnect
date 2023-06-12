@@ -32,6 +32,17 @@ class FeedViewModel(
             catch (e: Exception){}
         }
     }
+    fun deletePost(token: String?, idPost: Int) {
+        viewModelScope.launch {
+            try {
+                val api = APIService.getInstance(Unit)
+                api.deletePost(token!!, idPost)
+
+            } catch (e: Exception) {
+                //TODO: ERRORS
+            }
+        }
+    }
 
 }
 

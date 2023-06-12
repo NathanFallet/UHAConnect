@@ -72,7 +72,9 @@ fun FeedView(modifier: Modifier, navigate: (String)->Unit, token:String?) {
                 )
             )}
         items(posts ?: listOf()) { post ->
-            PostCard(post = post, navigate = navigate,token)
+            PostCard(post = post, navigate = navigate) {
+                viewModel.deletePost(token, post.id)
+            }
 
         }
     }

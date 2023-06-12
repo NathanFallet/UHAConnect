@@ -41,12 +41,10 @@ import me.nathanfallet.uhaconnect.models.RoleStatus
 
 
 @Composable
-fun PostCard(post: Post, navigate: (String)->Unit, token: String?){
+fun PostCard(post: Post, navigate: (String)->Unit, deletePost: () -> Unit){
 
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val viewModel: PostViewModel = viewModel()
 
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -89,16 +87,7 @@ fun PostCard(post: Post, navigate: (String)->Unit, token: String?){
                         ) {
                             DropdownMenuItem(
                                 text = { Text("Remove post") },
-                                onClick = {
-                                    scope.launch {
-                                        viewModel.deletePost(token, idPost=post.id)
-                                        Toast.makeText(
-                                            context,
-                                            "Post has been removed",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
+                                onClick = deletePost
                             )
                             DropdownMenuItem(
                                 text = { Text("Ban user") },
