@@ -42,19 +42,32 @@ class ComposeViewModel : ViewModel() {
         }
     }
 
-    fun selectImage(token: String, uri: Uri, context: Context) {
+    fun selectMedia(token: String, uri: Uri, context: Context) {
         viewModelScope.launch {
             try {
-                val bytes = context.contentResolver.openInputStream(uri)?.use {
-                    it.readBytes()
-                } ?: ByteArray(0)
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val mediaData = inputStream?.use { it.readBytes() } ?: ByteArray(0)
+                inputStream?.close()
 
-                APIService.getInstance().selectImage(token, bytes)
+                if (uri.toString().startsWith("content://")) {
+                    context.contentResolver.delete(uri, null, null)
+                }
 
-                _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                val isVideo = context.contentResolver.getType(uri)?.startsWith("video/") ?: false
+
+                val apiService = APIService.getInstance()
+                if (isVideo) {
+                    apiService.selectMedia(token, mediaData, true)
+                } else {
+                    apiService.selectMedia(token, mediaData, false)
+                }
+
+                _image.value = BitmapFactory.decodeByteArray(mediaData, 0, mediaData.size)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
+
+
 }

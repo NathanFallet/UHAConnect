@@ -16,9 +16,12 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import me.nathanfallet.uhaconnect.models.Comment
+import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Notification
+import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.User
@@ -74,7 +77,7 @@ class APIService {
     
     @Throws(Exception::class)
     suspend fun getUserPosts(id:Int, token: String): List<Post> {
-        return createRequest(HttpMethod.Get, "/users/$id/post", token).body()
+        return createRequest(HttpMethod.Get, "/users/$id/posts", token).body()
     }
 
     @Throws(Exception::class)
@@ -86,6 +89,14 @@ class APIService {
     @Throws(Exception::class)
     suspend fun postPost(token: String, payload: CreatePostPayload): Post {
         return createRequest(HttpMethod.Post, "/posts", token) {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }.body()
+    }
+
+    @Throws(Exception::class)
+    suspend fun postComment(token: String, id: Int, payload: CreateCommentPayload): Comment {
+        return createRequest(HttpMethod.Post, "/posts/$id/comments", token) {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }.body()
@@ -131,23 +142,45 @@ class APIService {
     }*/
 
     @Throws(Exception::class)
-    suspend fun selectImage(
+    suspend fun selectMedia(
         token: String,
-        picture: ByteArray
+        mediaData: ByteArray,
+        isVideo: Boolean
     ): HttpResponse {
         return createRequest(HttpMethod.Post, "/media", token) {
-            contentType(ContentType.Image.JPEG)
-            setBody(picture)
+            if (isVideo) {
+                contentType(ContentType.Video.MP4)
+            } else {
+                contentType(ContentType.Image.JPEG)
+            }
+            setBody(mediaData)
         }
     }
 
+
+    @Throws(Exception::class)
     suspend fun getNotification(token: String): List<Notification> {
         return createRequest(HttpMethod.Get, "/notifications", token).body()
     }
 
+    @Throws(Exception::class)
+    suspend fun sendNotificationToken(token: String, notificationToken: String) {
+        createRequest(HttpMethod.Post, "/notifications", token) {
+            contentType(ContentType.Application.Json)
+            setBody(NotificationsTokenPayload(notificationToken))
+        }
+    }
+
+    @Throws(Exception::class)
     suspend fun getPosts(token: String): List<Post> {
         return createRequest(HttpMethod.Get, "/posts", token).body()
     }
+
+    @Throws(Exception::class)
+    suspend fun getComments(token: String, id: Int): List<Comment>{
+        return createRequest(HttpMethod.Get, "/posts/$id/comments", token).body()
+    }
+
 }
 
 
