@@ -34,10 +34,8 @@ class ComposeViewModel : ViewModel() {
             return
         }
         viewModelScope.launch {
-            _id.value = APIService.getInstance().postPost(
-                token, CreatePostPayload(
-                    title, content ?: ""
-                )
+            _id.value = APIService.getInstance(Unit).postPost(
+                token, CreatePostPayload(title, content)
             ).id
         }
     }
@@ -48,8 +46,7 @@ class ComposeViewModel : ViewModel() {
                 val bytes = context.contentResolver.openInputStream(uri)?.use {
                     it.readBytes()
                 } ?: ByteArray(0)
-
-                APIService.getInstance().selectImage(token, bytes)
+                APIService.getInstance(Unit).selectImage(token, bytes)
 
                 _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             } catch (e: Exception) {
