@@ -46,14 +46,6 @@ fun NotificationView(
                             .wrapContentWidth(Alignment.CenterHorizontally)
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = darkBlue,
                     titleContentColor = Color.White
