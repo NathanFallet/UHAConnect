@@ -10,9 +10,12 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveStream
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.PipelineContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
@@ -20,7 +23,13 @@ import kotlinx.datetime.plus
 import me.nathanfallet.uhaconnect.database.Database
 import me.nathanfallet.uhaconnect.models.*
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.Date
+import java.util.*
+
 
 fun Route.api() {
     val secret = this.environment!!.config.property("jwt.secret").getString()
@@ -499,6 +508,47 @@ fun Route.api() {
             }
 
         }
+
+        route("/media") {
+            post {
+                val user = getUser() ?: run {
+                    call.response.status(HttpStatusCode.Unauthorized)
+                    call.respond(mapOf("error" to "Invalid user"))
+                    return@post
+                }
+
+                val uploadsFolder = Paths.get("medias/pictures")
+                if (!Files.exists(uploadsFolder)) {
+                    Files.createDirectory(uploadsFolder)
+                }
+
+                call.receiveStream().use { input ->
+                    val fileName = generateRandomName() + ".jpg"
+                    val file = File("medias/pictures/$fileName")
+                    withContext(Dispatchers.IO) {
+                        file.outputStream().buffered().use {
+                            input.copyTo(it)
+                        }
+                    }
+                    call.respond(mapOf("fileName" to fileName)) // Include fileName in the response
+                }
+
+                call.response.status(HttpStatusCode.Created)
+            }
+
+            get("/{id}") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Invalid media id"))
+                    return@get
+                }
+                // Retrieve media by ID and respond with the media data
+            }
+
+            // Add more media-related routes as needed
+        }
+
+
         route("/notifications") {
             get {
                 val user = getUser() ?: run {
@@ -624,6 +674,11 @@ fun Route.api() {
 
         // ...
     }
+}
+
+fun generateRandomName(): String {
+    val uuid = UUID.randomUUID()
+    return uuid.toString().substring(0, 8)
 }
 
 suspend fun PipelineContext<Unit, ApplicationCall>.getUser(): User? {
