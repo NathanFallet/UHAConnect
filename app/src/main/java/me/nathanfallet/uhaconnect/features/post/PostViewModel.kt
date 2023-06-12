@@ -8,8 +8,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.Comment
+import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.Post
-import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
 class PostViewModel(application: Application,
@@ -24,15 +24,9 @@ class PostViewModel(application: Application,
     val post: LiveData<Post>
         get() = _post
 
-    private val _user = MutableLiveData<User>()
-    val user: LiveData<User>
-        get() = _user
-
-
     private val _comments = MutableLiveData<List<Comment>>()
     val comments: LiveData<List<Comment>>
         get() = _comments
-
 
     fun loadData(token: String?){
         if (postId == null || token == null)
@@ -46,6 +40,23 @@ class PostViewModel(application: Application,
                 null
             }
         }
+    }
+    fun sendComment(token: String?) {
 
+        val content = newComment.value
+        val api = APIService.getInstance(Unit)
+
+        if (token == null || postId == null || content.isNullOrBlank()) {
+            return
+        }
+        viewModelScope.launch {
+            _comments.value = _comments.value?.plus(
+                api.postComment(
+                    token,
+                    postId,
+                    CreateCommentPayload(content)
+                )
+            )
+        }
     }
 }

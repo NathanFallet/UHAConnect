@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
+import androidx.compose.foundation.lazy.items
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -39,10 +41,11 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
     val viewModel: PostViewModel = viewModel()
 
     val newComment by viewModel.newComment.observeAsState("")
-    val post by viewModel.post.observeAsState()
-    val comments by viewModel.comments.observeAsState()
 
-    if (comments == null || post == null) viewModel.loadData(token)
+    val post by viewModel.post.observeAsState()
+    val comments by viewModel.comments.observeAsState(listOf())
+
+    if (post == null) viewModel.loadData(token)
 
     LazyColumn(modifier){
         stickyHeader{
@@ -112,36 +115,6 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                     }
                 }
             }
-
-            Column(modifier = Modifier.padding(horizontal = 8.dp)) {
-                comments?.forEach { comment ->
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        Column {
-                            Text(
-                                text = comment.user_id.toString(),
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            )
-                            Text(
-                                text = comment.content,
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(
-                                    start = 8.dp,
-                                    top = 4.dp,
-                                    end = 8.dp,
-                                    bottom = 8.dp
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,10 +130,35 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                         .weight(1f)
                         .padding(end = 8.dp)
                 )
-                IconButton(onClick = {}) {
+                IconButton(onClick = { viewModel.sendComment(token) }) {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
+                    )
+                }
+            }
+        }
+        items(comments){comment ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Column {
+                    Text(
+                        text = comment.user_id.toString(),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    Text(
+                        text = comment.content,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(
+                            start = 8.dp,
+                            top = 4.dp,
+                            end = 8.dp,
+                            bottom = 8.dp
+                        )
                     )
                 }
             }

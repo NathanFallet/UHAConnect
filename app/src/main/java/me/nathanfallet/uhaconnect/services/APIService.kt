@@ -17,6 +17,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.Comment
+import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.LoginPayload
@@ -92,6 +93,14 @@ class APIService {
     }
 
     @Throws(Exception::class)
+    suspend fun postComment(token: String, id: Int, payload: CreateCommentPayload): Comment {
+        return createRequest(HttpMethod.Post, "/posts/$id/comments", token) {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }.body()
+    }
+
+    @Throws(Exception::class)
     suspend fun getUser(token: String, id: Int): User {
         return createRequest(HttpMethod.Get, "/users/$id", token).body()
     }
@@ -139,7 +148,7 @@ class APIService {
     }
 
     suspend fun getComments(token: String, id:Int): List<Comment>{
-        return createRequest(HttpMethod.Get, "/post/$id/comments", token).body()
+        return createRequest(HttpMethod.Get, "/posts/$id/comments", token).body()
     }
 
 }

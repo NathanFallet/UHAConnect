@@ -39,12 +39,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
+fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?, disconnect: ()->Unit) {
 
     val viewModel: ProfileViewModel = viewModel()
 
@@ -62,7 +63,7 @@ fun ProfileView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        TextButton(onClick = { /*Logout the user*/ }) {
+                        TextButton(onClick = { disconnect() }) {
                             Text(
                                 text = stringResource(R.string.profile_logout),
                                 color = Color.White,

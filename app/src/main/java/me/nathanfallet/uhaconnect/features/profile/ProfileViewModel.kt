@@ -1,14 +1,18 @@
 package me.nathanfallet.uhaconnect.features.profile
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.services.APIService
 
 class ProfileViewModel(
@@ -38,8 +42,5 @@ class ProfileViewModel(
             catch (e: Exception){}
         }
     }
-
-
-
 
 }
