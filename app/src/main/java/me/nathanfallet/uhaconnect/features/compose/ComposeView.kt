@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
@@ -69,6 +70,13 @@ fun ComposeView(
             }
         }
     )
+
+
+
+
+    val imageUrl by viewModel.imageUrl.observeAsState()
+
+
 
 
     if (id != null) navigate("post/$id")
@@ -170,6 +178,17 @@ fun ComposeView(
                     .height(300.dp)
 
             )
+
+            if (imageUrl != null) {
+                Text(
+                    text = "![Selected Image]($imageUrl)",
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 30.dp, vertical = 8.dp)
+                )
+            }
+
+
             Button(
                 onClick = {
                     viewModel.post(token)

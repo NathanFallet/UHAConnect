@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.isSuccess
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
@@ -30,6 +29,10 @@ class ComposeViewModel : ViewModel() {
     private val _image = MutableLiveData<Bitmap>()
     val image: LiveData<Bitmap>
         get() = _image
+
+    private val _imageUrl = MutableLiveData<String>()
+    val imageUrl: LiveData<String>
+        get() = _imageUrl
 
     private val _fileName = MutableLiveData<String>()
     val fileName: LiveData<String>
@@ -56,18 +59,23 @@ class ComposeViewModel : ViewModel() {
                 val bytes = context.contentResolver.openInputStream(uri)?.use {
                     it.readBytes()
                 } ?: ByteArray(0)
+
                 val isVideo = context
                     .contentResolver
                     .getType(uri)
                     ?.startsWith("video/") ?: false
+
                 val payload = APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
                 val fileName = payload.fileName
                 _fileName.value = fileName
+                _imageUrl.value = "${APIService.baseUrl}media/$fileName"
                 _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 // Handle the exception, e.g., show an error message or retry
             }
         }
     }
+
 }
