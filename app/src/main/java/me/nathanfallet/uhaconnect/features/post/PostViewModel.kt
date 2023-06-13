@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.services.APIService
 
 class PostViewModel(application: Application,
@@ -27,6 +28,7 @@ class PostViewModel(application: Application,
     private val _comments = MutableLiveData<List<Comment>>()
     val comments: LiveData<List<Comment>>
         get() = _comments
+    private val api = APIService.getInstance(Unit)
 
     fun loadData(token: String?){
         if (postId == null || token == null)
@@ -74,6 +76,29 @@ class PostViewModel(application: Application,
         viewModelScope.launch {
             try {
                 APIService.getInstance(Unit).deletePost(token, idPost)
+            } catch (e: Exception) {
+                //TODO: ERRORS
+            }
+        }
+    }
+    fun favoritesHandle(token: String?, postId: Int, addOrDelete: Boolean){
+        if (token == null) return
+        viewModelScope.launch {
+            try {
+                if (addOrDelete) api.addToFavorites(token, postId)
+                else api.deleteToFavorites(token, postId)
+                loadData(token)
+            } catch (e: Exception) {
+            }
+        }
+    }
+    fun updatePost(token: String?, id: Int, payload: UpdatePostPayload) {
+        if (token == null) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                APIService.getInstance(Unit).updatePost(token, id, payload)
             } catch (e: Exception) {
                 //TODO: ERRORS
             }

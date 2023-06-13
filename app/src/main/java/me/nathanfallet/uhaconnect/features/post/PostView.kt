@@ -45,12 +45,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
+fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewedBy: User?
+) {
 
     val viewModel: PostViewModel = viewModel()
 
@@ -82,7 +85,29 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
             )
         }
         item{
-            Card(
+            post?.let { post ->
+
+                PostCard(
+                    post = post,
+                    navigate = navigate,
+                    favoriteCheck = {
+                        viewModel.favoritesHandle(token, post.id, it)
+                    },
+                    updatePost = {
+                        viewModel.updatePost(token, post.id, it)
+                    },
+                    deletePost = {
+                        viewModel.deletePost(token, post.id)
+                    },
+                    updateUser ={
+
+                    },
+                    viewedBy = viewedBy,
+                    detailed = true
+                )
+            }
+
+            /*Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
@@ -128,7 +153,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                         )
                     }
                 }
-            }
+            }*/
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,6 +177,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                 }
             }
         }
+
         //comments section
 
         items(comments){comment ->

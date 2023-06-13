@@ -34,9 +34,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
+import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 
 
@@ -47,7 +49,9 @@ fun PostCard(
     favoriteCheck: (Boolean) -> Unit,
     updatePost: (UpdatePostPayload) -> Unit,
     deletePost: () -> Unit,
-    viewedBy: User? = null
+    updateUser: (UpdateUserPayload) -> Unit,
+    viewedBy: User?,
+    detailed: Boolean = false
 ){
   
     val context = LocalContext.current
@@ -76,7 +80,7 @@ fun PostCard(
                     modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
                     fontSize = 24.sp,
                 )
-                if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
+                if (viewedBy?.role?.hasPermission(Permission.POST_DELETE) == true) {
 
                     Box(
                         modifier = Modifier
@@ -135,12 +139,14 @@ fun PostCard(
                         tint = if (post.favorite == null) Color.Black else Color.White
                     )
                 }
-                Button(
-                    onClick = { navigate("post/${post.id}") },
-                    //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text(text = stringResource(R.string.postcard_showmore))
+                if (!detailed) {
+                    Button(
+                        onClick = { navigate("post/${post.id}") },
+                        //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.postcard_showmore))
+                    }
                 }
             }
         }

@@ -179,6 +179,9 @@ fun ProfileView(
                 deletePost = {
                     viewModel.deletePost(token, post.id)
                 },
+                updateUser ={
+
+                },
                 viewedBy = viewedBy
             )
         }
