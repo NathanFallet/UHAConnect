@@ -60,33 +60,14 @@ fun Route.apiPosts() {
                 return@post
             }
 
-            val followers =
-                Database.dbQuery {
-                    Follows
-                        .select { Follows.user_id eq user.id }
-                        .map(Follows::toFollow)
-                }
-
-            followers.forEach { follow ->
-                Database.dbQuery {
-                    Notifications
-                        .insert {
-                            it[dest_id] = follow.follower_id
-                            it[post_id] = post.id
-                            it[type] = TypeStatus.NEW_POST.toString()
-                            it[origin_id] = user.id
-                            it[date] = Clock.System.now().toEpochMilliseconds()
-                        }
-                }
-                NotificationsPlugin.sendNotificationToUser(
-                    follow.follower_id,
-                    NotificationData(
-                        title_loc_key = "notifications_post",
-                        title_loc_args = listOf(user.username),
-                        body = post.title,
-                    )
+            NotificationsPlugin.sendNotificationToFollowers(
+                user.id,
+                NotificationData(
+                    title_loc_key = "notifications_post",
+                    title_loc_args = listOf(user.username),
+                    body = post.title,
                 )
-            }
+            )
 
             call.response.status(HttpStatusCode.Created)
             call.respond(post)
