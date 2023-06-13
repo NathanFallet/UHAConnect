@@ -47,18 +47,26 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             return
         }
         val title = message.notification?.titleLocalizationKey?.let { key ->
-            val id = resources.getIdentifier(key, "string", packageName)
-            val string = getString(id)
-            message.notification?.titleLocalizationArgs?.let {
-                string.format(*it)
-            } ?: string
+            try {
+                val id = resources.getIdentifier(key, "string", packageName)
+                val string = getString(id)
+                message.notification?.titleLocalizationArgs?.let {
+                    string.format(*it)
+                } ?: string
+            } catch (e: Exception) {
+                null
+            }
         } ?: message.notification?.title
         val body = message.notification?.bodyLocalizationKey?.let { key ->
-            val id = resources.getIdentifier(key, "string", packageName)
-            val string = getString(id)
-            message.notification?.bodyLocalizationArgs?.let {
-                string.format(*it)
-            } ?: string
+            try {
+                val id = resources.getIdentifier(key, "string", packageName)
+                val string = getString(id)
+                message.notification?.bodyLocalizationArgs?.let {
+                    string.format(*it)
+                } ?: string
+            } catch (e: Exception) {
+                null
+            }
         } ?: message.notification?.body
         val notification = NotificationCompat.Builder(this, "default")
             .setContentTitle(title)

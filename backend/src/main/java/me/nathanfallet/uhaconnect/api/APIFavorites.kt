@@ -90,7 +90,7 @@ fun Route.apiFavorites() {
             NotificationsPlugin.sendNotificationToUser(
                 post.user_id,
                 NotificationData(
-                    title_loc_key = "notification_like",
+                    title_loc_key = "notifications_like",
                     title_loc_args = listOf(user.username),
                     body = post.title
                 )
