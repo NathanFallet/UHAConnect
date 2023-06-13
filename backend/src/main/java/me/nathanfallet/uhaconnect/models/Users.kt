@@ -9,9 +9,10 @@ object Users : IntIdTable() {
     val username = varchar("username", 64)
     val firstName = varchar("firstName", 64)
     val lastName = varchar("lastName", 64)
-    val email = varchar("email", 64)
-    val role = varchar("role", 13).default(RoleStatus.STUDENT.toString())
-    val password = varchar("password", 128)
+    val email = varchar("email", 255)
+    val role = varchar("role", 255).default(RoleStatus.STUDENT.toString())
+    val password = varchar("password", 255)
+    val picture = varchar("picture", 255).nullable()
 
     override val primaryKey = PrimaryKey(id)
 
@@ -23,7 +24,8 @@ object Users : IntIdTable() {
             lastName = row[lastName],
             email = row[email],
             role = RoleStatus.valueOf(row[role]),
-            password = row[password]
+            password = row[password],
+            picture = row.getOrNull(picture)
         )
     }
 

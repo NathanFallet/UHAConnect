@@ -3,7 +3,6 @@ package me.nathanfallet.uhaconnect.features.profile
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -44,7 +43,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
@@ -116,9 +117,11 @@ fun ProfileView(
                         .fillMaxWidth()
                 )
                 Row(modifier = Modifier.padding(vertical = 30.dp, horizontal = 16.dp)) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_launcher_background),
-                        contentDescription = null,
+                    AsyncImage(
+                        model = user?.pictureUrl,
+                        contentDescription = user?.username,
+                        placeholder = painterResource(id = R.drawable.picture_placeholder),
+                        error = painterResource(id = R.drawable.picture_placeholder),
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)

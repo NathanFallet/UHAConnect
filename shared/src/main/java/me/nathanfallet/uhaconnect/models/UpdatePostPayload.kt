@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UpdatePostPayload(
-    val title: String?,
-    val content: String?,
-    val validated: Boolean?
+    val title: String? = null,
+    val content: String? = null,
+    val validated: Boolean? = null
 )
