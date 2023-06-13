@@ -16,6 +16,7 @@ object Emails {
         CoroutineScope(Job()).launch {
             val email = HtmlEmail()
             email.hostName = host
+            email.isStartTLSEnabled = true
             email.setSmtpPort(587)
             email.setAuthentication(username, password)
             email.setFrom(username)
