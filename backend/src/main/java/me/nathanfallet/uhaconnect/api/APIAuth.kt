@@ -109,6 +109,13 @@ fun Route.apiAuth() {
                 call.respond(mapOf("error" to "Error while creating user."))
                 return@post
             }
+            Emails.sendEmail(
+                newUser.email,
+                "Welcome to UHA Connect",
+                "Welcome ${newUser.firstName} to UHA Connect!<br/>We're happy to see you here!<br/><br/>" +
+                        "You can now login to your account using your email address or your username.<br/><br/>" +
+                        "Have a nice day!<br/>UHA Connect team."
+            )
             val token = JWT.create()
                 .withSubject(newUser.id.toString())
                 .withAudience(audience)
@@ -149,7 +156,7 @@ fun Route.apiAuth() {
                 Emails.sendEmail(
                     user.email,
                     "UHA Connect - Reset password",
-                    "Use this code to reset your password: $code. It expires in 10 minutes."
+                    "Use this code to reset your password: $code.<br/>It expires in 10 minutes."
                 )
                 call.respond(HttpStatusCode.Created)
                 return@post
