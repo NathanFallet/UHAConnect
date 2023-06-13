@@ -14,7 +14,6 @@ enum class RoleStatus {
             Permission.POST_DELETE -> listOf(ADMINISTRATOR, MODERATOR).contains(this)
             Permission.POST_UPDATE -> listOf(ADMINISTRATOR, MODERATOR).contains(this)
             Permission.COMMENT_DELETE -> listOf(ADMINISTRATOR, MODERATOR).contains(this)
-            Permission.FORBIDDEN -> listOf(BANNED).contains(this)
         }
     }
 

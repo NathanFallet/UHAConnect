@@ -32,7 +32,7 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Invalid user"))
                 return@post
             }
-            if (user.role.hasPermission(Permission.FORBIDDEN)) {
+            if (user.role == RoleStatus.BANNED) {
                 call.response.status(HttpStatusCode.Forbidden)
                 call.respond(mapOf("error" to "User unauthorized."))
                 return@post
@@ -221,7 +221,7 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "User not found."))
                 return@post
             }
-            if (user.role.hasPermission(Permission.FORBIDDEN)) {
+            if (user.role == RoleStatus.BANNED) {
                 call.response.status(HttpStatusCode.Forbidden)
                 call.respond(mapOf("error" to "User unauthorized."))
                 return@post
