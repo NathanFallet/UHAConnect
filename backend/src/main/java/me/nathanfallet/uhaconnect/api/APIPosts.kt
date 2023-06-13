@@ -28,21 +28,31 @@ import me.nathanfallet.uhaconnect.plugins.NotificationsPlugin
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
 fun Route.apiPosts() {
     route("/posts") {
         get {
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@get
+            }
             val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
             val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val posts = Database.dbQuery {
                 Posts
                     .join(Users, JoinType.INNER, Posts.user_id, Users.id)
                     .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
-                    .select { Posts.validated eq true }
+                    .select {
+                        Posts.validated eq true and
+                                (Favorites.user_id eq null or (Favorites.user_id eq user.id))
+                    }
                     .orderBy(Posts.date, SortOrder.DESC)
                     .limit(limit, offset)
                     .map(Posts::toPost)
@@ -105,6 +115,11 @@ fun Route.apiPosts() {
             call.respond(posts)
         }
         get("/{id}") {
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@get
+            }
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
                 call.respond(mapOf("error" to "Invalid post id"))
@@ -114,7 +129,10 @@ fun Route.apiPosts() {
                 Posts
                     .join(Users, JoinType.INNER, Posts.user_id, Users.id)
                     .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
-                    .select { Posts.id eq id }
+                    .select {
+                        Posts.id eq id and
+                                (Favorites.user_id eq null or (Favorites.user_id eq user.id))
+                    }
                     .map(Posts::toPost)
                     .singleOrNull()
             } ?: run {
