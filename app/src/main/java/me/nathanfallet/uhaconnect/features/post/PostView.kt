@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.models.Comment
+import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
@@ -56,9 +58,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
 ) {
 
     val viewModel: PostViewModel = viewModel()
-
     val newComment by viewModel.newComment.observeAsState("")
-
     val post by viewModel.post.observeAsState()
     val comments by viewModel.comments.observeAsState(listOf())
     val context = LocalContext.current
@@ -107,53 +107,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
                 )
             }
 
-            /*Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(8.dp)) {
-                    post?.let { post ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ){
-                            Text(
-                                text = post.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
 
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ){
-                            TextButton(onClick = { navigate("profile/${post.user?.id}") }){
-                                Text(
-                                    text = stringResource(
-                                        R.string.post_author,
-                                        post.user?.username.toString()
-                                    ),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                )
-                            }
-                            Text(
-                                text = stringResource(R.string.post_date, post.date.toString()),
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
-                        }
-                        Text(
-                            text = post.content,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-                }
-            }*/
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -195,9 +149,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
-                        // TODO: Use logged user instead
-                        if (post?.user?.role == RoleStatus.ADMINISTRATOR) {
-
+                        if (viewedBy?.role?.hasPermission(Permission.COMMENT_DELETE) == true) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -217,27 +169,18 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
                                     DropdownMenuItem(
                                         text = { Text("Remove comment") },
                                         onClick = {
-                                            Toast.makeText(
-                                                context,
-                                                "Comment has been removed",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            viewModel.deleteComment(token,comment.post_id, comment.id)
                                         }
                                     )
                                     DropdownMenuItem(
                                         text = { Text("Ban user") },
                                         onClick = {
-                                            Toast.makeText(
-                                                context,
-                                                "User has been banned",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                        //TODO : Ban user method
                                         }
                                     )
                                 }
                             }
                         }
-
 
                     }
                     Text(

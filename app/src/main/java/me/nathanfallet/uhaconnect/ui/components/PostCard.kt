@@ -114,6 +114,7 @@ fun PostCard(
                             DropdownMenuItem(
                                 text = { Text("Ban user") },
                                 onClick = {
+                                    //TODO: method to ban user
                                     Toast.makeText(
                                         context,
                                         "User has been banned",
@@ -123,9 +124,7 @@ fun PostCard(
                             )
                         }
                     }
-
                 }
-
             }
             MarkdownText(
                 markdown = post.content,
