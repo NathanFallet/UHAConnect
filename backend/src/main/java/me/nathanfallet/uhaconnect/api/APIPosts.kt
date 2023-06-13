@@ -32,6 +32,11 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Invalid user"))
                 return@post
             }
+            if (user.role.hasPermission(Permission.FORBIDDEN)) {
+                call.response.status(HttpStatusCode.Forbidden)
+                call.respond(mapOf("error" to "User unauthorized."))
+                return@post
+            }
             val newPost = try {
                 call.receive<CreatePostPayload>()
             } catch (e: Exception) {
@@ -119,6 +124,7 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Invalid title or content."))
                 return@put
             }
+
             Database.dbQuery {
                 Posts
                     .update({ Posts.id eq id }) {
@@ -129,6 +135,9 @@ fun Route.apiPosts() {
                             ?.let { validated ->
                                 it[Posts.validated] = validated
                             }
+                        if (post.user_id == user.id && !(user.role.hasPermission(Permission.POST_UPDATE))) {
+                            it[Posts.validated] = false
+                        }
                     }
             }
             val newPost = Database.dbQuery {
@@ -204,12 +213,17 @@ fun Route.apiPosts() {
         post("/{id}/comments") {
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to "Invalid post id"))
+                call.respond(mapOf("error" to "Invalid post id."))
                 return@post
             }
             val user = getUser() ?: run {
                 call.response.status(HttpStatusCode.Unauthorized)
-                call.respond(mapOf("error" to "User not found"))
+                call.respond(mapOf("error" to "User not found."))
+                return@post
+            }
+            if (user.role.hasPermission(Permission.FORBIDDEN)) {
+                call.response.status(HttpStatusCode.Forbidden)
+                call.respond(mapOf("error" to "User unauthorized."))
                 return@post
             }
             val post =

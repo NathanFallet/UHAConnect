@@ -76,10 +76,6 @@ fun Route.apiUsers() {
                                     .hashToString(12, uploadUser.password?.toCharArray())
                             }
                                 ?: user.password
-                        if (user.role.hasPermission(me.nathanfallet.uhaconnect.models.Permission.USER_UPDATE)) {
-                            it[me.nathanfallet.uhaconnect.models.Users.role] =
-                                (uploadUser.role ?: user.role).toString()
-                        }
                     }
             }
 
@@ -106,6 +102,81 @@ fun Route.apiUsers() {
                 return@get
             }
             call.respond(user)
+        }
+
+        put("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                call.response.status(io.ktor.http.HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid user id"))
+                return@put
+            }
+            val user = me.nathanfallet.uhaconnect.database.Database.dbQuery {
+                me.nathanfallet.uhaconnect.models.Users.select { me.nathanfallet.uhaconnect.models.Users.id eq id }
+                    .map { me.nathanfallet.uhaconnect.models.Users.toUser(it) }.singleOrNull()
+            } ?: run {
+                call.response.status(io.ktor.http.HttpStatusCode.NotFound)
+                call.respond(mapOf("error" to "User not found"))
+                return@put
+            }
+            val uploadUser = try {
+                call.receive<UpdateUserPayload>()
+            } catch (e: Exception) {
+                call.response.status(io.ktor.http.HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid field."))
+                return@put
+            }
+
+            uploadUser.username
+                ?.takeIf { !it.equals(user.username, true) }
+                ?.let {
+                    if (!me.nathanfallet.uhaconnect.models.User.isUsernameValid(it)) {
+                        call.response.status(io.ktor.http.HttpStatusCode.BadRequest)
+                        call.respond(mapOf("error" to "Invalid Username."))
+                        return@put
+                    }
+                    me.nathanfallet.uhaconnect.database.Database.dbQuery {
+                        me.nathanfallet.uhaconnect.models.Users
+                            .select { me.nathanfallet.uhaconnect.models.Users.username eq it }
+                            .singleOrNull()
+                    }?.let {
+                        call.response.status(io.ktor.http.HttpStatusCode.BadRequest)
+                        call.respond(mapOf("error" to "Username already used."))
+                        return@put
+                    }
+                }
+
+            me.nathanfallet.uhaconnect.database.Database.dbQuery {
+                me.nathanfallet.uhaconnect.models.Users
+                    .update({ me.nathanfallet.uhaconnect.models.Users.id eq user.id }) {
+                        it[me.nathanfallet.uhaconnect.models.Users.firstName] =
+                            uploadUser.firstName ?: user.firstName
+                        it[me.nathanfallet.uhaconnect.models.Users.lastName] =
+                            uploadUser.lastName ?: user.lastName
+                        it[me.nathanfallet.uhaconnect.models.Users.username] =
+                            uploadUser.username ?: user.username
+                        it[me.nathanfallet.uhaconnect.models.Users.password] =
+                            uploadUser.password?.let {
+                                at.favre.lib.crypto.bcrypt.BCrypt.withDefaults()
+                                    .hashToString(12, uploadUser.password?.toCharArray())
+                            }
+                                ?: user.password
+                        if (user.role.hasPermission(me.nathanfallet.uhaconnect.models.Permission.USER_UPDATE)) {
+                            it[me.nathanfallet.uhaconnect.models.Users.role] =
+                                (uploadUser.role ?: user.role).toString()
+                        }
+                    }
+            }
+
+            val newUser = me.nathanfallet.uhaconnect.database.Database.dbQuery {
+                me.nathanfallet.uhaconnect.models.Users.select { me.nathanfallet.uhaconnect.models.Users.id eq id }
+                    .map { me.nathanfallet.uhaconnect.models.Users.toUser(it) }.singleOrNull()
+            } ?: run {
+                call.response.status(io.ktor.http.HttpStatusCode.NotFound)
+                call.respond(mapOf("error" to "User not found"))
+                return@put
+            }
+
+            call.respond(newUser)
         }
 
         get("/{id}/posts") {

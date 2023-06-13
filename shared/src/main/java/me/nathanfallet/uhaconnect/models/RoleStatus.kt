@@ -5,7 +5,8 @@ enum class RoleStatus {
     MODERATOR,
     STAFF,
     TEACHER,
-    STUDENT;
+    STUDENT,
+    BANNED;
 
     fun hasPermission(permission: Permission): Boolean {
         return when (permission) {
@@ -13,6 +14,7 @@ enum class RoleStatus {
             Permission.POST_DELETE -> listOf(ADMINISTRATOR, MODERATOR).contains(this)
             Permission.POST_UPDATE -> listOf(ADMINISTRATOR, MODERATOR).contains(this)
             Permission.COMMENT_DELETE -> listOf(ADMINISTRATOR, MODERATOR).contains(this)
+            Permission.FORBIDDEN -> listOf(BANNED).contains(this)
         }
     }
 
