@@ -4,6 +4,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
+import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
 import me.nathanfallet.uhaconnect.models.*
 import me.nathanfallet.uhaconnect.plugins.NotificationData
@@ -71,6 +72,7 @@ fun Route.apiFavorites() {
                         it[Notifications.post_id] = post.id
                         it[Notifications.type] = TypeStatus.LIKE.toString()
                         it[Notifications.origin_id] = user.id
+                        it[date] = Clock.System.now().toEpochMilliseconds()
                     }
             }
             NotificationsPlugin.sendNotificationToUser(

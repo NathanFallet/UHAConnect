@@ -6,6 +6,7 @@ import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
+import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
 import me.nathanfallet.uhaconnect.models.*
 import me.nathanfallet.uhaconnect.plugins.NotificationData
@@ -184,6 +185,7 @@ fun Route.apiUsers() {
                         it[Notifications.dest_id] = id
                         it[Notifications.type] = TypeStatus.FOLLOWER.toString()
                         it[Notifications.origin_id] = user.id
+                        it[date] = Clock.System.now().toEpochMilliseconds()
                     }
             }
 
