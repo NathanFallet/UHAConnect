@@ -161,7 +161,7 @@ fun ProfileView(
                                 ) {
                                     DropdownMenuItem(
                                         text = { Text("Ban user") },
-                                        onClick = { Toast.makeText(context, "Save", Toast.LENGTH_SHORT).show() }
+                                        onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
                                     )
                                 }
                             }

@@ -58,9 +58,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
 ) {
 
     val viewModel: PostViewModel = viewModel()
-
     val newComment by viewModel.newComment.observeAsState("")
-
     val post by viewModel.post.observeAsState()
     val comments by viewModel.comments.observeAsState(listOf())
     val context = LocalContext.current
@@ -109,53 +107,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
                 )
             }
 
-            /*Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(8.dp)) {
-                    post?.let { post ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ){
-                            Text(
-                                text = post.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
 
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ){
-                            TextButton(onClick = { navigate("profile/${post.user?.id}") }){
-                                Text(
-                                    text = stringResource(
-                                        R.string.post_author,
-                                        post.user?.username.toString()
-                                    ),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                )
-                            }
-                            Text(
-                                text = stringResource(R.string.post_date, post.date.toString()),
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
-                        }
-                        Text(
-                            text = post.content,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-                }
-            }*/
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -218,6 +170,12 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
                                         text = { Text("Remove comment") },
                                         onClick = {
                                             viewModel.deleteComment(token,comment.post_id, comment.id)
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Ban user") },
+                                        onClick = {
+                                        //TODO : Ban user method
                                         }
                                     )
                                 }
