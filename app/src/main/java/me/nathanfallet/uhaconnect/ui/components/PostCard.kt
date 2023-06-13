@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -19,14 +18,12 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,17 +34,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
-import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.User
 
 
 @Composable
 fun PostCard(
     post: Post,
-    navigate: (String)->Unit,
-    favoriteCheck: (Boolean)->Unit,
-    deletePost: () -> Unit
+    navigate: (String) -> Unit,
+    favoriteCheck: (Boolean) -> Unit,
+    updatePost: (UpdatePostPayload) -> Unit,
+    deletePost: () -> Unit,
+    viewedBy: User? = null
 ){
   
     val context = LocalContext.current
@@ -76,8 +76,7 @@ fun PostCard(
                     modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
                     fontSize = 24.sp,
                 )
-                // TODO: Use logged user instead
-                if (post.user?.role  == RoleStatus.ADMINISTRATOR) {
+                if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
 
                     Box(
                         modifier = Modifier
@@ -99,9 +98,23 @@ fun PostCard(
                                 text = { Text("Remove post") },
                                 onClick = deletePost
                             )
+                            if (!post.validated) {
+                                DropdownMenuItem(
+                                    text = { Text("Validate post") },
+                                    onClick = {
+                                        updatePost(UpdatePostPayload(null, null, true))
+                                    }
+                                )
+                            }
                             DropdownMenuItem(
                                 text = { Text("Ban user") },
-                                onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
+                                onClick = {
+                                    Toast.makeText(
+                                        context,
+                                        "User has been banned",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             )
                         }
                     }

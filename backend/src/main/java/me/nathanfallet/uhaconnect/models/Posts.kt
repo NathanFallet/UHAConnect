@@ -16,8 +16,11 @@ object Posts : IntIdTable() {
     fun toPost(row: ResultRow): Post {
         val user = if (row.hasValue(Users.id)) Users.toUser(row)
         else null
-        val favorite = if (row.hasValue(Favorites.post_id)) Favorites.toFavorite(row)
-        else null
+        val favorite =
+            if (row.hasValue(Favorites.post_id) && row.getOrNull(Favorites.post_id) != null) Favorites.toFavorite(
+                row
+            )
+            else null
         return Post(
             id = row[id].value,
             user_id = row[user_id].value,

@@ -5,7 +5,8 @@ enum class RoleStatus {
     MODERATOR,
     STAFF,
     TEACHER,
-    STUDENT;
+    STUDENT,
+    BANNED;
 
     fun hasPermission(permission: Permission): Boolean {
         return when (permission) {
