@@ -34,10 +34,6 @@ fun Route.apiMedia() {
 
             call.response.status(io.ktor.http.HttpStatusCode.Created)
         }
-
-        staticFiles("", File("media"))
-
-        // Add more media-related routes as needed
     }
 }
 

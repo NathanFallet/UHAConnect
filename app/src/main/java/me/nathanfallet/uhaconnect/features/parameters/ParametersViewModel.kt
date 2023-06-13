@@ -1,5 +1,7 @@
 package me.nathanfallet.uhaconnect.features.parameters
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +17,6 @@ class ParametersViewModel: ViewModel() {
 
     val error = MutableLiveData<Int>()
     val newUsername = MutableLiveData("")
-    val oldPassword = MutableLiveData("")
     val newPassword = MutableLiveData("")
     val newPassword2 = MutableLiveData("")
 
@@ -28,16 +29,11 @@ class ParametersViewModel: ViewModel() {
         if (isUsernameValid()) {
             viewModelScope.launch {
                 try {
-                    APIService.getInstance(Unit).updateUser(
+                    _user.value = APIService.getInstance(Unit).updateUser(
                         token,
                         id,
                         UpdateUserPayload(
-                            null,
-                            null,
                             username = newUsername.value ?: "",
-                            null,
-                            null,
-                            null
                         )
                     )
                 } catch (e: Exception) {
@@ -56,15 +52,10 @@ class ParametersViewModel: ViewModel() {
         if (isPasswordValid()) {
             viewModelScope.launch {
                 try {
-                    APIService.getInstance(Unit).updateUser(
+                    _user.value = APIService.getInstance(Unit).updateUser(
                         token,
                         id,
                         UpdateUserPayload(
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
                             newPassword.value ?: ""
                         )
                     )
@@ -76,6 +67,24 @@ class ParametersViewModel: ViewModel() {
         } else null ?: run {
             Log.d("ParametersViewModel", "UsernameNotValid")
             error.value = R.string.parameters_invalid_pw_credentials
+        }
+    }
+
+    fun selectMedia(token: String?, id: Int?, uri: Uri?, context: Context) {
+        if (token == null || id == null || uri == null) return
+        viewModelScope.launch {
+            try {
+                val bytes = context.contentResolver.openInputStream(uri)?.use {
+                    it.readBytes()
+                } ?: ByteArray(0)
+                val payload = APIService.getInstance(Unit).uploadMedia(token, bytes, false)
+                _user.value = APIService.getInstance(Unit).updateUser(
+                    token, id, UpdateUserPayload(picture = payload.fileName)
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Handle the exception, e.g., show an error message or retry
+            }
         }
     }
 

@@ -1,6 +1,5 @@
 package me.nathanfallet.uhaconnect.features.compose
 
-import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -9,7 +8,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,7 +37,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
@@ -59,30 +56,16 @@ fun ComposeView(
     val titleContent by viewModel.titleContent.observeAsState("")
     val id by viewModel.id.observeAsState()
 
-    val activity = LocalContext.current as? Activity
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            if (token != null) {
-                if (uri != null) {
-                    viewModel.selectMedia(token, uri, context)
-                }
-            }
-        }
+        onResult = { uri -> viewModel.selectMedia(token, uri, context) }
     )
-
-
-
-
-    val imageUrl by viewModel.imageUrl.observeAsState()
-
-
-
 
     if (id != null) navigate("post/$id")
 
     LazyColumn(
-        modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         stickyHeader{
             TopAppBar(
@@ -178,16 +161,6 @@ fun ComposeView(
                     .height(300.dp)
 
             )
-
-            if (imageUrl != null) {
-                Text(
-                    text = "![Selected Image]($imageUrl)",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 30.dp, vertical = 8.dp)
-                )
-            }
-
 
             Button(
                 onClick = {
