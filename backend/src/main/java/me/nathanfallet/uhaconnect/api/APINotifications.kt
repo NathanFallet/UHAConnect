@@ -26,7 +26,7 @@ fun Route.apiNotifications() {
                     .select { Notifications.dest_id eq user.id }
                     .orderBy(Notifications.date, SortOrder.DESC)
                     .limit(limit, offset)
-                    .map(Posts::toPost)
+                    .map(Notifications::toNotification)
             }
             call.respond(notifications)
         }
