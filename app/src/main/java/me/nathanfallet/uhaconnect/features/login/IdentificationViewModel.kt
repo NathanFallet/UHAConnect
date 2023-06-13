@@ -4,9 +4,12 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.common.api.Api
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.*
+import me.nathanfallet.uhaconnect.models.User.Companion.isUsernameValid
 import me.nathanfallet.uhaconnect.services.APIService
 
 class LoginViewModel : ViewModel() {
@@ -18,6 +21,7 @@ class LoginViewModel : ViewModel() {
     val firstname = MutableLiveData("")
     val lastname = MutableLiveData("")
     val mail = MutableLiveData("")
+    val code = MutableLiveData("")
 
     fun login(loginUser: (UserToken) -> Unit) {
         if (validateLoginForm()) {
@@ -65,11 +69,36 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun resetPassword() {
-        if (validateResetPasswordForm()) {
-            println("Demande de réinitialisation du mot de passe envoyée à l'adresse : $mail")
-        } else {
-            println("Impossible de réinitialiser le mot de passe : veuillez vérifier les informations fournies")
+
+    fun sendMail(navigate: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                APIService.getInstance(Unit)
+                    .resetPassword(ResetPasswordPayload(email = mail.value)
+                    ).let {
+                        navigate("resetPassword")
+                    }
+            }
+            catch (e: java.lang.Exception) {
+                error.value = R.string.login_email_wrong
+            }
+        }
+    }
+
+    fun resetPassword(navigate: (String) -> Unit){
+        viewModelScope.launch {
+            try{
+                APIService.getInstance(Unit)
+                    .resetPassword(ResetPasswordPayload(
+                        code = code.value?.toInt(),
+                        password = password.value)
+                    ).let {
+                        navigate("login")
+                    }
+            }
+            catch (e: Exception){
+                error.value = R.string.login_code_pw_wrong
+            }
         }
     }
 

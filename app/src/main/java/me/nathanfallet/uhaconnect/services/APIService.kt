@@ -24,8 +24,9 @@ import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
-import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.ResetPasswordPayload
 import me.nathanfallet.uhaconnect.models.UpdateUserPayload
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
@@ -118,22 +119,6 @@ class APIService {
             setBody(payload)
         }.body()
     }
-
-    /*suspend fun resetPassword(email: String): UserToken? {
-        val payload = ResetPasswordPayload(email)
-        val json = Json.encodeToString(payload)
-
-        return try {
-            val response = createRequest(HttpMethod.Post, "/auth/reset-password") {
-                contentType(ContentType.Application.Json)
-                setBody(json)
-            }
-            response.body()
-        } catch (exception: Exception) {
-            null
-        }
-    }*/
-
     @Throws(Exception::class)
     suspend fun uploadMedia(
         token: String,
@@ -210,6 +195,13 @@ class APIService {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }.body()
+    }
+
+    suspend fun resetPassword(payload: ResetPasswordPayload){
+        createRequest(HttpMethod.Post, "/auth/reset"){
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }
     }
 }
 
