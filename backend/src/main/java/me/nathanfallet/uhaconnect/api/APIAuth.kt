@@ -4,17 +4,30 @@ import at.favre.lib.crypto.bcrypt.BCrypt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import io.ktor.util.pipeline.PipelineContext
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.*
+import me.nathanfallet.uhaconnect.models.AuthResetCodes
+import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.RegisterPayload
+import me.nathanfallet.uhaconnect.models.ResetPasswordPayload
+import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.UserToken
+import me.nathanfallet.uhaconnect.models.Users
+import me.nathanfallet.uhaconnect.plugins.Emails
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 import java.util.Date
 
 fun Route.apiAuth() {
@@ -55,7 +68,6 @@ fun Route.apiAuth() {
                 .sign(Algorithm.HMAC256(secret))
             call.respond(UserToken(user, token))
         }
-
         post("/register") {
             val payload = try {
                 call.receive<RegisterPayload>()
@@ -104,6 +116,95 @@ fun Route.apiAuth() {
                 .withExpiresAt(Date(System.currentTimeMillis() + expiration))
                 .sign(Algorithm.HMAC256(secret))
             call.respond(UserToken(newUser, token))
+        }
+        post("/reset") {
+            val payload = try {
+                call.receive<ResetPasswordPayload>()
+            } catch (e: Exception) {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid payload."))
+                return@post
+            }
+            payload.email?.let { email ->
+                val user = Database.dbQuery {
+                    Users
+                        .select { Users.email eq email }
+                        .map(Users::toUser)
+                        .singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.NotFound)
+                    call.respond(mapOf("error" to "Email not found."))
+                    return@post
+                }
+                val code = Database.dbQuery {
+                    val value = AuthResetCodes.generateCode()
+                    AuthResetCodes.insert {
+                        it[AuthResetCodes.code] = value
+                        it[AuthResetCodes.userId] = user.id
+                        it[AuthResetCodes.expiration] =
+                            System.currentTimeMillis() + 10 * 60 * 1000L // 10 minutes
+                    }
+                    value
+                }
+                Emails.sendEmail(
+                    user.email,
+                    "UHA Connect - Reset password",
+                    "Use this code to reset your password: $code. It expires in 10 minutes."
+                )
+                call.respond(HttpStatusCode.Created)
+                return@post
+            }
+            payload.code?.let { code ->
+                val password = payload.password ?: run {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Password is required."))
+                    return@post
+                }
+                val resetCode = Database.dbQuery {
+                    AuthResetCodes
+                        .select { AuthResetCodes.code eq code }
+                        .map(AuthResetCodes::toCode)
+                        .singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.NotFound)
+                    call.respond(mapOf("error" to "Code not found."))
+                    return@post
+                }
+                if (resetCode.expiration < System.currentTimeMillis()) {
+                    call.response.status(HttpStatusCode.BadRequest)
+                    call.respond(mapOf("error" to "Code expired."))
+                    return@post
+                }
+                val user = Database.dbQuery {
+                    Users
+                        .select { Users.id eq resetCode.userId }
+                        .map(Users::toUser)
+                        .singleOrNull()
+                } ?: run {
+                    call.response.status(HttpStatusCode.NotFound)
+                    call.respond(mapOf("error" to "User not found."))
+                    return@post
+                }
+                val newPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray())
+                Database.dbQuery {
+                    Users.update({ Users.id eq user.id }) {
+                        it[Users.password] = newPassword
+                    }
+                    AuthResetCodes.deleteWhere { AuthResetCodes.code eq code }
+                }
+                call.respond(HttpStatusCode.OK)
+                return@post
+            }
+        }
+    }
+}
+
+suspend fun PipelineContext<Unit, ApplicationCall>.getUser(): User? {
+    return call.principal<JWTPrincipal>()?.payload?.subject?.let { userId ->
+        Database.dbQuery {
+            Users.select { Users.id eq userId.toInt() }.map {
+                Users.toUser(it)
+            }.singleOrNull()
         }
     }
 }

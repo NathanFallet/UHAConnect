@@ -10,23 +10,19 @@ import io.ktor.server.routing.route
 import kotlinx.coroutines.withContext
 import me.nathanfallet.uhaconnect.models.MediaPayload
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.UUID
 
 fun Route.apiMedia() {
     route("/media") {
         post {
-            val user = getUser() ?: run {
-                call.response.status(io.ktor.http.HttpStatusCode.Unauthorized)
-                call.respond(mapOf("error" to "Invalid user"))
-                return@post
+            val uploadsFolder = Paths.get("media")
+            if (!Files.exists(uploadsFolder)) {
+                Files.createDirectory(uploadsFolder)
             }
-
-            val uploadsFolder = java.nio.file.Paths.get("media")
-            if (!java.nio.file.Files.exists(uploadsFolder)) {
-                java.nio.file.Files.createDirectory(uploadsFolder)
-            }
-
             call.receiveStream().use { input ->
-                val fileName = generateRandomName()
+                val fileName = generateMediaName()
                 val file = File("media/$fileName")
                 withContext(kotlinx.coroutines.Dispatchers.IO) {
                     file.outputStream().buffered().use {
@@ -42,5 +38,14 @@ fun Route.apiMedia() {
         staticFiles("", File("media"))
 
         // Add more media-related routes as needed
+    }
+}
+
+fun generateMediaName(): String {
+    val uuid = UUID.randomUUID().toString()
+    return if (Files.exists(Paths.get("media/$uuid"))) {
+        generateMediaName()
+    } else {
+        uuid
     }
 }
