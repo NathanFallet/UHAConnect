@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +64,9 @@ fun PostCard(
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()){
-                Text(text = post.user?.username ?: "")
+                TextButton(onClick = { navigate("profile/${post.user?.id}") }){
+                    Text(text = post.user?.username ?: "")
+                }
                 Text(text = stringResource(R.string.postcard_ago, post.date.timeAgo(context)), fontSize = 12.sp)
             }
             Row(horizontalArrangement = Arrangement.SpaceBetween,

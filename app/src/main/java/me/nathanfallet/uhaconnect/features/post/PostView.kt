@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -104,11 +105,16 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
                         ){
-                            Text(
-                                text = stringResource(R.string.post_author, post.user?.username.toString()),
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
+                            TextButton(onClick = { navigate("profile/${post.user?.id}") }){
+                                Text(
+                                    text = stringResource(
+                                        R.string.post_author,
+                                        post.user?.username.toString()
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
                             Text(
                                 text = stringResource(R.string.post_date, post.date.toString()),
                                 style = MaterialTheme.typography.bodySmall,

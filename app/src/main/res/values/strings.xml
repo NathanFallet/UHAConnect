@@ -43,4 +43,18 @@
     <string name="compose_mind">What\'s in your mind ?</string>
     <string name="compose_title">Title</string>
     <string name="compose_tag">Tag</string>
+    <string name="parameters_change_un">Change username</string>
+    <string name="parameters_new_username">New username</string>
+    <string name="parameters_validate">Validate</string>
+    <string name="parameters_theme">Theme</string>
+    <string name="parameters_dark_theme">Dark</string>
+    <string name="parameters_light_theme">Light</string>
+    <string name="parameters_change_password">Change password</string>
+    <string name="parameters_old_password">Old password</string>
+    <string name="parameters_new_password">New password</string>
+    <string name="parameters_repeat_password">Repeat password</string>
+    <string name="parameters_language">Change language</string>
+    <string name="parameters_auto">Auto</string>
+    <string name="parameters_invalid_un_credentials">Invalid username</string>
+    <string name="parameters_invalid_pw_credentials">Invalid password</string>
 </resources>

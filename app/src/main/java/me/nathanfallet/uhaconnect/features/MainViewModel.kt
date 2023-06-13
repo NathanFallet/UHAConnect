@@ -1,6 +1,7 @@
 package me.nathanfallet.uhaconnect.features
 
 import android.app.Application
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,6 +26,7 @@ class MainViewModel(
     private val _token = MutableLiveData<String>()
     val token: LiveData<String>
         get() = _token
+
 
     init {
         // Load user and token, if connected

@@ -25,6 +25,7 @@ import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
@@ -197,6 +198,13 @@ class APIService {
 
     suspend fun deleteToFavorites(token: String, id: Int){
         createRequest(HttpMethod.Delete, "/favorites/$id", token)
+    }
+
+    suspend fun updateUser(token: String, id: Int, payload: UpdateUserPayload): User{
+        return createRequest(HttpMethod.Put, "/user/$id", token) {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }.body()
     }
 }
 
