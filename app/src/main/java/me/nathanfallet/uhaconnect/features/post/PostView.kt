@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.features.compose.ComposeViewModel
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
@@ -51,11 +50,6 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
-
-    val viewModel_1: ComposeViewModel = viewModel()
-
-    // Observe the fileName value from the ComposeViewModel
-    val fileName by viewModel_1.fileName.observeAsState()
 
     val viewModel: PostViewModel = viewModel()
 
@@ -123,14 +117,6 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                         }
                         Text(
                             text = post.content,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-                    if (!fileName.isNullOrEmpty()) {
-                        val imageUrl = "https://uhaconnect.nathanfallet.me/media/$fileName"
-                        Text(
-                            text = "![The image didn't get printed]($imageUrl)",
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
