@@ -11,8 +11,6 @@
     <string name="title_activity_favs_view">Favorites</string>
     <string name="title_activity_validation_view">Requests</string>
     <string name="title_activity_profile_view">Profile</string>
-    <string name="notifications_like">%s liked your post</string>
-    <string name="notifications_comment">%s commented your post</string>
     <string name="login_invalid_credentials">Invalid username or password</string>
     <string name="postcard_showmore">Show more</string>
     <string name="postcard_ago">%s ago</string>
@@ -38,7 +36,6 @@
     <string name="post_date">Date : %s</string>
     <string name="post_write_comment">Write a comment</string>
     <string name="login_login">Log in</string>
-    <string name="notification_notifications">Notifications</string>
     <string name="compose_post">Post</string>
     <string name="compose_mind">What\'s in your mind ?</string>
     <string name="compose_title">Title</string>
@@ -57,4 +54,9 @@
     <string name="parameters_auto">Auto</string>
     <string name="parameters_invalid_un_credentials">Invalid username</string>
     <string name="parameters_invalid_pw_credentials">Invalid password</string>
+    <string name="notification_notifications">Notifications</string>
+    <string name="notifications_like">%s liked your post</string>
+    <string name="notifications_comment">%s commented your post</string>
+    <string name="notifications_follow">%s starts following you</string>
+    <string name="notifications_post">New post from %s</string>
 </resources>

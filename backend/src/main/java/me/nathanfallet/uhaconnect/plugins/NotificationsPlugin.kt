@@ -24,7 +24,7 @@ import java.io.FileInputStream
 import java.nio.file.Files
 import java.nio.file.Paths
 
-object Notifications {
+object NotificationsPlugin {
 
     private val credentials: GoogleCredentials? =
         if (Files.exists(Paths.get("firebase-adminsdk.json"))) GoogleCredentials
@@ -119,6 +119,10 @@ data class NotificationPayload(
 
 @Serializable
 data class NotificationData(
-    val title: String,
-    val body: String
+    val title: String? = null,
+    val body: String? = null,
+    val title_loc_key: String? = null,
+    val body_loc_key: String? = null,
+    val title_loc_args: List<String>? = null,
+    val body_loc_args: List<String>? = null
 )
