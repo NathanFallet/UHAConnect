@@ -40,7 +40,7 @@ fun Route.apiPosts() {
             val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val posts = Database.dbQuery {
                 Posts
-                    .join(Users, JoinType.INNER)
+                    .join(Users, JoinType.INNER, Posts.user_id, Users.id)
                     .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                     .select { Posts.validated eq true }
                     .orderBy(Posts.date, SortOrder.DESC)
@@ -67,7 +67,6 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Invalid title or content."))
                 return@post
             }
-
             val post = Database.dbQuery {
                 Posts.insert {
                     it[user_id] = user.id
@@ -80,7 +79,6 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Error while creating post."))
                 return@post
             }
-
             NotificationsPlugin.sendNotificationToFollowers(
                 user.id,
                 NotificationData(
@@ -89,17 +87,16 @@ fun Route.apiPosts() {
                     body = post.title,
                 )
             )
-
             call.response.status(HttpStatusCode.Created)
             call.respond(post)
         }
-
         get("/requests") {
             val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
             val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val posts = Database.dbQuery {
                 Posts
-                    .join(Users, JoinType.INNER)
+                    .join(Users, JoinType.INNER, Posts.user_id, Users.id)
+                    .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                     .select { Posts.validated eq false }
                     .orderBy(Posts.date, SortOrder.DESC)
                     .limit(limit, offset)
@@ -115,7 +112,8 @@ fun Route.apiPosts() {
             }
             val post = Database.dbQuery {
                 Posts
-                    .join(Users, JoinType.INNER)
+                    .join(Users, JoinType.INNER, Posts.user_id, Users.id)
+                    .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                     .select { Posts.id eq id }
                     .map(Posts::toPost)
                     .singleOrNull()
@@ -159,7 +157,6 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Invalid title or content."))
                 return@put
             }
-
             Database.dbQuery {
                 Posts
                     .update({ Posts.id eq id }) {
@@ -177,6 +174,8 @@ fun Route.apiPosts() {
             }
             val newPost = Database.dbQuery {
                 Posts
+                    .join(Users, JoinType.INNER, Posts.user_id, Users.id)
+                    .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                     .select { Posts.id eq id }
                     .map(Posts::toPost)
                     .singleOrNull()
@@ -226,7 +225,6 @@ fun Route.apiPosts() {
             }
             call.respond(HttpStatusCode.NoContent)
         }
-
         get("/{id}/comments") {
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
@@ -279,7 +277,6 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Invalid comment."))
                 return@post
             }
-
             val comment = Database.dbQuery {
                 Comments.insert {
                     it[post_id] = post.id
@@ -292,7 +289,6 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Error while creating post."))
                 return@post
             }
-
             Database.dbQuery {
                 Notifications
                     .insert {
@@ -303,7 +299,6 @@ fun Route.apiPosts() {
                         it[date] = Clock.System.now().toEpochMilliseconds()
                     }
             }
-
             NotificationsPlugin.sendNotificationToUser(
                 post.user_id,
                 NotificationData(
@@ -312,7 +307,6 @@ fun Route.apiPosts() {
                     body = comment.content
                 )
             )
-
             call.response.status(HttpStatusCode.Created)
             call.respond(comment)
         }

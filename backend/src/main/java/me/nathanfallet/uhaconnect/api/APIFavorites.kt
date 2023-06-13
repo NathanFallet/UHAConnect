@@ -3,13 +3,27 @@ package me.nathanfallet.uhaconnect.api
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.*
+import me.nathanfallet.uhaconnect.models.Favorites
+import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.Posts
+import me.nathanfallet.uhaconnect.models.TypeStatus
+import me.nathanfallet.uhaconnect.models.Users
 import me.nathanfallet.uhaconnect.plugins.NotificationData
 import me.nathanfallet.uhaconnect.plugins.NotificationsPlugin
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 
 fun Route.apiFavorites() {
     route("/favorites") {
@@ -23,8 +37,8 @@ fun Route.apiFavorites() {
             val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val favorites = Database.dbQuery {
                 Posts
-                    .join(Users, JoinType.INNER)
-                    .join(Favorites, JoinType.INNER, Posts.id, Favorites.post_id)
+                    .join(Users, JoinType.INNER, Posts.user_id, Users.id)
+                    .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
                     .select { Favorites.user_id eq user.id }
                     .orderBy(Posts.date, SortOrder.DESC)
                     .limit(limit, offset)
@@ -32,7 +46,6 @@ fun Route.apiFavorites() {
             }
             call.respond(favorites)
         }
-
         post("/{id}") {
             val post = call.parameters["id"]?.toIntOrNull()?.let { id ->
                 Database.dbQuery {
@@ -64,7 +77,6 @@ fun Route.apiFavorites() {
                 call.respond(mapOf("error" to "Error while adding post to favorite."))
                 return@post
             }
-
             Database.dbQuery {
                 Notifications
                     .insert {
@@ -83,11 +95,9 @@ fun Route.apiFavorites() {
                     body = post.title
                 )
             )
-
             call.response.status(HttpStatusCode.Created)
             call.respond(favorite)
         }
-
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
