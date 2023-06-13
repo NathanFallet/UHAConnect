@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -19,8 +18,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,17 +34,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
-import me.nathanfallet.uhaconnect.features.post.PostViewModel
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.User
 
 
 @Composable
 fun PostCard(
     post: Post,
-    navigate: (String)->Unit,
-    favoriteCheck: (Boolean)->Unit,
+    navigate: (String) -> Unit,
+    favoriteCheck: (Boolean) -> Unit,
+    updatePost: (UpdatePostPayload) -> Unit,
+    deletePost: () -> Unit,
+    viewedBy: User? = null
 ){
+  
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
@@ -60,7 +64,9 @@ fun PostCard(
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()){
-                Text(text = post.user?.username ?: "")
+                TextButton(onClick = { navigate("profile/${post.user?.id}") }){
+                    Text(text = post.user?.username ?: "")
+                }
                 Text(text = stringResource(R.string.postcard_ago, post.date.timeAgo(context)), fontSize = 12.sp)
             }
             Row(horizontalArrangement = Arrangement.SpaceBetween,
@@ -70,8 +76,7 @@ fun PostCard(
                     modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
                     fontSize = 24.sp,
                 )
-                // TODO: Use logged user instead
-                if (post.user?.role  == RoleStatus.ADMINISTRATOR) {
+                if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
 
                     Box(
                         modifier = Modifier
@@ -91,11 +96,25 @@ fun PostCard(
                         ) {
                             DropdownMenuItem(
                                 text = { Text("Remove post") },
-                                onClick = { Toast.makeText(context, "Post has been removed", Toast.LENGTH_SHORT).show() }
+                                onClick = deletePost
                             )
+                            if (!post.validated) {
+                                DropdownMenuItem(
+                                    text = { Text("Validate post") },
+                                    onClick = {
+                                        updatePost(UpdatePostPayload(null, null, true))
+                                    }
+                                )
+                            }
                             DropdownMenuItem(
                                 text = { Text("Ban user") },
-                                onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
+                                onClick = {
+                                    Toast.makeText(
+                                        context,
+                                        "User has been banned",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             )
                         }
                     }
@@ -109,12 +128,11 @@ fun PostCard(
                 .padding(top = 50.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
-                IconButton(onClick = { favoriteCheck(true) }) {
+                IconButton(onClick = { favoriteCheck(post.favorite != null) }) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Post",
-                        tint = Color.White,
-                        modifier = Modifier.padding(start = 8.dp)
+                        contentDescription = "Like",
+                        tint = if (post.favorite == null) Color.Black else Color.White
                     )
                 }
                 Button(

@@ -13,8 +13,6 @@ jobs:
         uses: actions/setup-java@v1.4.3
         with:
           java-version: 19
-      - name: Run Linter
-        run: ./gradlew lint
-      - name: Run Tests
-        run: ./gradlew test
+      - name: Run Linter and Tests
+        run: ./gradlew lint test
     runs-on: ubuntu-latest

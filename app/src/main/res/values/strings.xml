@@ -2,14 +2,14 @@
     <string name="app_name">UHAConnect</string>
     <string name="title_activity_main">Home</string>
     <string name="title_activity_identification">identification</string>
-    <string name="title_activity_notification_view">NotificationView</string>
     <string name="title_activity_new_post">New post</string>
-    <string name="title_activity_notification">Notification</string>
+    <string name="title_activity_notification">Notifications</string>
     <string name="profile_logout">Logout</string>
     <string name="profile_profile">Profile</string>
     <string name="profile_settings">Settings</string>
     <string name="title_activity_post_view">PostView</string>
     <string name="title_activity_favs_view">Favorites</string>
+    <string name="title_activity_validation_view">Requests</string>
     <string name="title_activity_profile_view">Profile</string>
     <string name="notifications_like">%s liked your post</string>
     <string name="notifications_comment">%s commented your post</string>
@@ -43,4 +43,18 @@
     <string name="compose_mind">What\'s in your mind ?</string>
     <string name="compose_title">Title</string>
     <string name="compose_tag">Tag</string>
+    <string name="parameters_change_un">Change username</string>
+    <string name="parameters_new_username">New username</string>
+    <string name="parameters_validate">Validate</string>
+    <string name="parameters_theme">Theme</string>
+    <string name="parameters_dark_theme">Dark</string>
+    <string name="parameters_light_theme">Light</string>
+    <string name="parameters_change_password">Change password</string>
+    <string name="parameters_old_password">Old password</string>
+    <string name="parameters_new_password">New password</string>
+    <string name="parameters_repeat_password">Repeat password</string>
+    <string name="parameters_language">Change language</string>
+    <string name="parameters_auto">Auto</string>
+    <string name="parameters_invalid_un_credentials">Invalid username</string>
+    <string name="parameters_invalid_pw_credentials">Invalid password</string>
 </resources>

@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ResultRow
 
 object Posts : IntIdTable() {
-    val user_id = reference("id_user", Users)
+    val user_id = reference("user_id", Users)
     val title = varchar("title", 32)
     val content = text("content")
     val date = long("date")
@@ -16,8 +16,11 @@ object Posts : IntIdTable() {
     fun toPost(row: ResultRow): Post {
         val user = if (row.hasValue(Users.id)) Users.toUser(row)
         else null
-        val favorite = if (row.hasValue(Favorites.post_id)) Favorites.toFavorite(row)
-        else null
+        val favorite =
+            if (row.hasValue(Favorites.post_id) && row.getOrNull(Favorites.post_id) != null) Favorites.toFavorite(
+                row
+            )
+            else null
         return Post(
             id = row[id].value,
             user_id = row[user_id].value,

@@ -7,10 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonNull.content
-import me.nathanfallet.uhaconnect.models.CreateCommentPayload
-import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
@@ -19,7 +17,7 @@ class FeedViewModel(
     savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-    private val isFavorite: Boolean? = savedStateHandle["isFavorite"]
+    val loader: String? = savedStateHandle["loader"]
 
     private val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>>
@@ -35,14 +33,45 @@ class FeedViewModel(
         }
         viewModelScope.launch {
             try {
-                _posts.value = if (isFavorite == true) api.getFavorites(token)
-                else api.getPosts(token)
+                _posts.value = when (loader) {
+                    "posts" -> api.getPosts(token)
+                    "favorites" -> api.getFavorites(token)
+                    "validation" -> api.getPostsRequests(token)
+                    else -> listOf()
+                }
+            } catch (e: Exception) {
+
             }
-            catch (e: Exception){}
         }
     }
 
-    fun favoritesHandle(token: String?, postId: Int, addOrDelete: Boolean){
+    fun deletePost(token: String?, id: Int) {
+        if (token == null) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                APIService.getInstance(Unit).deletePost(token, id)
+            } catch (e: Exception) {
+                //TODO: ERRORS
+            }
+        }
+    }
+
+    fun updatePost(token: String?, id: Int, payload: UpdatePostPayload) {
+        if (token == null) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                APIService.getInstance(Unit).updatePost(token, id, payload)
+            } catch (e: Exception) {
+                //TODO: ERRORS
+            }
+        }
+    }
+
+    fun favoritesHandle(token: String?, postId: Int, addOrDelete: Boolean) {
         if (token == null) return
         viewModelScope.launch {
             try {
