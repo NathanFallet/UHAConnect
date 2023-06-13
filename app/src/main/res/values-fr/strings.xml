@@ -12,8 +12,6 @@
     <string name="title_activity_favs_view">Favoris</string>
     <string name="title_activity_validation_view">Requêtes</string>
     <string name="title_activity_profile_view">Profile</string>
-    <string name="notifications_like">%s a aimé votre publication</string>
-    <string name="notifications_comment">%s a commenté votre publication</string>
     <string name="login_invalid_credentials">Mot de passe ou nom d\'utilisateur invalide</string>
     <string name="postcard_showmore">Voir plus</string>
     <string name="postcard_ago">il y a %s</string>
@@ -44,4 +42,8 @@
     <string name="compose_mind">Qu\'avez vous à dire?</string>
     <string name="compose_title">Titre</string>
     <string name="compose_tag">Tag</string>
+    <string name="notifications_like">%s a aimé votre publication</string>
+    <string name="notifications_comment">%s a commenté votre publication</string>
+    <string name="notifications_follow">%s a commencé à vous suivre</string>
+    <string name="notifications_post">Nouvelle publication de %s</string>
 </resources>

@@ -8,6 +8,8 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import me.nathanfallet.uhaconnect.database.Database
 import me.nathanfallet.uhaconnect.models.*
+import me.nathanfallet.uhaconnect.plugins.NotificationData
+import me.nathanfallet.uhaconnect.plugins.NotificationsPlugin
 import org.jetbrains.exposed.sql.*
 
 fun Route.apiUsers() {
@@ -209,6 +211,69 @@ fun Route.apiUsers() {
                     .map(Posts::toPost)
             }
             call.respond(posts)
+        }
+
+        post("/{id}/follow") {
+            val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid user id"))
+                return@post
+            }
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@post
+            }
+
+            Database.dbQuery {
+                Follows.insert {
+                    it[Follows.user_id] = id
+                    it[Follows.follower_id] = user.id
+                }.resultedValues?.map(Follows::toFollow)?.singleOrNull()
+            } ?: run {
+                call.response.status(HttpStatusCode.InternalServerError)
+                call.respond(mapOf("error" to "Error while creating post."))
+                return@post
+            }
+
+            Database.dbQuery {
+                Notifications
+                    .insert {
+                        it[Notifications.dest_id] = id
+                        it[Notifications.type] = TypeStatus.FOLLOWER.toString()
+                        it[Notifications.origin_id] = user.id
+                    }
+            }
+
+            NotificationsPlugin.sendNotificationToUser(
+                id,
+                NotificationData(
+                    title = "New follower",
+                    body_loc_key = "notifications_follow",
+                    body_loc_args = listOf(user.username),
+                )
+            )
+
+            call.respond(HttpStatusCode.Created)
+        }
+
+        delete("/{id}/follow") {
+            val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid user id"))
+                return@delete
+            }
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@delete
+            }
+            Database.dbQuery {
+                Follows.deleteWhere {
+                    Op.build { Follows.user_id eq user.id and (Follows.follower_id eq id) }
+                }
+            }
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 }
