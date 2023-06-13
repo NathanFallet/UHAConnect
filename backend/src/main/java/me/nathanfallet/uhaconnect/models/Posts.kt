@@ -10,7 +10,6 @@ object Posts : IntIdTable() {
     val content = text("content")
     val date = long("date")
     val validated = bool("validated").default(false)
-    val filename = varchar("filename", 256).nullable()
 
     override val primaryKey = PrimaryKey(id)
 
@@ -29,7 +28,6 @@ object Posts : IntIdTable() {
             content = row[content],
             date = Instant.fromEpochMilliseconds(row[date]),
             validated = row[validated],
-            filename = row[filename],
             user = user,
             favorite = favorite
         )

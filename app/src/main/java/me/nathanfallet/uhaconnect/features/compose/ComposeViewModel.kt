@@ -47,9 +47,6 @@ class ComposeViewModel : ViewModel() {
             val postId = APIService.getInstance(Unit).postPost(
                 token, CreatePostPayload(title, content)
             ).id
-
-            val updatedPost = Post(postId, token, title, content, filename)
-            // Faites ce que vous voulez avec le post mis à jour, par exemple, le stocker ou l'envoyer à un autre service
         }
     }
 
@@ -63,16 +60,10 @@ class ComposeViewModel : ViewModel() {
                     .contentResolver
                     .getType(uri)
                     ?.startsWith("video/") ?: false
-                val response = APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
-
-                if (response.status.isSuccess()) {
-                    val responseData = Json.decodeFromString<MediaPayload>(response.bodyAsText())
-                    val fileName = responseData.fileName
-                    _fileName.value = fileName
-                    _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                } else {
-                    // error message
-                }
+                val payload = APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
+                val fileName = payload.fileName
+                _fileName.value = fileName
+                _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             } catch (e: Exception) {
                 e.printStackTrace()
                 // Handle the exception, e.g., show an error message or retry

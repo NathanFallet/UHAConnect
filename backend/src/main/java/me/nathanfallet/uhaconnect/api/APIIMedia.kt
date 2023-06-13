@@ -8,6 +8,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.coroutines.withContext
+import me.nathanfallet.uhaconnect.models.MediaPayload
 import java.io.File
 
 fun Route.apiMedia() {
@@ -32,7 +33,7 @@ fun Route.apiMedia() {
                         input.copyTo(it)
                     }
                 }
-                call.respond(mapOf("fileName" to fileName)) // Include fileName in the response
+                call.respond(MediaPayload(fileName)) // Include fileName in the response
             }
 
             call.response.status(io.ktor.http.HttpStatusCode.Created)
