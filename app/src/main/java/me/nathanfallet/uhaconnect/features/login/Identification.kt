@@ -3,7 +3,6 @@ package me.nathanfallet.uhaconnect.features.login
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -11,25 +10,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.UserToken
@@ -42,7 +35,7 @@ fun LoginPage(
     login: (UserToken) -> Unit
 ) {
 
-    val viewModel = viewModel<LoginViewModel>()
+    val viewModel = viewModel<IdentificationViewModel>()
 
     val error by viewModel.error.observeAsState()
     val username by viewModel.username.observeAsState("")
@@ -165,7 +158,7 @@ fun CreateAccountPage(
     login: (UserToken) -> Unit
 ) {
 
-    val viewModel = viewModel<LoginViewModel>()
+    val viewModel = viewModel<IdentificationViewModel>()
 
     val error by viewModel.error.observeAsState()
     val firstname by viewModel.firstname.observeAsState("")
@@ -284,7 +277,7 @@ fun CreateAccountPage(
 @Composable
 fun ResetEmailPage(navigate: (String) -> Unit) {
 
-    val viewModel = viewModel<LoginViewModel>()
+    val viewModel = viewModel<IdentificationViewModel>()
 
     val mail by viewModel.mail.observeAsState("")
     val error by viewModel.error.observeAsState()
@@ -352,7 +345,7 @@ fun ResetEmailPage(navigate: (String) -> Unit) {
 @Composable
 fun ResetPasswordPage(navigate: (String) -> Unit) {
 
-    val viewModel = viewModel<LoginViewModel>()
+    val viewModel = viewModel<IdentificationViewModel>()
 
     val code by viewModel.code.observeAsState("")
     val password by viewModel.password.observeAsState("")

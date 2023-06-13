@@ -41,6 +41,7 @@
     <string name="login_change_password">Changer le mot de passe</string>
     <string name="login_email_wrong">E-mail inconnue</string>
     <string name="login_code_pw_wrong">Code mauvais ou mot de passe invalide</string>
+    <string name="login_missing_fields">Veuillez remplir tous les champs</string>
     <string name="post_author">Auteur : %s</string>
     <string name="post_date">Date : %s</string>
     <string name="post_write_comment">Écrire un commentaire</string>
@@ -58,6 +59,10 @@
     <string name="parameters_repeat_password">Répéter le mot de passe</string>
     <string name="parameters_invalid_un_credentials">Nom d\'utilisateur invalide</string>
     <string name="parameters_invalid_pw_credentials">Mot de passe invalide</string>
+    <string name="login_invalid_username" >Invalid username</string>
+    <string name="login_invalid_password">Invalid password</string>
+    <string name="login_passwords_not_match" >Passwords do not match</string>
+    <string name="login_invalid_mail">Email is already used</string>
     <string name="parameters_settings">Paramètres</string>
     <string name="notification_notifications">Notifications</string>
     <string name="notifications_like">%s a aimé votre publication</string>

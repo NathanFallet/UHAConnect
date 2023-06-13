@@ -40,6 +40,7 @@
     <string name="login_change_password">Change password</string>
     <string name="login_email_wrong">E-mail unknown</string>
     <string name="login_code_pw_wrong">Code wrong or invalid password</string>
+    <string name="login_missing_fields">Missing fields</string>
     <string name="post_author">Author : %s</string>
     <string name="post_date">Date : %s</string>
     <string name="post_write_comment">Write a comment</string>
@@ -57,6 +58,10 @@
     <string name="parameters_repeat_password">Repeat password</string>
     <string name="parameters_invalid_un_credentials">Invalid username</string>
     <string name="parameters_invalid_pw_credentials">Invalid password</string>
+    <string name="login_invalid_username" >Invalid username</string>
+    <string name="login_invalid_password">Invalid password</string>
+    <string name="login_passwords_not_match" >Passwords do not match</string>
+    <string name="login_invalid_mail">Email is already used</string>
     <string name="parameters_settings">Settings</string>
     <string name="notification_notifications">Notifications</string>
     <string name="notifications_like">%s liked your post</string>
