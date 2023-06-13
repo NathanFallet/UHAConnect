@@ -171,16 +171,6 @@ fun ComposeView(
 
             )
 
-            if (imageUrl != null) {
-                Text(
-                    text = "![Selected Image]($imageUrl)",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 30.dp, vertical = 8.dp)
-                )
-            }
-
-
             Button(
                 onClick = {
                     viewModel.post(token)

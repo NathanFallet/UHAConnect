@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.services.APIService
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 
 class ComposeViewModel : ViewModel() {
@@ -67,6 +68,8 @@ class ComposeViewModel : ViewModel() {
                 _fileName.value = fileName
                 _imageUrl.value = "${APIService.baseUrl}/media/$fileName"
                 _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                val imageUrl = "https://uhaconnect.nathanfallet.me/media/$fileName"
+                postContent.value =  postContent.value + "\n" + "![]($imageUrl)"
 
             } catch (e: Exception) {
                 e.printStackTrace()
