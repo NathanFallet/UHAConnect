@@ -23,7 +23,7 @@
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
     <string name="login_forgot_pw">Forgotten your password?</string>
-    <string name="login_no_account">You don\'t have an account?</string>
+    <string name="login_no_account">You don\'t have an account? </string>
     <string name="login_join_us">Join us</string>
     <string name="login_sign_up">Sign up</string>
     <string name="login_first_name">First name</string>
@@ -34,6 +34,14 @@
     <string name="login_find_acc">Find your account</string>
     <string name="login_verif_email">If you have an account, you will receive a verification e-mail.</string>
     <string name="login_send_verif">Send verification e-mail</string>
+    <string name="login_code">Code</string>
+    <string name="login_check_email">You should have received a verification code on your e-mail box</string>
+    <string name="login_check_code">Check code</string>
+    <string name="login_new_password">New password</string>
+    <string name="login_rp_new_password">Confirm new password</string>
+    <string name="login_change_password">Change password</string>
+    <string name="login_email_wrong">E-mail unknown</string>
+    <string name="login_code_pw_wrong">Code wrong or invalid password</string>
     <string name="post_author">Author : %s</string>
     <string name="post_date">Date : %s</string>
     <string name="post_write_comment">Write a comment</string>
@@ -46,15 +54,11 @@
     <string name="parameters_change_un">Change username</string>
     <string name="parameters_new_username">New username</string>
     <string name="parameters_validate">Validate</string>
-    <string name="parameters_theme">Theme</string>
-    <string name="parameters_dark_theme">Dark</string>
-    <string name="parameters_light_theme">Light</string>
     <string name="parameters_change_password">Change password</string>
     <string name="parameters_old_password">Old password</string>
     <string name="parameters_new_password">New password</string>
     <string name="parameters_repeat_password">Repeat password</string>
-    <string name="parameters_language">Change language</string>
-    <string name="parameters_auto">Auto</string>
     <string name="parameters_invalid_un_credentials">Invalid username</string>
     <string name="parameters_invalid_pw_credentials">Invalid password</string>
+    <string name="parameters_settings">Settings</string>
 </resources>

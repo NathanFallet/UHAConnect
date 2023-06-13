@@ -15,7 +15,6 @@ class ParametersViewModel: ViewModel() {
 
     val error = MutableLiveData<Int>()
     val newUsername = MutableLiveData("")
-    val oldPassword = MutableLiveData("")
     val newPassword = MutableLiveData("")
     val newPassword2 = MutableLiveData("")
 

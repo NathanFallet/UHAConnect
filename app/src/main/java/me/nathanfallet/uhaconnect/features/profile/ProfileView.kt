@@ -80,19 +80,21 @@ fun ProfileView(
                     )
                 },
                 actions = {
-                    IconButton(onClick = disconnect) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_logout_24),
-                            contentDescription = "Logout"
-                        )
-                    }
-                    IconButton(onClick = {
-                        navigate("settings")
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_settings_24),
-                            contentDescription = "Settings"
-                        )
+                    if (user?.id == viewedBy?.id){
+                        IconButton(onClick = disconnect) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_logout_24),
+                                contentDescription = "Logout"
+                            )
+                        }
+                        IconButton(onClick = {
+                            navigate("settings")
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_settings_24),
+                                contentDescription = "Settings"
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
