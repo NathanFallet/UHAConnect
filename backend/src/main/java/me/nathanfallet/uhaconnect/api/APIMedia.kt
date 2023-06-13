@@ -1,7 +1,6 @@
 package me.nathanfallet.uhaconnect.api
 
 import io.ktor.server.application.call
-import io.ktor.server.http.content.staticFiles
 import io.ktor.server.request.receiveStream
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -34,10 +33,6 @@ fun Route.apiMedia() {
 
             call.response.status(io.ktor.http.HttpStatusCode.Created)
         }
-
-        staticFiles("", File("media"))
-
-        // Add more media-related routes as needed
     }
 }
 
