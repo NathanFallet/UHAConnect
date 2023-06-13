@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import me.nathanfallet.uhaconnect.models.AuthResetCodes
 import me.nathanfallet.uhaconnect.models.Comments
 import me.nathanfallet.uhaconnect.models.Favorites
 import me.nathanfallet.uhaconnect.models.Follows
@@ -13,6 +14,7 @@ import me.nathanfallet.uhaconnect.models.NotificationsTokens
 import me.nathanfallet.uhaconnect.models.Posts
 import me.nathanfallet.uhaconnect.models.Users
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.Timer
@@ -42,6 +44,7 @@ object Database {
         // Create tables (if needed)
         transaction {
             SchemaUtils.create(Users)
+            SchemaUtils.create(AuthResetCodes)
             SchemaUtils.create(Follows)
             SchemaUtils.create(Posts)
             SchemaUtils.create(Favorites)
@@ -62,8 +65,13 @@ object Database {
         newSuspendedTransaction(Dispatchers.IO) { block() }
 
     private suspend fun doExpiration() {
-        Database.dbQuery {
-
+        dbQuery {
+            AuthResetCodes.deleteWhere {
+                AuthResetCodes.expiration lessEq System.currentTimeMillis()
+            }
+            NotificationsTokens.deleteWhere {
+                NotificationsTokens.expiration lessEq System.currentTimeMillis()
+            }
         }
     }
 

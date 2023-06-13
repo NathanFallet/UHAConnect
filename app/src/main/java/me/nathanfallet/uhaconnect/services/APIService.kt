@@ -1,6 +1,5 @@
 package me.nathanfallet.uhaconnect.services
 
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -9,7 +8,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
@@ -21,11 +19,13 @@ import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.MediaPayload
 import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
@@ -35,7 +35,7 @@ class APIService {
     // Constants
 
     companion object : SingletonHolder<APIService, Unit>({ APIService() }) {
-        private const val baseUrl = "https://uhaconnect.nathanfallet.me"
+        const val baseUrl = "https://uhaconnect.nathanfallet.me"
     }
 
 
@@ -87,7 +87,6 @@ class APIService {
         return createRequest(HttpMethod.Get, "/posts/$id", token).body()
     }
 
-
     @Throws(Exception::class)
     suspend fun postPost(token: String, payload: CreatePostPayload): Post {
         return createRequest(HttpMethod.Post, "/posts", token) {
@@ -106,13 +105,10 @@ class APIService {
 
     @Throws(Exception::class)
     suspend fun login(payload: LoginPayload): UserToken {
-
-        val r = createRequest(HttpMethod.Post, "/auth/login") {
+        return createRequest(HttpMethod.Post, "/auth/login") {
             contentType(ContentType.Application.Json)
             setBody(payload)
-        }
-        Log.d("LoginViewModel", r.bodyAsText())
-        return r.body()
+        }.body()
     }
 
     @Throws(Exception::class)
@@ -143,11 +139,11 @@ class APIService {
         token: String,
         media: ByteArray,
         isVideo: Boolean
-    ): HttpResponse {
+    ): MediaPayload {
         return createRequest(HttpMethod.Post, "/media", token) {
             contentType(if (isVideo) ContentType.Video.MP4 else ContentType.Image.JPEG)
             setBody(media)
-        }
+        }.body()
     }
 
     @Throws(Exception::class)
@@ -207,6 +203,13 @@ class APIService {
 
     suspend fun deleteToFavorites(token: String, id: Int){
         createRequest(HttpMethod.Delete, "/favorites/$id", token)
+    }
+
+    suspend fun updateUser(token: String, id: Int, payload: UpdateUserPayload): User{
+        return createRequest(HttpMethod.Put, "/users/$id", token) {
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }.body()
     }
 }
 

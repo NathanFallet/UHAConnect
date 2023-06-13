@@ -1,8 +1,6 @@
 package me.nathanfallet.uhaconnect.features.compose
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +10,7 @@ import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.services.APIService
 
+
 class ComposeViewModel : ViewModel() {
 
     val postContent = MutableLiveData("")
@@ -20,11 +19,6 @@ class ComposeViewModel : ViewModel() {
     private val _id = MutableLiveData<Int>()
     val id: LiveData<Int>
         get() = _id
-
-
-    private val _image = MutableLiveData<Bitmap>()
-    val image: LiveData<Bitmap>
-        get() = _image
 
     fun post(token: String?) {
         val title = titleContent.value
@@ -40,24 +34,27 @@ class ComposeViewModel : ViewModel() {
         }
     }
 
-    fun selectMedia(token: String, uri: Uri, context: Context) {
+    fun selectMedia(token: String?, uri: Uri?, context: Context) {
+        if (token == null || uri == null) return
         viewModelScope.launch {
             try {
                 val bytes = context.contentResolver.openInputStream(uri)?.use {
                     it.readBytes()
                 } ?: ByteArray(0)
+
                 val isVideo = context
                     .contentResolver
                     .getType(uri)
                     ?.startsWith("video/") ?: false
-                APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
 
-                _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                val payload = APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
+                val imageUrl = "${APIService.baseUrl}/media/${payload.fileName}"
+                postContent.value =  postContent.value + "\n" + "![]($imageUrl)"
             } catch (e: Exception) {
                 e.printStackTrace()
+                // Handle the exception, e.g., show an error message or retry
             }
         }
     }
-
 
 }

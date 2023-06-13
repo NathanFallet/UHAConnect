@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,12 +45,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
+fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewedBy: User?
+) {
 
     val viewModel: PostViewModel = viewModel()
 
@@ -81,7 +85,29 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
             )
         }
         item{
-            Card(
+            post?.let { post ->
+
+                PostCard(
+                    post = post,
+                    navigate = navigate,
+                    favoriteCheck = {
+                        viewModel.favoritesHandle(token, post.id, it)
+                    },
+                    updatePost = {
+                        viewModel.updatePost(token, post.id, it)
+                    },
+                    deletePost = {
+                        viewModel.deletePost(token, post.id)
+                    },
+                    updateUser ={
+
+                    },
+                    viewedBy = viewedBy,
+                    detailed = true
+                )
+            }
+
+            /*Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
@@ -104,11 +130,16 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
                         ){
-                            Text(
-                                text = stringResource(R.string.post_author, post.user?.username.toString()),
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
+                            TextButton(onClick = { navigate("profile/${post.user?.id}") }){
+                                Text(
+                                    text = stringResource(
+                                        R.string.post_author,
+                                        post.user?.username.toString()
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
                             Text(
                                 text = stringResource(R.string.post_date, post.date.toString()),
                                 style = MaterialTheme.typography.bodySmall,
@@ -122,7 +153,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                         )
                     }
                 }
-            }
+            }*/
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -146,6 +177,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?) {
                 }
             }
         }
+
         //comments section
 
         items(comments){comment ->

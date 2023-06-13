@@ -19,6 +19,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,11 +32,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
+import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 
 
@@ -46,7 +50,9 @@ fun PostCard(
     favoriteCheck: (Boolean) -> Unit,
     updatePost: (UpdatePostPayload) -> Unit,
     deletePost: () -> Unit,
-    viewedBy: User? = null
+    updateUser: (UpdateUserPayload) -> Unit,
+    viewedBy: User?,
+    detailed: Boolean = false
 ){
   
     val context = LocalContext.current
@@ -63,7 +69,9 @@ fun PostCard(
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()){
-                Text(text = post.user?.username ?: "")
+                TextButton(onClick = { navigate("profile/${post.user?.id}") }){
+                    Text(text = post.user?.username ?: "")
+                }
                 Text(text = stringResource(R.string.postcard_ago, post.date.timeAgo(context)), fontSize = 12.sp)
             }
             Row(horizontalArrangement = Arrangement.SpaceBetween,
@@ -73,7 +81,7 @@ fun PostCard(
                     modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
                     fontSize = 24.sp,
                 )
-                if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
+                if (viewedBy?.role?.hasPermission(Permission.POST_DELETE) == true) {
 
                     Box(
                         modifier = Modifier
@@ -119,7 +127,10 @@ fun PostCard(
                 }
 
             }
-            Text(text = post.content)
+            MarkdownText(
+                markdown = post.content,
+                color = Color.White
+                )
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 50.dp),
@@ -132,12 +143,14 @@ fun PostCard(
                         tint = if (post.favorite == null) Color.Black else Color.White
                     )
                 }
-                Button(
-                    onClick = { navigate("post/${post.id}") },
-                    //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text(text = stringResource(R.string.postcard_showmore))
+                if (!detailed) {
+                    Button(
+                        onClick = { navigate("post/${post.id}") },
+                        //colors = ButtonDefaults.buttonColors(backgroundColor = darkBlue),
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.postcard_showmore))
+                    }
                 }
             }
         }
