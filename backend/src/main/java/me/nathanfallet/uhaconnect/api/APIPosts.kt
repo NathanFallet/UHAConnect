@@ -16,7 +16,6 @@ import me.nathanfallet.uhaconnect.models.Comments
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Favorites
-import me.nathanfallet.uhaconnect.models.Follows
 import me.nathanfallet.uhaconnect.models.Notifications
 import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Posts
@@ -299,7 +298,7 @@ fun Route.apiPosts() {
                     .insert {
                         it[dest_id] = post.user_id
                         it[post_id] = post.id
-                        it[type] = TypeStatus.LIKE.toString()
+                        it[type] = TypeStatus.COMMENT.toString()
                         it[origin_id] = user.id
                         it[date] = Clock.System.now().toEpochMilliseconds()
                     }

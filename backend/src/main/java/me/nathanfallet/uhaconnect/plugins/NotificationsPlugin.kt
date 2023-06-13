@@ -48,11 +48,7 @@ object NotificationsPlugin {
         httpClient.post("https://fcm.googleapis.com/v1/projects/uhaconnect/messages:send") {
             header("Authorization", "Bearer ${token.tokenValue}")
             contentType(ContentType.Application.Json)
-            setBody(
-                mapOf(
-                    "message" to notification
-                )
-            )
+            setBody(mapOf("message" to notification))
         }
     }
 
@@ -72,7 +68,7 @@ object NotificationsPlugin {
                 sendNotification(
                     NotificationPayload(
                         token = token,
-                        notification = notification
+                        android = NotificationPayloadAndroid(notification)
                     )
                 )
             }
@@ -90,7 +86,7 @@ object NotificationsPlugin {
                 sendNotification(
                     NotificationPayload(
                         token = token,
-                        notification = notification
+                        android = NotificationPayloadAndroid(notification)
                     )
                 )
             }
@@ -102,7 +98,7 @@ object NotificationsPlugin {
             sendNotification(
                 NotificationPayload(
                     topic = topic,
-                    notification = notification
+                    android = NotificationPayloadAndroid(notification)
                 )
             )
         }
@@ -114,6 +110,11 @@ object NotificationsPlugin {
 data class NotificationPayload(
     val token: String? = null,
     val topic: String? = null,
+    val android: NotificationPayloadAndroid
+)
+
+@Serializable
+data class NotificationPayloadAndroid(
     val notification: NotificationData
 )
 
