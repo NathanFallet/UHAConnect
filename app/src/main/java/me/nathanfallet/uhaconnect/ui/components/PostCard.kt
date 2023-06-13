@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
 import me.nathanfallet.uhaconnect.models.Permission
@@ -126,7 +127,7 @@ fun PostCard(
                 }
 
             }
-            Text(text = post.content)
+            MarkdownText(markdown = post.content)
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 50.dp),
