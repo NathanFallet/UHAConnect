@@ -21,7 +21,7 @@ object Notifications : IntIdTable() {
             post_id = row.getOrNull(post_id),
             type = TypeStatus.valueOf(row[type]),
             origin_id = row[origin_id].value,
-            date = Instant.fromEpochMilliseconds(row[Comments.date]),
+            date = Instant.fromEpochMilliseconds(row[date]),
             user = user
         )
     }
