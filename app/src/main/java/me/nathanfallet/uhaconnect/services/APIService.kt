@@ -1,6 +1,5 @@
 package me.nathanfallet.uhaconnect.services
 
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -107,13 +106,10 @@ class APIService {
 
     @Throws(Exception::class)
     suspend fun login(payload: LoginPayload): UserToken {
-
-        val r = createRequest(HttpMethod.Post, "/auth/login") {
+        return createRequest(HttpMethod.Post, "/auth/login") {
             contentType(ContentType.Application.Json)
             setBody(payload)
-        }
-        Log.d("LoginViewModel", r.bodyAsText())
-        return r.body()
+        }.body()
     }
 
     @Throws(Exception::class)
