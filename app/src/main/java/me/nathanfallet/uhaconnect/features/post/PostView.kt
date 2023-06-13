@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.models.Comment
+import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
@@ -195,9 +197,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
-                        // TODO: Use logged user instead
-                        if (post?.user?.role == RoleStatus.ADMINISTRATOR) {
-
+                        if (viewedBy?.role?.hasPermission(Permission.COMMENT_DELETE) == true) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -217,28 +217,12 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
                                     DropdownMenuItem(
                                         text = { Text("Remove comment") },
                                         onClick = {
-                                            Toast.makeText(
-                                                context,
-                                                "Comment has been removed",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    )
-                                    DropdownMenuItem(
-                                        text = { Text("Ban user") },
-                                        onClick = {
-                                            Toast.makeText(
-                                                context,
-                                                "User has been banned",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            viewModel.deleteComment(token,comment.post_id, comment.id)
                                         }
                                     )
                                 }
                             }
                         }
-
-
                     }
                     Text(
                         text = comment.content,

@@ -122,9 +122,7 @@ fun PostCard(
                             )
                         }
                     }
-
                 }
-
             }
             Text(text = post.content)
             Row(modifier = Modifier
