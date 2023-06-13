@@ -235,7 +235,8 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding),
                         token,
                         user,
-                        navController::navigate
+                        navController::navigate,
+                        viewModel::onUpdateUser
                     )
                 }
             }

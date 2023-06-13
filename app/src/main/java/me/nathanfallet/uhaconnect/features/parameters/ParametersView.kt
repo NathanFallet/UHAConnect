@@ -60,13 +60,13 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 @Composable
 fun ParametersView(
     modifier: Modifier,
-   token: String?,
-   viewedBy: User?,
-   navigate: (String) -> Unit,
+    token: String?,
+    user: User?,
+    navigate: (String) -> Unit,
+    onUpdateUser: (User) -> Unit
 ){
 
     val viewModel: ParametersViewModel = viewModel()
-    val user by viewModel.user.observeAsState(viewedBy)
 
     val newUsername by viewModel.newUsername.observeAsState("")
     val newPw by viewModel.newPassword.observeAsState("")
@@ -75,7 +75,7 @@ fun ParametersView(
     val context = LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
-        onResult = { uri -> viewModel.selectMedia(token, viewedBy?.id, uri, context) }
+        onResult = { uri -> viewModel.selectMedia(token, user?.id, uri, context, onUpdateUser) }
     )
 
     LazyColumn(modifier) {
@@ -173,9 +173,9 @@ fun ParametersView(
                     singleLine = true,
                     maxLines = 1
                 )
-                Button(
-                    onClick = { viewModel.changeUsername(token, user?.id)},
-                    ){
+                Button(onClick = {
+                    viewModel.changeUsername(token, user?.id, onUpdateUser)
+                }) {
                     Text(stringResource(R.string.parameters_validate))
                     Icon(
                         imageVector = Icons.Filled.Send,
@@ -207,9 +207,9 @@ fun ParametersView(
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
-                Button(
-                    onClick = {viewModel.changePassword(token, user?.id)},
-                ){
+                Button(onClick = {
+                    viewModel.changePassword(token, user?.id, onUpdateUser)
+                }) {
                     Text(stringResource(R.string.parameters_validate))
                     Icon(
                         imageVector = Icons.Filled.Send,

@@ -51,7 +51,7 @@ class MainViewModel(
         token.value?.let { token ->
             viewModelScope.launch {
                 try {
-                    _user.value = APIService.getInstance(Unit).getMe(token)
+                    onUpdateUser(APIService.getInstance(Unit).getMe(token))
                 } catch (e: Exception) {
                     if (
                         e is ClientRequestException &&
@@ -102,6 +102,14 @@ class MainViewModel(
             .edit()
             .putString("user", Json.encodeToString(userToken.user))
             .putString("token", userToken.token)
+            .apply()
+    }
+
+    fun onUpdateUser(user: User) {
+        _user.value = user
+        StorageService.getInstance(getApplication()).sharedPreferences
+            .edit()
+            .putString("user", Json.encodeToString(user))
             .apply()
     }
 

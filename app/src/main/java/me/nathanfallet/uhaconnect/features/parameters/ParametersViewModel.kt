@@ -3,7 +3,6 @@ package me.nathanfallet.uhaconnect.features.parameters
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,57 +19,56 @@ class ParametersViewModel: ViewModel() {
     val newPassword = MutableLiveData("")
     val newPassword2 = MutableLiveData("")
 
-    private val _user = MutableLiveData<User>()
-    val user: LiveData<User>
-        get() = _user
-
-    fun changeUsername(token: String?, id: Int?){
+    fun changeUsername(token: String?, id: Int?, onUpdateUser: (User) -> Unit) {
         if (token == null || id == null) return
-        if (isUsernameValid()) {
-            viewModelScope.launch {
-                try {
-                    _user.value = APIService.getInstance(Unit).updateUser(
-                        token,
-                        id,
-                        UpdateUserPayload(
-                            username = newUsername.value ?: "",
-                        )
-                    )
-                } catch (e: Exception) {
-                    Log.d("ParametersViewModel", e.toString())
-                    error.value = R.string.parameters_invalid_un_credentials
-                }
-            }
-        } else null ?: run {
-            Log.d("ParametersViewModel", "UsernameNotValid")
+        if (!User.isUsernameValid(newUsername.value ?: "")) {
             error.value = R.string.parameters_invalid_un_credentials
+            return
         }
-    }
-
-    fun changePassword(token: String?, id: Int?){
-        if (token == null || id == null) return
-        if (isPasswordValid()) {
-            viewModelScope.launch {
-                try {
-                    _user.value = APIService.getInstance(Unit).updateUser(
+        viewModelScope.launch {
+            try {
+                onUpdateUser(
+                    APIService.getInstance(Unit).updateUser(
                         token,
                         id,
-                        UpdateUserPayload(
-                            newPassword.value ?: ""
-                        )
+                        UpdateUserPayload(username = newUsername.value ?: "")
                     )
-                } catch (e: Exception) {
-                    Log.d("ParametersViewModel", e.toString())
-                    error.value = R.string.parameters_invalid_pw_credentials
-                }
+                )
+            } catch (e: Exception) {
+                error.value = R.string.parameters_invalid_un_credentials
             }
-        } else null ?: run {
-            Log.d("ParametersViewModel", "UsernameNotValid")
-            error.value = R.string.parameters_invalid_pw_credentials
         }
     }
 
-    fun selectMedia(token: String?, id: Int?, uri: Uri?, context: Context) {
+    fun changePassword(token: String?, id: Int?, onUpdateUser: (User) -> Unit) {
+        if (token == null || id == null) return
+        if (!isPasswordValid()) {
+            error.value = R.string.parameters_invalid_pw_credentials
+            return
+        }
+        viewModelScope.launch {
+            try {
+                onUpdateUser(
+                    APIService.getInstance(Unit).updateUser(
+                        token,
+                        id,
+                        UpdateUserPayload(password = newPassword.value ?: "")
+                    )
+                )
+            } catch (e: Exception) {
+                Log.d("ParametersViewModel", e.toString())
+                error.value = R.string.parameters_invalid_pw_credentials
+            }
+        }
+    }
+
+    fun selectMedia(
+        token: String?,
+        id: Int?,
+        uri: Uri?,
+        context: Context,
+        onUpdateUser: (User) -> Unit
+    ) {
         if (token == null || id == null || uri == null) return
         viewModelScope.launch {
             try {
@@ -78,18 +76,16 @@ class ParametersViewModel: ViewModel() {
                     it.readBytes()
                 } ?: ByteArray(0)
                 val payload = APIService.getInstance(Unit).uploadMedia(token, bytes, false)
-                _user.value = APIService.getInstance(Unit).updateUser(
-                    token, id, UpdateUserPayload(picture = payload.fileName)
+                onUpdateUser(
+                    APIService.getInstance(Unit).updateUser(
+                        token, id, UpdateUserPayload(picture = payload.fileName)
+                    )
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
                 // Handle the exception, e.g., show an error message or retry
             }
         }
-    }
-
-    private fun isUsernameValid(): Boolean {
-        return User.isUsernameValid(newUsername.value ?: "")
     }
 
     private fun isPasswordValid(): Boolean {
