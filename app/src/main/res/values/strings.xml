@@ -57,4 +57,9 @@
     <string name="parameters_auto">Auto</string>
     <string name="parameters_invalid_un_credentials">Invalid username</string>
     <string name="parameters_invalid_pw_credentials">Invalid password</string>
+    <string name="login_invalid_username" >Invalid username</string>
+    <string name="login_invalid_password">Invalid password</string>
+    <string name="login_passwords_not_match" >Passwords do not match</string>
+    <string name="login_invalid_mail">Email is already used</string>
+
 </resources>

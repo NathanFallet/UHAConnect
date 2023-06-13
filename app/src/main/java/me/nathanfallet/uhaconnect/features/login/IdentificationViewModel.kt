@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.R.string.login_invalid_credentials
 import me.nathanfallet.uhaconnect.models.*
 import me.nathanfallet.uhaconnect.services.APIService
 
@@ -32,12 +33,15 @@ class LoginViewModel : ViewModel() {
                     }
                 } catch (e: Exception) {
                     Log.d("LoginViewModel", e.toString())
-                    error.value = R.string.login_invalid_credentials
+                    error.value = login_invalid_credentials
                 }
             }
-        } else null ?: run {
-            Log.d("LoginViewModel", "validateLoginForm")
-            error.value = R.string.login_invalid_credentials
+        } else {
+            if (!isUsernameValid()) {
+                error.value = R.string.login_invalid_username
+            } else if (!isPasswordValid()) {
+                error.value = R.string.login_invalid_password
+            }
         }
     }
 
@@ -60,8 +64,12 @@ class LoginViewModel : ViewModel() {
                     error.value = R.string.login_invalid_credentials
                 }
             }
-        } else null ?: run {
-            error.value = R.string.login_invalid_credentials
+        } else {
+            if (password.value != password2.value) {
+                error.value = R.string.login_passwords_not_match
+            } else if (isMailValid()) {
+                error.value = R.string.login_invalid_mail
+            }
         }
     }
 
