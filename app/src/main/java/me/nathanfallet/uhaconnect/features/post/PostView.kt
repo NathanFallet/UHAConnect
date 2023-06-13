@@ -223,6 +223,7 @@ fun PostView(modifier: Modifier, navigate: (String)->Unit, token: String?,viewed
                                 }
                             }
                         }
+
                     }
                     Text(
                         text = comment.content,
