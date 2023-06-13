@@ -1,11 +1,9 @@
 package me.nathanfallet.uhaconnect.features.parameters
 
-import android.content.res.Resources
-import android.widget.ImageButton
-import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,74 +18,66 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.features.login.LoginViewModel
+import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
-import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ParametersView(modifier: Modifier, token: String?, user: User?){
+fun ParametersView(modifier: Modifier, token: String?, viewedBy: User?) {
 
     val viewModel: ParametersViewModel = viewModel()
+    val user by viewModel.user.observeAsState(viewedBy)
 
     val newUsername by viewModel.newUsername.observeAsState("")
     val oldPw by viewModel.oldPassword.observeAsState("")
     val newPw by viewModel.newPassword.observeAsState("")
     val rpPw by viewModel.newPassword2.observeAsState("")
 
+    val context = LocalContext.current
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri -> viewModel.selectMedia(token, viewedBy?.id, uri, context) }
+    )
 
-    LazyColumn(modifier){
-        stickyHeader{
+    LazyColumn(modifier) {
+        stickyHeader {
             TopAppBar(
                 title = {
                     Text(
@@ -122,16 +112,20 @@ fun ParametersView(modifier: Modifier, token: String?, user: User?){
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Box{
-                        Image(
-                            painter = painterResource(R.drawable.ic_launcher_background),
-                            contentDescription = null,
+                    Box {
+                        AsyncImage(
+                            model = user?.pictureUrl,
+                            contentDescription = user?.username,
+                            placeholder = painterResource(id = R.drawable.picture_placeholder),
+                            error = painterResource(id = R.drawable.picture_placeholder),
                             modifier = Modifier
-                                .clickable { /*change profile picture*/ }
+                                .clickable {
+                                    imagePickerLauncher.launch("image/*")
+                                }
                                 .size(100.dp)
                                 .clip(CircleShape)
                                 .border(
-                                    BorderStroke(3.dp, Color.White),
+                                    BorderStroke(3.dp, White),
                                     CircleShape
                                 )
                         )

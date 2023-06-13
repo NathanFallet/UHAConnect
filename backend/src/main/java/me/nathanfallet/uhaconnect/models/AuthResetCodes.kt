@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 object AuthResetCodes : Table() {
 
-    val userId = integer("userId").references(Users.id)
+    val userId = reference("user_id", Users.id)
     val code = integer("code")
     val expiration = long("expiration")
 
@@ -15,7 +15,7 @@ object AuthResetCodes : Table() {
 
     fun toCode(row: ResultRow): AuthResetCode {
         return AuthResetCode(
-            userId = row[userId],
+            userId = row[userId].value,
             code = row[code],
             expiration = row[expiration]
         )

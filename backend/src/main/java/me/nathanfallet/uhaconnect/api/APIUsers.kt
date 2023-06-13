@@ -5,10 +5,22 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.put
+import io.ktor.server.routing.route
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.*
-import org.jetbrains.exposed.sql.*
+import me.nathanfallet.uhaconnect.models.Favorites
+import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.Posts
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
+import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.Users
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 
 fun Route.apiUsers() {
     route("/users") {
@@ -27,65 +39,6 @@ fun Route.apiUsers() {
                 return@get
             }
             call.respond(user)
-        }
-
-        put("/me") {
-            val user = getUser() ?: run {
-                call.response.status(HttpStatusCode.Unauthorized)
-                call.respond(mapOf("error" to "User not found"))
-                return@put
-            }
-            val uploadUser = try {
-                call.receive<UpdateUserPayload>()
-            } catch (e: Exception) {
-                call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to "Invalid field."))
-                return@put
-            }
-
-            uploadUser.username
-                ?.takeIf { !it.equals(user.username, true) }
-                ?.let {
-                    if (!User.isUsernameValid(it)) {
-                        call.response.status(HttpStatusCode.BadRequest)
-                        call.respond(mapOf("error" to "Invalid Username."))
-                        return@put
-                    }
-                    Database.dbQuery {
-                        Users
-                            .select { Users.username eq it }
-                            .singleOrNull()
-                    }?.let {
-                        call.response.status(HttpStatusCode.BadRequest)
-                        call.respond(mapOf("error" to "Username already used."))
-                        return@put
-                    }
-                }
-
-            Database.dbQuery {
-                Users
-                    .update({ Users.id eq user.id }) {
-                        it[firstName] =
-                            uploadUser.firstName ?: user.firstName
-                        it[lastName] =
-                            uploadUser.lastName ?: user.lastName
-                        it[username] =
-                            uploadUser.username ?: user.username
-                        it[password] =
-                            uploadUser.password?.let {
-                                BCrypt.withDefaults()
-                                    .hashToString(12, uploadUser.password?.toCharArray())
-                            }
-                                ?: user.password
-                    }
-            }
-
-            val newUser = getUser() ?: run {
-                call.response.status(HttpStatusCode.Unauthorized)
-                call.respond(mapOf("error" to "Invalid user"))
-                return@put
-            }
-            call.respond(newUser)
         }
 
         get("/{id}") {
@@ -161,6 +114,7 @@ fun Route.apiUsers() {
                                     .hashToString(12, uploadUser.password?.toCharArray())
                             }
                                 ?: user.password
+                        it[picture] = uploadUser.picture ?: user.picture
                         if (user.role.hasPermission(Permission.USER_UPDATE)) {
                             it[role] =
                                 (uploadUser.role ?: user.role).toString()

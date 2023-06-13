@@ -1,6 +1,5 @@
 package me.nathanfallet.uhaconnect.features.compose
 
-import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -58,16 +57,9 @@ fun ComposeView(
     val titleContent by viewModel.titleContent.observeAsState("")
     val id by viewModel.id.observeAsState()
 
-    val activity = LocalContext.current as? Activity
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            if (token != null) {
-                if (uri != null) {
-                    viewModel.selectMedia(token, uri, context)
-                }
-            }
-        }
+        onResult = { uri -> viewModel.selectMedia(token, uri, context) }
     )
 
 

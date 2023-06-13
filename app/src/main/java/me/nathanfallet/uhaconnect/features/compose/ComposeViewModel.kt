@@ -8,12 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
-import me.nathanfallet.uhaconnect.models.MediaPayload
-import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.services.APIService
 
 
@@ -53,7 +49,8 @@ class ComposeViewModel : ViewModel() {
         }
     }
 
-    fun selectMedia(token: String, uri: Uri, context: Context) {
+    fun selectMedia(token: String?, uri: Uri?, context: Context) {
+        if (token == null || uri == null) return
         viewModelScope.launch {
             try {
                 val bytes = context.contentResolver.openInputStream(uri)?.use {
