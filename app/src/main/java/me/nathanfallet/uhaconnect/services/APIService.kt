@@ -21,6 +21,7 @@ import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.LoginPayload
+import me.nathanfallet.uhaconnect.models.MediaPayload
 import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
@@ -88,7 +89,6 @@ class APIService {
         return createRequest(HttpMethod.Get, "/posts/$id", token).body()
     }
 
-
     @Throws(Exception::class)
     suspend fun postPost(token: String, payload: CreatePostPayload): Post {
         return createRequest(HttpMethod.Post, "/posts", token) {
@@ -144,11 +144,11 @@ class APIService {
         token: String,
         media: ByteArray,
         isVideo: Boolean
-    ): HttpResponse {
+    ): MediaPayload {
         return createRequest(HttpMethod.Post, "/media", token) {
             contentType(if (isVideo) ContentType.Video.MP4 else ContentType.Image.JPEG)
             setBody(media)
-        }
+        }.body()
     }
 
     @Throws(Exception::class)
