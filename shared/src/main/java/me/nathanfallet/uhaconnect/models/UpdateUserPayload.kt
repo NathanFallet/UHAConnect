@@ -9,5 +9,6 @@ data class UpdateUserPayload(
     var username: String?,
     var email: String?,
     var role: RoleStatus?,
-    var password: String?
+    var password: String?,
+    var picture: String?
 )
