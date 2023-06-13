@@ -46,12 +46,11 @@ class FeedViewModel(
     }
 
     fun deletePost(token: String?, id: Int) {
-        if (token == null) {
-            return
-        }
+        if (token == null) return
         viewModelScope.launch {
             try {
                 APIService.getInstance(Unit).deletePost(token, id)
+                _posts.value = _posts.value?.filter { it.id != id }
             } catch (e: Exception) {
                 //TODO: ERRORS
             }
@@ -59,12 +58,13 @@ class FeedViewModel(
     }
 
     fun updatePost(token: String?, id: Int, payload: UpdatePostPayload) {
-        if (token == null) {
-            return
-        }
+        if (token == null) return
         viewModelScope.launch {
             try {
                 APIService.getInstance(Unit).updatePost(token, id, payload)
+                if (payload == UpdatePostPayload(validated = true)) {
+                    _posts.value = _posts.value?.filter { it.id != id }
+                }
             } catch (e: Exception) {
                 //TODO: ERRORS
             }

@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -99,7 +98,7 @@ enum class NavigationItem(
 @Preview(showBackground = true)
 @Composable
 fun UHAConnectApp() {
-    UHAConnectTheme{
+    UHAConnectTheme {
 
         val viewModel: MainViewModel = viewModel()
 
@@ -193,15 +192,15 @@ fun UHAConnectApp() {
                 composable("feed/compose") {
                     ComposeView(
                         modifier = Modifier.padding(padding),
+                        navigate = navController::navigate,
                         token = token,
-                        navigate = navController::navigate
+                        viewedBy = user
                     )
                 }
                 composable(
                     "feed/{loader}",
                     arguments = listOf(navArgument("loader") { type = NavType.StringType })
-                )
-                {
+                ) {
                     FeedView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
@@ -212,12 +211,12 @@ fun UHAConnectApp() {
                 dialog("feed") {
                     navController.navigate("feed/posts")
                 }
-                dialog("self_profile")
-                {
+                dialog("self_profile") {
                     val userId = user?.id ?: ""
                     navController.navigate("profile/$userId")
                 }
-                composable("profile/{userId}",
+                composable(
+                    "profile/{userId}",
                     arguments = listOf(navArgument("userId") { type = NavType.IntType })
                 ) {
                     ProfileView(
@@ -231,7 +230,7 @@ fun UHAConnectApp() {
                         viewedBy = user
                     )
                 }
-                composable("settings"){
+                composable("settings") {
                     ParametersView(
                         modifier = Modifier.padding(padding),
                         token,

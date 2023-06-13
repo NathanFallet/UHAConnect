@@ -53,6 +53,7 @@ import me.nathanfallet.uhaconnect.models.User
 
 @Composable
 fun PostCard(
+    modifier: Modifier = Modifier,
     post: Post,
     navigate: (String) -> Unit,
     favoriteCheck: (Boolean) -> Unit,
@@ -66,13 +67,11 @@ fun PostCard(
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)
-    ){
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+    Card(modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

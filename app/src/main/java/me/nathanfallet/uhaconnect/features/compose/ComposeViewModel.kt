@@ -2,7 +2,6 @@ package me.nathanfallet.uhaconnect.features.compose
 
 import android.content.Context
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,21 +15,21 @@ class ComposeViewModel : ViewModel() {
     val postContent = MutableLiveData("")
     val titleContent = MutableLiveData("")
 
-    private val _id = MutableLiveData<Int>()
-    val id: LiveData<Int>
-        get() = _id
-
-    fun post(token: String?) {
-        val title = titleContent.value
-        val content = postContent.value
-
-        if (token == null || title.isNullOrBlank() || content.isNullOrBlank()) {
-            return
-        }
+    fun post(token: String?, navigate: (String) -> Unit) {
+        if (
+            token == null ||
+            titleContent.value.isNullOrBlank() ||
+            postContent.value.isNullOrBlank()
+        ) return
         viewModelScope.launch {
-            _id.value = APIService.getInstance(Unit).postPost(
-                token, CreatePostPayload(title, content)
-            ).id
+            APIService.getInstance(Unit).postPost(
+                token, CreatePostPayload(
+                    titleContent.value ?: "",
+                    postContent.value ?: ""
+                )
+            ).let {
+                navigate("post/${it.id}")
+            }
         }
     }
 

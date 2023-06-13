@@ -175,6 +175,9 @@ fun ProfileView(
         }
         items(posts ?: listOf()) { post ->
             PostCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(vertical = 8.dp),
                 post,
                 navigate,
                 favoriteCheck = {

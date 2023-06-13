@@ -33,35 +33,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.extensions.pictureUrl
+import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ComposeView(
-    modifier: Modifier, token: String?, navigate: (String) -> Unit
+    modifier: Modifier,
+    navigate: (String) -> Unit,
+    token: String?,
+    viewedBy: User?
 ) {
 
     val viewModel = viewModel<ComposeViewModel>()
+
+    val postContent by viewModel.postContent.observeAsState()
+    val titleContent by viewModel.titleContent.observeAsState()
+
     val context = LocalContext.current
-
-    val postContent by viewModel.postContent.observeAsState("")
-
-    val titleContent by viewModel.titleContent.observeAsState("")
-    val id by viewModel.id.observeAsState()
-
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> viewModel.selectMedia(token, uri, context) }
     )
-
-    if (id != null) navigate("post/$id")
 
     LazyColumn(
         modifier = modifier,
@@ -91,31 +94,32 @@ fun ComposeView(
                 )
             )
         }
-
-        /*Buttons and profile photo*/
-        item{
+        item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .padding(vertical = 20.dp),
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = null,
+                AsyncImage(
+                    model = viewedBy?.pictureUrl,
+                    contentDescription = viewedBy?.username,
+                    placeholder = painterResource(id = R.drawable.picture_placeholder),
+                    error = painterResource(id = R.drawable.picture_placeholder),
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(75.dp)
+                        .size(40.dp)
                         .clip(CircleShape)
                         .border(
-                            BorderStroke(3.dp, Color.White), CircleShape
+                            BorderStroke(1.dp, Color.White),
+                            CircleShape
                         )
                 )
                 Button(
                     onClick = {
-                        viewModel.post(token)
+                        // TODO: Add tag
                     }, modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text(text = stringResource(R.string.compose_tag), color = Color.White)
@@ -127,7 +131,8 @@ fun ComposeView(
                     )
                 }
                 Button(
-                    onClick = {imagePickerLauncher.launch("image/*, video/*")}, modifier = Modifier.padding(start = 8.dp)
+                    onClick = { imagePickerLauncher.launch("image/*, video/*") },
+                    modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.round_file_present_24),
@@ -136,36 +141,39 @@ fun ComposeView(
 
                 }
             }
-
-            /*Text fields for posting*/
+        }
+        item {
             TextField(
-                value = titleContent,
+                value = titleContent ?: "",
                 onValueChange = { viewModel.titleContent.value = it },
                 label = { Text(stringResource(R.string.compose_title)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 30.dp)
-                    .padding(vertical = 8.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp)
                     .height(50.dp)
             )
-
+        }
+        item {
             TextField(
-                value = postContent,
+                value = postContent ?: "",
                 onValueChange = { viewModel.postContent.value = it },
                 label = { Text(stringResource(R.string.compose_mind)) },
-
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 30.dp)
-                    .padding(vertical = 8.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp)
                     .height(300.dp)
-
             )
-
+        }
+        item {
             Button(
                 onClick = {
-                    viewModel.post(token)
-                }, modifier = Modifier.padding(start = 8.dp)
+                    viewModel.post(token, navigate)
+                },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp)
             ) {
                 Text(text = stringResource(R.string.compose_post), color = Color.White)
                 Icon(

@@ -13,13 +13,14 @@ import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.services.APIService
 
-class PostViewModel(application: Application,
-                    savedStateHandle: SavedStateHandle
+class PostViewModel(
+    application: Application,
+    savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-    val newComment = MutableLiveData("")
-
     private val postId: Int? = savedStateHandle["postId"]
+
+    val newComment = MutableLiveData("")
 
     private val _post = MutableLiveData<Post>()
     val post: LiveData<Post>
@@ -28,34 +29,41 @@ class PostViewModel(application: Application,
     private val _comments = MutableLiveData<List<Comment>>()
     val comments: LiveData<List<Comment>>
         get() = _comments
-    private val api = APIService.getInstance(Unit)
 
-    fun loadData(token: String?){
-        if (postId == null || token == null)
-            return
+    fun loadPost(token: String?) {
+        if (postId == null || token == null) return
         viewModelScope.launch {
             try {
-                val api = APIService.getInstance(Unit)
-                _post.value = api.getPost(token, postId)
-                _comments.value = api.getComments(token, postId)
+                _post.value = APIService.getInstance(Unit).getPost(token, postId)
             } catch (e: Exception) {
-                null
+
             }
         }
     }
+
+    fun loadComments(token: String?) {
+        if (postId == null || token == null) return
+        viewModelScope.launch {
+            try {
+                _comments.value = APIService.getInstance(Unit).getComments(token, postId)
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
     fun sendComment(token: String?) {
-
-        val content = newComment.value
-
-        if (token == null || postId == null || content.isNullOrBlank()) {
+        if (newComment.value.isNullOrBlank()) {
+            // TODO: Show error
             return
         }
+        if (token == null || postId == null) return
         viewModelScope.launch {
             _comments.value = _comments.value?.plus(
                 APIService.getInstance(Unit).postComment(
                     token,
                     postId,
-                    CreateCommentPayload(content)
+                    CreateCommentPayload(newComment.value ?: "")
                 )
             )
         }
@@ -81,21 +89,21 @@ class PostViewModel(application: Application,
             }
         }
     }
+
     fun favoritesHandle(token: String?, postId: Int, addOrDelete: Boolean){
         if (token == null) return
         viewModelScope.launch {
             try {
-                if (addOrDelete) api.addToFavorites(token, postId)
-                else api.deleteToFavorites(token, postId)
-                loadData(token)
+                if (addOrDelete) APIService.getInstance(Unit).addToFavorites(token, postId)
+                else APIService.getInstance(Unit).deleteToFavorites(token, postId)
+                loadPost(token)
             } catch (e: Exception) {
             }
         }
     }
+
     fun updatePost(token: String?, id: Int, payload: UpdatePostPayload) {
-        if (token == null) {
-            return
-        }
+        if (token == null) return
         viewModelScope.launch {
             try {
                 APIService.getInstance(Unit).updatePost(token, id, payload)
