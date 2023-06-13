@@ -1,6 +1,7 @@
 package me.nathanfallet.uhaconnect.api
 
 import io.ktor.server.application.call
+import io.ktor.server.http.content.staticFiles
 import io.ktor.server.request.receiveStream
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route

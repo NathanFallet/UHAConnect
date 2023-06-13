@@ -37,6 +37,7 @@ import me.nathanfallet.uhaconnect.features.compose.ComposeView
 import me.nathanfallet.uhaconnect.features.feed.FeedView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
+import me.nathanfallet.uhaconnect.features.login.ResetEmailPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
 import me.nathanfallet.uhaconnect.features.parameters.ParametersView
@@ -166,9 +167,11 @@ fun UHAConnectApp() {
                         navController.navigate("home")
                     }
                 }
+                composable("resetPasswordMail") {
+                    ResetEmailPage(navigate = navController::navigate)
+                }
                 composable("resetPassword") {
                     ResetPasswordPage(navigate = navController::navigate)
-
                 }
                 composable("notifications") {
                     NotificationView(
@@ -184,7 +187,7 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
                         token = token,
-                        viewedBy = user
+                        viewedBy = user,
                     )
                 }
                 composable("feed/compose") {
@@ -232,7 +235,8 @@ fun UHAConnectApp() {
                     ParametersView(
                         modifier = Modifier.padding(padding),
                         token,
-                        user
+                        user,
+                        navController::navigate
                     )
                 }
             }

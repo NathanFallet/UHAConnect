@@ -2,5 +2,7 @@ package me.nathanfallet.uhaconnect.models
 
 enum class TypeStatus {
     LIKE,
-    COMMENT;
+    COMMENT,
+    FOLLOWER,
+    NEW_POST;
 }

@@ -6,22 +6,22 @@ import org.jetbrains.exposed.sql.ResultRow
 
 object Notifications : IntIdTable() {
     val dest_id = reference("dest_id", Users)
-    val post_id = reference("post_id", Posts)
+    val post_id = integer("post_id").nullable()
     val type = varchar("type", 6)
     val origin_id = reference("origin_id", Users)
     val date = long("date")
 
     override val primaryKey = PrimaryKey(id)
 
-    fun toNotifications(row: ResultRow): Notification {
+    fun toNotification(row: ResultRow): Notification {
         val user = if (row.hasValue(Users.id)) Users.toUser(row)
         else null
         return Notification(
             dest_id = row[dest_id].value,
-            post_id = row[post_id].value,
+            post_id = row.getOrNull(post_id),
             type = TypeStatus.valueOf(row[type]),
             origin_id = row[origin_id].value,
-            date = Instant.fromEpochMilliseconds(row[Comments.date]),
+            date = Instant.fromEpochMilliseconds(row[date]),
             user = user
         )
     }

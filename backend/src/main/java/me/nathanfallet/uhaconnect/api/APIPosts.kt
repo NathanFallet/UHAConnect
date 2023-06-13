@@ -4,11 +4,35 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.put
+import io.ktor.server.routing.route
 import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.*
-import org.jetbrains.exposed.sql.*
+import me.nathanfallet.uhaconnect.models.Comments
+import me.nathanfallet.uhaconnect.models.CreateCommentPayload
+import me.nathanfallet.uhaconnect.models.CreatePostPayload
+import me.nathanfallet.uhaconnect.models.Favorites
+import me.nathanfallet.uhaconnect.models.Follows
+import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.Posts
+import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.TypeStatus
+import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.Users
+import me.nathanfallet.uhaconnect.plugins.NotificationData
+import me.nathanfallet.uhaconnect.plugins.NotificationsPlugin
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 fun Route.apiPosts() {
     route("/posts") {
@@ -47,19 +71,49 @@ fun Route.apiPosts() {
 
             val post = Database.dbQuery {
                 Posts.insert {
-                    it[Posts.user_id] = user.id
-                    it[Posts.title] = newPost.title
-                    it[Posts.content] = newPost.content
-                    it[Posts.date] = Clock.System.now().toEpochMilliseconds()
+                    it[user_id] = user.id
+                    it[title] = newPost.title
+                    it[content] = newPost.content
+                    it[date] = Clock.System.now().toEpochMilliseconds()
                 }.resultedValues?.map(Posts::toPost)?.singleOrNull()
             } ?: run {
                 call.response.status(HttpStatusCode.InternalServerError)
                 call.respond(mapOf("error" to "Error while creating post."))
                 return@post
             }
+
+            val followers =
+                Database.dbQuery {
+                    Follows
+                        .select { Follows.user_id eq user.id }
+                        .map(Follows::toFollow)
+                }
+
+            followers.forEach { follow ->
+                Database.dbQuery {
+                    Notifications
+                        .insert {
+                            it[dest_id] = follow.follower_id
+                            it[post_id] = post.id
+                            it[type] = TypeStatus.NEW_POST.toString()
+                            it[origin_id] = user.id
+                            it[date] = Clock.System.now().toEpochMilliseconds()
+                        }
+                }
+                NotificationsPlugin.sendNotificationToUser(
+                    follow.follower_id,
+                    NotificationData(
+                        title_loc_key = "notifications_post",
+                        title_loc_args = listOf(user.username),
+                        body = post.title,
+                    )
+                )
+            }
+
             call.response.status(HttpStatusCode.Created)
             call.respond(post)
         }
+
         get("/requests") {
             val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
             val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
@@ -81,6 +135,7 @@ fun Route.apiPosts() {
             }
             val post = Database.dbQuery {
                 Posts
+                    .join(Users, JoinType.INNER)
                     .select { Posts.id eq id }
                     .map(Posts::toPost)
                     .singleOrNull()
@@ -128,15 +183,15 @@ fun Route.apiPosts() {
             Database.dbQuery {
                 Posts
                     .update({ Posts.id eq id }) {
-                        it[Posts.title] = uploadPost.title ?: post.title
-                        it[Posts.content] = uploadPost.content ?: post.content
+                        it[title] = uploadPost.title ?: post.title
+                        it[content] = uploadPost.content ?: post.content
                         uploadPost.validated
                             ?.takeIf { user.role.hasPermission(Permission.POST_UPDATE) }
                             ?.let { validated ->
                                 it[Posts.validated] = validated
                             }
                         if (post.user_id == user.id && !(user.role.hasPermission(Permission.POST_UPDATE))) {
-                            it[Posts.validated] = false
+                            it[validated] = false
                         }
                     }
             }
@@ -247,16 +302,37 @@ fun Route.apiPosts() {
 
             val comment = Database.dbQuery {
                 Comments.insert {
-                    it[Comments.post_id] = post.id
-                    it[Comments.user_id] = user.id
-                    it[Comments.content] = newComment.content
-                    it[Comments.date] = Clock.System.now().toEpochMilliseconds()
+                    it[post_id] = post.id
+                    it[user_id] = user.id
+                    it[content] = newComment.content
+                    it[date] = Clock.System.now().toEpochMilliseconds()
                 }.resultedValues?.map(Comments::toComment)?.singleOrNull()
             } ?: run {
                 call.response.status(HttpStatusCode.InternalServerError)
                 call.respond(mapOf("error" to "Error while creating post."))
                 return@post
             }
+
+            Database.dbQuery {
+                Notifications
+                    .insert {
+                        it[dest_id] = post.user_id
+                        it[post_id] = post.id
+                        it[type] = TypeStatus.LIKE.toString()
+                        it[origin_id] = user.id
+                        it[date] = Clock.System.now().toEpochMilliseconds()
+                    }
+            }
+
+            NotificationsPlugin.sendNotificationToUser(
+                post.user_id,
+                NotificationData(
+                    title_loc_key = "notifications_comment",
+                    title_loc_args = listOf(user.username),
+                    body = comment.content
+                )
+            )
+
             call.response.status(HttpStatusCode.Created)
             call.respond(comment)
         }
@@ -296,14 +372,17 @@ fun Route.apiPosts() {
                 call.respond(mapOf("error" to "Comment not found."))
                 return@delete
             }
-            if (!(post.user_id == user.id || user.role.hasPermission(Permission.COMMENT_DELETE))) {
+            if (post.user_id != user.id && comment.user_id != user.id && !user.role.hasPermission(
+                    Permission.COMMENT_DELETE
+                )
+            ) {
                 call.response.status(HttpStatusCode.Forbidden)
                 call.respond(mapOf("error" to "Cannot delete this comment."))
                 return@delete
             }
             Database.dbQuery {
                 Comments.deleteWhere {
-                    Op.build { Comments.post_id eq id }
+                    Op.build { Comments.id eq comment_id }
                 }
             }
             call.respond(HttpStatusCode.NoContent)

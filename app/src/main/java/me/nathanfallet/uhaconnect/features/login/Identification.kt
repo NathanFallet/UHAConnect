@@ -1,5 +1,6 @@
 package me.nathanfallet.uhaconnect.features.login
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
@@ -25,8 +26,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.UserToken
@@ -110,13 +113,13 @@ fun LoginPage(
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            ClickableText(
+            Text(
                 text = AnnotatedString(stringResource(R.string.login_forgot_pw)),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     textDecoration = TextDecoration.Underline,
                     textAlign = TextAlign.Center
                 ),
-                onClick = { navigate("resetPassword") }
+                modifier = Modifier.clickable(onClick = { navigate("resetPasswordMail")})
             )
         }
 
@@ -133,20 +136,24 @@ fun LoginPage(
             )
         }
 
-        ClickableText(
-            text = AnnotatedString.Builder().apply {
-                append(stringResource(R.string.login_no_account))
-                pushStyle(style = SpanStyle(textDecoration = TextDecoration.Underline))
-                append(stringResource(R.string.login_join_us))
-                pop()
-            }.toAnnotatedString(),
-            modifier = Modifier.padding(top = 20.dp,bottom = 40.dp),
-            onClick = { offset ->
-                if (offset >= 27) {
-                    navigate("createAccount")
-                }
-            }
-        )
+        Row(
+            modifier = Modifier
+                .padding(top = 20.dp, bottom = 40.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ){
+            Text(text = stringResource(R.string.login_no_account))
+            Text(
+                text = stringResource(R.string.login_join_us),
+                modifier = Modifier
+                    .clickable(onClick = { navigate("createAccount") })
+                    .padding(start = 5.dp),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    textDecoration = TextDecoration.Underline,
+                    textAlign = TextAlign.Center
+                )
+            )
+        }
 
     }
 }
@@ -275,9 +282,12 @@ fun CreateAccountPage(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResetPasswordPage(navigate: (String) -> Unit) {
+fun ResetEmailPage(navigate: (String) -> Unit) {
 
     val viewModel = viewModel<LoginViewModel>()
+
+    val mail by viewModel.mail.observeAsState("")
+    val error by viewModel.error.observeAsState()
 
     Column(
         modifier = Modifier
@@ -294,18 +304,26 @@ fun ResetPasswordPage(navigate: (String) -> Unit) {
             ),
             modifier = Modifier.padding(vertical = 130.dp)
         )
-
+        error?.let {
+            Text(
+                text = stringResource(id = it),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Color.Red
+                ),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
         Text(
             text = stringResource(R.string.login_verif_email),
             modifier = Modifier.padding(top = 0.dp, start = 0.dp)
         )
 
-
-        var email by remember { mutableStateOf("") }
-
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = mail,
+            onValueChange = { viewModel.mail.value = it },
             label = { Text(stringResource(R.string.login_email)) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -315,7 +333,9 @@ fun ResetPasswordPage(navigate: (String) -> Unit) {
 
 
         Button(
-            onClick = {},
+            onClick = {
+                viewModel.sendMail(navigate)
+                      },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 33.dp, horizontal = 2.dp)
@@ -323,6 +343,91 @@ fun ResetPasswordPage(navigate: (String) -> Unit) {
         ) {
             Text(
                 text = stringResource(R.string.login_send_verif),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ResetPasswordPage(navigate: (String) -> Unit) {
+
+    val viewModel = viewModel<LoginViewModel>()
+
+    val code by viewModel.code.observeAsState("")
+    val password by viewModel.password.observeAsState("")
+    val password2 by viewModel.password2.observeAsState("")
+    val error by viewModel.error.observeAsState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(17.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(R.string.login_find_acc),
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 25.sp
+            ),
+            modifier = Modifier.padding(vertical = 130.dp)
+        )
+        error?.let {
+            Text(
+                text = stringResource(id = it),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Color.Red
+                ),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+        Text(
+            text = stringResource(R.string.login_check_email),
+            modifier = Modifier.padding(top = 0.dp, start = 0.dp)
+        )
+        OutlinedTextField(
+            value = code,
+            onValueChange = { viewModel.code.value = it },
+            label = { Text(stringResource(R.string.login_code)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
+        OutlinedTextField(
+            value = password,
+            onValueChange = { viewModel.password.value = it },
+            label = { Text(stringResource(R.string.login_new_password)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            visualTransformation = PasswordVisualTransformation()
+        )
+        OutlinedTextField(
+            value = password2,
+            onValueChange = { viewModel.password2.value = it },
+            label = { Text(stringResource(R.string.login_rp_new_password)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Button(
+            onClick = {
+                viewModel.resetPassword(navigate)
+                      },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 33.dp, horizontal = 2.dp)
+
+        ) {
+            Text(
+                text = stringResource(R.string.login_change_password),
             )
         }
     }

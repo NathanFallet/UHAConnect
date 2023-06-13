@@ -3,7 +3,6 @@ package me.nathanfallet.uhaconnect.features.profile
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -38,13 +37,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
@@ -80,19 +82,21 @@ fun ProfileView(
                     )
                 },
                 actions = {
-                    IconButton(onClick = disconnect) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_logout_24),
-                            contentDescription = "Logout"
-                        )
-                    }
-                    IconButton(onClick = {
-                        navigate("settings")
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_settings_24),
-                            contentDescription = "Settings"
-                        )
+                    if (user?.id == viewedBy?.id){
+                        IconButton(onClick = disconnect) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_logout_24),
+                                contentDescription = "Logout"
+                            )
+                        }
+                        IconButton(onClick = {
+                            navigate("settings")
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_settings_24),
+                                contentDescription = "Settings"
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -114,9 +118,12 @@ fun ProfileView(
                         .fillMaxWidth()
                 )
                 Row(modifier = Modifier.padding(vertical = 30.dp, horizontal = 16.dp)) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_launcher_background),
-                        contentDescription = null,
+                    AsyncImage(
+                        model = user?.pictureUrl,
+                        contentDescription = user?.username,
+                        placeholder = painterResource(id = R.drawable.picture_placeholder),
+                        error = painterResource(id = R.drawable.picture_placeholder),
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
@@ -156,7 +163,7 @@ fun ProfileView(
                                 ) {
                                     DropdownMenuItem(
                                         text = { Text("Ban user") },
-                                        onClick = { Toast.makeText(context, "Save", Toast.LENGTH_SHORT).show() }
+                                        onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
                                     )
                                 }
                             }

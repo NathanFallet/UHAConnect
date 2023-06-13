@@ -8,7 +8,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
@@ -25,6 +24,7 @@ import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
+import me.nathanfallet.uhaconnect.models.ResetPasswordPayload
 import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.models.User
@@ -119,22 +119,6 @@ class APIService {
             setBody(payload)
         }.body()
     }
-
-    /*suspend fun resetPassword(email: String): UserToken? {
-        val payload = ResetPasswordPayload(email)
-        val json = Json.encodeToString(payload)
-
-        return try {
-            val response = createRequest(HttpMethod.Post, "/auth/reset-password") {
-                contentType(ContentType.Application.Json)
-                setBody(json)
-            }
-            response.body()
-        } catch (exception: Exception) {
-            null
-        }
-    }*/
-
     @Throws(Exception::class)
     suspend fun uploadMedia(
         token: String,
@@ -207,10 +191,17 @@ class APIService {
     }
 
     suspend fun updateUser(token: String, id: Int, payload: UpdateUserPayload): User{
-        return createRequest(HttpMethod.Put, "/user/$id", token) {
+        return createRequest(HttpMethod.Put, "/users/$id", token) {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }.body()
+    }
+
+    suspend fun resetPassword(payload: ResetPasswordPayload){
+        createRequest(HttpMethod.Post, "/auth/reset"){
+            contentType(ContentType.Application.Json)
+            setBody(payload)
+        }
     }
 }
 

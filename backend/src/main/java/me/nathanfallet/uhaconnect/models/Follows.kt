@@ -9,7 +9,7 @@ object Follows : Table() {
 
     override val primaryKey = PrimaryKey(user_id, follower_id, name = "PK_follows")
 
-    fun toFollows(row: ResultRow): Follow {
+    fun toFollow(row: ResultRow): Follow {
         return Follow(
             user_id = row[user_id].value,
             follower_id = row[follower_id].value

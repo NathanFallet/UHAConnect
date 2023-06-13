@@ -4,10 +4,11 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
+import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.Favorites
-import me.nathanfallet.uhaconnect.models.Posts
-import me.nathanfallet.uhaconnect.models.Users
+import me.nathanfallet.uhaconnect.models.*
+import me.nathanfallet.uhaconnect.plugins.NotificationData
+import me.nathanfallet.uhaconnect.plugins.NotificationsPlugin
 import org.jetbrains.exposed.sql.*
 
 fun Route.apiFavorites() {
@@ -33,7 +34,14 @@ fun Route.apiFavorites() {
         }
 
         post("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull() ?: run {
+            val post = call.parameters["id"]?.toIntOrNull()?.let { id ->
+                Database.dbQuery {
+                    Posts
+                        .select { Posts.id eq id }
+                        .map(Posts::toPost)
+                        .singleOrNull()
+                }
+            } ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
                 call.respond(mapOf("error" to "Invalid post id"))
                 return@post
@@ -45,17 +53,37 @@ fun Route.apiFavorites() {
             }
             val favorite = Database.dbQuery {
                 Favorites
-                    .select { Favorites.post_id eq id and (Favorites.user_id eq user.id) }
+                    .select { Favorites.post_id eq post.id and (Favorites.user_id eq user.id) }
                     .map(Favorites::toFavorite)
                     .singleOrNull() ?: Favorites.insert {
                     it[Favorites.user_id] = user.id
-                    it[Favorites.post_id] = id
+                    it[Favorites.post_id] = post.id
                 }.resultedValues?.map(Favorites::toFavorite)?.singleOrNull()
             } ?: run {
                 call.response.status(HttpStatusCode.InternalServerError)
                 call.respond(mapOf("error" to "Error while adding post to favorite."))
                 return@post
             }
+
+            Database.dbQuery {
+                Notifications
+                    .insert {
+                        it[Notifications.dest_id] = post.user_id
+                        it[Notifications.post_id] = post.id
+                        it[Notifications.type] = TypeStatus.LIKE.toString()
+                        it[Notifications.origin_id] = user.id
+                        it[date] = Clock.System.now().toEpochMilliseconds()
+                    }
+            }
+            NotificationsPlugin.sendNotificationToUser(
+                post.user_id,
+                NotificationData(
+                    title_loc_key = "notification_like",
+                    title_loc_args = listOf(user.username),
+                    body = post.title
+                )
+            )
+
             call.response.status(HttpStatusCode.Created)
             call.respond(favorite)
         }

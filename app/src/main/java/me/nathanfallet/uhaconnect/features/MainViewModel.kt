@@ -1,12 +1,13 @@
 package me.nathanfallet.uhaconnect.features
 
 import android.app.Application
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -31,18 +32,37 @@ class MainViewModel(
     init {
         // Load user and token, if connected
         val prefs = StorageService.getInstance(getApplication()).sharedPreferences
-        prefs.getString("user", null)?.let {
-            _user.value = Json.decodeFromString(it)
-        }
-        prefs.getString("token", null)?.let {
-            _token.value = it
+        try {
+            prefs.getString("user", null)?.let {
+                _user.value = Json.decodeFromString(it)
+            }
+            prefs.getString("token", null)?.let {
+                _token.value = it
+            }
+        } catch (e: Exception) {
+            login(null)
         }
 
-        // Setup firebase messaging
+        refreshUser()
         setupFirebaseMessaging()
     }
 
-    fun setupFirebaseMessaging() {
+    private fun refreshUser() {
+        token.value?.let { token ->
+            viewModelScope.launch {
+                try {
+                    _user.value = APIService.getInstance(Unit).getMe(token)
+                } catch (e: Exception) {
+                    if (
+                        e is ClientRequestException &&
+                        e.response.status == HttpStatusCode.Unauthorized
+                    ) login(null)
+                }
+            }
+        }
+    }
+
+    private fun setupFirebaseMessaging() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if (it.isSuccessful) {
                 token.value?.let { token ->
@@ -84,15 +104,5 @@ class MainViewModel(
             .putString("token", userToken.token)
             .apply()
     }
-
-    /*fun resetPassword(email: String) {
-        viewModelScope.launch {
-            val userToken = APIService.getInstance().ResetPassword(email)
-            userToken?.let {
-                _user.value = it.user
-                _token.value = it.token
-            }
-        }
-    }*/
 
 }
