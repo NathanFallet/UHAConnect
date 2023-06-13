@@ -41,6 +41,7 @@
     <string name="login_change_password">Changer le mot de passe</string>
     <string name="login_email_wrong">E-mail inconnue</string>
     <string name="login_code_pw_wrong">Code mauvais ou mot de passe invalide</string>
+    <string name="login_missing_fields">Veuillez remplir tous les champs</string>
     <string name="post_author">Auteur : %s</string>
     <string name="post_date">Date : %s</string>
     <string name="post_write_comment">Écrire un commentaire</string>

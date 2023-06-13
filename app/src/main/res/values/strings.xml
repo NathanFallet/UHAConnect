@@ -40,6 +40,7 @@
     <string name="login_change_password">Change password</string>
     <string name="login_email_wrong">E-mail unknown</string>
     <string name="login_code_pw_wrong">Code wrong or invalid password</string>
+    <string name="login_missing_fields">Missing fields</string>
     <string name="post_author">Author : %s</string>
     <string name="post_date">Date : %s</string>
     <string name="post_write_comment">Write a comment</string>
