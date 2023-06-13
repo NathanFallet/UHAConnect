@@ -72,7 +72,7 @@ class ComposeViewModel : ViewModel() {
                 _imageUrl.value = "${APIService.baseUrl}/media/$fileName"
                 _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                 val imageUrl = "https://uhaconnect.nathanfallet.me/media/$fileName"
-                postContent.value += "\n\n![]($imageUrl)"
+                postContent.value =  postContent.value + "\n" + "![]($imageUrl)"
 
             } catch (e: Exception) {
                 e.printStackTrace()

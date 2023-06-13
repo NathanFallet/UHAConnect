@@ -127,7 +127,10 @@ fun PostCard(
                 }
 
             }
-            MarkdownText(markdown = post.content)
+            MarkdownText(
+                markdown = post.content,
+                color = Color.White
+                )
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 50.dp),
