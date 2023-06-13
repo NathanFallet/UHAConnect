@@ -124,6 +124,9 @@ fun FeedView(
                 deletePost = {
                     viewModel.deletePost(token, post.id)
                 },
+                updateUser ={
+
+                },
                 viewedBy = user
             )
         }

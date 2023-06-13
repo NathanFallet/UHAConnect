@@ -183,7 +183,8 @@ fun UHAConnectApp() {
                     PostView(
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
-                        token = token
+                        token = token,
+                        viewedBy = user
                     )
                 }
                 composable("feed/compose") {
