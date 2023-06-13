@@ -68,7 +68,7 @@ class ComposeViewModel : ViewModel() {
                 val payload = APIService.getInstance(Unit).uploadMedia(token, bytes, isVideo)
                 val fileName = payload.fileName
                 _fileName.value = fileName
-                _imageUrl.value = "${APIService.baseUrl}media/$fileName"
+                _imageUrl.value = "${APIService.baseUrl}/media/$fileName"
                 _image.value = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
             } catch (e: Exception) {
