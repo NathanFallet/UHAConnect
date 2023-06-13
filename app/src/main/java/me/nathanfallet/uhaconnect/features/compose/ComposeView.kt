@@ -37,7 +37,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
@@ -61,14 +60,6 @@ fun ComposeView(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> viewModel.selectMedia(token, uri, context) }
     )
-
-
-
-
-    val imageUrl by viewModel.imageUrl.observeAsState()
-
-
-
 
     if (id != null) navigate("post/$id")
 
