@@ -1,6 +1,7 @@
 package me.nathanfallet.uhaconnect.services
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -34,6 +35,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 
+    @SuppressLint("DiscouragedApi")
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
@@ -44,9 +46,23 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         ) {
             return
         }
+        val title = message.notification?.titleLocalizationKey?.let { key ->
+            val id = resources.getIdentifier(key, "string", packageName)
+            val string = getString(id)
+            message.notification?.titleLocalizationArgs?.let {
+                string.format(*it)
+            } ?: string
+        } ?: message.notification?.title
+        val body = message.notification?.bodyLocalizationKey?.let { key ->
+            val id = resources.getIdentifier(key, "string", packageName)
+            val string = getString(id)
+            message.notification?.bodyLocalizationArgs?.let {
+                string.format(*it)
+            } ?: string
+        } ?: message.notification?.body
         val notification = NotificationCompat.Builder(this, "default")
-            .setContentTitle(message.notification?.title)
-            .setContentText(message.notification?.body)
+            .setContentTitle(title)
+            .setContentText(body)
             .setSmallIcon(R.drawable.logo_transparent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
