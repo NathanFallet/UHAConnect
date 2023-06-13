@@ -75,6 +75,7 @@ fun Route.apiPosts() {
                             it[post_id] = post.id
                             it[type] = TypeStatus.NEW_POST.toString()
                             it[origin_id] = user.id
+                            it[date] = Clock.System.now().toEpochMilliseconds()
                         }
                 }
                 NotificationsPlugin.sendNotificationToUser(
@@ -296,6 +297,7 @@ fun Route.apiPosts() {
                         it[post_id] = post.id
                         it[type] = TypeStatus.LIKE.toString()
                         it[origin_id] = user.id
+                        it[date] = Clock.System.now().toEpochMilliseconds()
                     }
             }
 
