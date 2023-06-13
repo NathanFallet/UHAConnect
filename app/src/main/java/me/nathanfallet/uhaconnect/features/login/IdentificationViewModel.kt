@@ -4,13 +4,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.gms.common.api.Api
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.R.string.login_invalid_credentials
 import me.nathanfallet.uhaconnect.models.*
-import me.nathanfallet.uhaconnect.models.User.Companion.isUsernameValid
 import me.nathanfallet.uhaconnect.services.APIService
 
 class LoginViewModel : ViewModel() {
@@ -37,7 +34,7 @@ class LoginViewModel : ViewModel() {
                     }
                 } catch (e: Exception) {
                     Log.d("LoginViewModel", e.toString())
-                    error.value = login_invalid_credentials
+                    error.value = R.string.login_invalid_credentials
                 }
             }
         } else {
@@ -69,9 +66,9 @@ class LoginViewModel : ViewModel() {
                 }
             }
         } else {
-            if (password.value != password2.value) {
+            if (password.value != password2.value || password.value.isNullOrBlank()) {
                 error.value = R.string.login_passwords_not_match
-            } else if (isMailValid()) {
+            } else if (!isMailValid()) {
                 error.value = R.string.login_invalid_mail
             }
         }
