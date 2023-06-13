@@ -1,7 +1,6 @@
 package me.nathanfallet.uhaconnect.features
 
 import android.app.Application
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -31,11 +30,15 @@ class MainViewModel(
     init {
         // Load user and token, if connected
         val prefs = StorageService.getInstance(getApplication()).sharedPreferences
-        prefs.getString("user", null)?.let {
-            _user.value = Json.decodeFromString(it)
-        }
-        prefs.getString("token", null)?.let {
-            _token.value = it
+        try {
+            prefs.getString("user", null)?.let {
+                _user.value = Json.decodeFromString(it)
+            }
+            prefs.getString("token", null)?.let {
+                _token.value = it
+            }
+        } catch (e: Exception) {
+            login(null)
         }
 
         // Setup firebase messaging
@@ -84,15 +87,5 @@ class MainViewModel(
             .putString("token", userToken.token)
             .apply()
     }
-
-    /*fun resetPassword(email: String) {
-        viewModelScope.launch {
-            val userToken = APIService.getInstance().ResetPassword(email)
-            userToken?.let {
-                _user.value = it.user
-                _token.value = it.token
-            }
-        }
-    }*/
 
 }

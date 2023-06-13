@@ -8,7 +8,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
@@ -25,8 +24,8 @@ import me.nathanfallet.uhaconnect.models.Notification
 import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
-import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
@@ -207,7 +206,7 @@ class APIService {
     }
 
     suspend fun updateUser(token: String, id: Int, payload: UpdateUserPayload): User{
-        return createRequest(HttpMethod.Put, "/user/$id", token) {
+        return createRequest(HttpMethod.Put, "/users/$id", token) {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }.body()
