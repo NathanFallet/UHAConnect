@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -122,6 +123,7 @@ fun ProfileView(
                         contentDescription = user?.username,
                         placeholder = painterResource(id = R.drawable.picture_placeholder),
                         error = painterResource(id = R.drawable.picture_placeholder),
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)

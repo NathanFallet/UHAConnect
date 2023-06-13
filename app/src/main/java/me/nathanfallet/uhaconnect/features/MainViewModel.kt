@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -41,11 +43,26 @@ class MainViewModel(
             login(null)
         }
 
-        // Setup firebase messaging
+        refreshUser()
         setupFirebaseMessaging()
     }
 
-    fun setupFirebaseMessaging() {
+    private fun refreshUser() {
+        token.value?.let { token ->
+            viewModelScope.launch {
+                try {
+                    _user.value = APIService.getInstance(Unit).getMe(token)
+                } catch (e: Exception) {
+                    if (
+                        e is ClientRequestException &&
+                        e.response.status == HttpStatusCode.Unauthorized
+                    ) login(null)
+                }
+            }
+        }
+    }
+
+    private fun setupFirebaseMessaging() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if (it.isSuccessful) {
                 token.value?.let { token ->
