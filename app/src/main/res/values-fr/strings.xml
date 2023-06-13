@@ -44,4 +44,18 @@
     <string name="compose_mind">Qu\'avez vous à dire?</string>
     <string name="compose_title">Titre</string>
     <string name="compose_tag">Tag</string>
+    <string name="parameters_change_un">Changer le nom d\'utilisateur</string>
+    <string name="parameters_new_username">Nouveau nom d\'utilisateur</string>
+    <string name="parameters_validate">Valider</string>
+    <string name="parameters_theme">Thème</string>
+    <string name="parameters_dark_theme">Clair</string>
+    <string name="parameters_light_theme">Sombre</string>
+    <string name="parameters_change_password">Changer de mot de passe</string>
+    <string name="parameters_old_password">Ancien mot de passe</string>
+    <string name="parameters_new_password">Nouveau mot de passe</string>
+    <string name="parameters_repeat_password">Répéter le mot de passe</string>
+    <string name="parameters_language">Changer la langue</string>
+    <string name="parameters_auto">Auto</string>
+    <string name="parameters_invalid_un_credentials">Nom d\'utilisateur invalide</string>
+    <string name="parameters_invalid_pw_credentials">Mot de passe invalide</string>
 </resources>

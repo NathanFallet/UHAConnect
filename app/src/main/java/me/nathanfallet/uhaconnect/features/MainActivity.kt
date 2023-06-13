@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,6 +39,7 @@ import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetPasswordPage
 import me.nathanfallet.uhaconnect.features.notifications.NotificationView
+import me.nathanfallet.uhaconnect.features.parameters.ParametersView
 import me.nathanfallet.uhaconnect.features.post.PostView
 import me.nathanfallet.uhaconnect.features.profile.ProfileView
 import me.nathanfallet.uhaconnect.ui.theme.UHAConnectTheme
@@ -96,7 +98,7 @@ enum class NavigationItem(
 @Preview(showBackground = true)
 @Composable
 fun UHAConnectApp() {
-    UHAConnectTheme {
+    UHAConnectTheme{
 
         val viewModel: MainViewModel = viewModel()
 
@@ -223,6 +225,13 @@ fun UHAConnectApp() {
                             navController.navigate("login")
                         },
                         viewedBy = user
+                    )
+                }
+                composable("settings"){
+                    ParametersView(
+                        modifier = Modifier.padding(padding),
+                        token,
+                        user
                     )
                 }
             }
