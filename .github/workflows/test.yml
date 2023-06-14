@@ -1,9 +1,11 @@
-name: Build
+name: Test
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -12,10 +14,5 @@ jobs:
         uses: actions/setup-java@v1.4.3
         with:
           java-version: 19
-      - name: Build apk
-        run: ./gradlew assemble
-      - name: Upload apk
-        uses: actions/upload-artifact@v2
-        with:
-          name: uhaconnect.apk
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+      - name: Run Linter and Tests
+        run: ./gradlew lint test
