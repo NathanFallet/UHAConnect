@@ -76,7 +76,7 @@ fun LoginPage(
         OutlinedTextField(
             value = username,
             onValueChange = { viewModel.username.value = it },
-            label = { stringResource(R.string.login_username) },
+            label = { Text(stringResource(R.string.login_username)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -92,7 +92,7 @@ fun LoginPage(
         OutlinedTextField(
             value = password,
             onValueChange = { viewModel.password.value = it },
-            label = { stringResource(R.string.login_password) },
+            label = { Text(stringResource(R.string.login_password)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 5.dp)
@@ -100,7 +100,6 @@ fun LoginPage(
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -229,7 +228,7 @@ fun CreateAccountPage(
         OutlinedTextField(
             value = username,
             onValueChange = { viewModel.username.value = it },
-            label = { Text(stringResource(R.string.login_username)) },
+            label = { Text(stringResource(R.string.register_username)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
@@ -250,7 +249,8 @@ fun CreateAccountPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
         OutlinedTextField(
             value = password2,
@@ -259,7 +259,8 @@ fun CreateAccountPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
         Button(
             onClick = {

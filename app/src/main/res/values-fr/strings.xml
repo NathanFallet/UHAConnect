@@ -23,7 +23,8 @@
     <string name="instantextension_hours">%s heures</string>
     <string name="instantextension_minutes">%s minutes</string>
     <string name="instantextension_seconds">%s secondes</string>
-    <string name="login_username">Nom d\'utilisateur ou E-mail</string>
+    <string name="register_username">Nom d\'utilisateur</string>
+    <string name="login_username">Nom d\'utilisateur ou mail uha</string>
     <string name="login_password">Mot de passe</string>
     <string name="login_forgot_pw">Mot de passe oublié?</string>
     <string name="login_no_account">Vous n\'avez pas de compte? </string>
@@ -31,7 +32,7 @@
     <string name="login_sign_up">Inscription</string>
     <string name="login_first_name">Prénom</string>
     <string name="login_last_name">Nom</string>
-    <string name="login_email">Mail</string>
+    <string name="login_email">Mail uha</string>
     <string name="login_confirm_pw">Confirmer le mot de passe</string>
     <string name="login_create_acc">Créez votre compte</string>
     <string name="login_find_acc">Trouver votre compte</string>
