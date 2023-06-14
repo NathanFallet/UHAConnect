@@ -13,7 +13,8 @@
     <string name="title_activity_favs_view">Favorites</string>
     <string name="title_activity_validation_view">Requests</string>
     <string name="title_activity_profile_view">Profile</string>
-    <string name="title_activity_follows">%s \'s Followers</string>
+    <string name="title_activity_followers">%s\'s Followers</string>
+    <string name="title_activity_following">%s\s Following</string>
     <string name="login_invalid_credentials">Invalid username or password</string>
     <string name="postcard_showmore">Show more</string>
     <string name="postcard_ago">%s ago</string>
@@ -76,6 +77,7 @@
     <string name="profile_follow">Follow</string>
     <string name="profile_following">Following</string>
     <string name="profile_followers_list">Followers</string>
+    <string name="profile_following_list">Following</string>
     <string name="feed_following">Following</string>
     <string name="feed_all">All</string>
 </resources>

@@ -1,6 +1,7 @@
 package me.nathanfallet.uhaconnect.features.notifications
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,7 +33,8 @@ import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 @Composable
 fun NotificationView(
     modifier: Modifier,
-    token: String?
+    token: String?,
+    navigate: (String)->Unit
 ) {
 
     val viewModel = viewModel<NotificationViewModel>()
@@ -68,7 +70,11 @@ fun NotificationView(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable {
+                            navigate("profile/${notification.user?.id}")
+                        }
                 ) {
                     UserPictureView(
                         user = notification.user,

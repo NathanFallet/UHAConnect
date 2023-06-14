@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.extensions.pictureUrl
+import me.nathanfallet.uhaconnect.extensions.text
+import me.nathanfallet.uhaconnect.ui.components.UserPictureView
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -59,12 +62,18 @@ fun FollowsView(
     if (user == null) viewModel.loadUser(token)
     else if (follows == null) viewModel.loadFollows(token, true)
 
-    LazyColumn(modifier) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         stickyHeader {
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.title_activity_follows, user?.username ?: ""),
+                        text = stringResource(
+                            id = if (viewModel.loader == "followers") R.string.title_activity_followers
+                            else R.string.title_activity_following,
+                            user?.username ?: ""),
                         color = Color.White,
                     )
                 },
@@ -83,51 +92,28 @@ fun FollowsView(
             )
         }
         items(follows ?: listOf()){follow ->
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .padding(16.dp)
                         .clickable {
                             navigate("profile/${follow.id}")
                         }
-                        .padding(start = 8.dp)
                 ) {
-                    AsyncImage(
-                        model = follow.pictureUrl,
-                        contentDescription = follow.username,
-                        placeholder = painterResource(id = R.drawable.picture_placeholder),
-                        error = painterResource(id = R.drawable.picture_placeholder),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .border(
-                                BorderStroke(1.dp, Color.White),
-                                CircleShape
-                            )
+                    UserPictureView(
+                        user = follow,
+                        size = 22.dp
                     )
                     Text(
                         text = follow.username,
-                        fontSize = 12.sp,
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                    Button(
-                        onClick = {viewModel.followHandle(token, follow.id, follow.follow != null) },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (follow.follow != null) Color.Black else Color.White,
-                            contentColor = if (follow.follow != null) Color.White else Color.Black
-                        ),
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                    ) {
-                        Text(stringResource(
-                            id = if (follow.follow != null) R.string.profile_following else R.string.profile_follow)
-                        )
-                    }
                 }
             }
             if (hasMore == true && follows?.lastOrNull()?.id == follow.id) {

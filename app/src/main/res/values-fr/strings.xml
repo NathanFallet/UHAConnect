@@ -14,7 +14,8 @@
     <string name="title_activity_favs_view">Favoris</string>
     <string name="title_activity_validation_view">Requêtes</string>
     <string name="title_activity_profile_view">Profile</string>
-    <string name="title_activity_follows">Abonnés de %s</string>
+    <string name="title_activity_followers">Abonnés de %s</string>
+    <string name="title_activity_following">Abonnements de %s</string>
     <string name="login_invalid_credentials">Mot de passe ou nom d\'utilisateur invalide</string>
     <string name="postcard_showmore">Voir plus</string>
     <string name="postcard_ago">il y a %s</string>
@@ -77,6 +78,7 @@
     <string name="profile_follow">Suivre</string>
     <string name="profile_following">Abonné</string>
     <string name="profile_followers_list">Abonnés</string>
+    <string name="profile_following_list">Abonnements</string>
     <string name="feed_following">Suivis</string>
     <string name="feed_all">Tout</string>
 </resources>

@@ -93,7 +93,7 @@ fun PostView(
                         viewModel.deletePost(token, post.id)
                     },
                     updateUser = {
-                        viewModel.updateUser(token, post.user_id,UpdateUserPayload(role = RoleStatus.BANNED))
+                        viewModel.updateUser(token, post.user_id, it)
                     },
                     viewedBy = viewedBy,
                     detailed = true
