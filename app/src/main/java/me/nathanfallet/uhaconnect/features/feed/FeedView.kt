@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.Permission
@@ -130,12 +131,13 @@ fun FeedView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(30.dp)
+                        .height(40.dp)
                         .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = stringResource(R.string.feed_following),
+                        fontSize = 20.sp,
                         fontWeight = if (viewModel.loader == "following") FontWeight.Bold else null,
                         modifier = Modifier.clickable(
                             onClick = {
@@ -152,6 +154,7 @@ fun FeedView(
                     )
                     Text(
                         stringResource(R.string.feed_all),
+                        fontSize = 20.sp,
                         fontWeight = if (viewModel.loader != "following") FontWeight.Bold else null,
                         modifier = Modifier.clickable(
                             onClick = {

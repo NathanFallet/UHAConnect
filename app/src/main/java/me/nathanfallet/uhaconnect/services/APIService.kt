@@ -20,6 +20,7 @@ import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Favorite
+import me.nathanfallet.uhaconnect.models.Follow
 import me.nathanfallet.uhaconnect.models.LoginPayload
 import me.nathanfallet.uhaconnect.models.MediaPayload
 import me.nathanfallet.uhaconnect.models.Notification
@@ -226,12 +227,18 @@ class APIService {
         }
     }
 
-    suspend fun follow(token: String, id: Int){
-        createRequest(HttpMethod.Post, "/users/$id/follow", token)
+    suspend fun follow(token: String, id: Int): Follow {
+        return createRequest(HttpMethod.Post, "/users/$id/follow", token).body()
     }
 
-    suspend fun unfollow(token: String, id: Int){
+    suspend fun unfollow(token: String, id: Int) {
         createRequest(HttpMethod.Delete, "/users/$id/follow", token)
+    }
+
+    suspend fun getFollows(token: String, id: Int, offset: Long = 0): List<User>{
+        return createRequest(HttpMethod.Get, "/users/$id/follow", token) {
+            parameter("offset", offset)
+        }.body()
     }
 }
 

@@ -5,16 +5,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -38,7 +36,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,10 +64,6 @@ fun ProfileView(
     disconnect: () -> Unit,
     viewedBy: User?
 ) {
-
-    var isFollowed by remember {
-        mutableStateOf(false)
-    }
 
     val viewModel: ProfileViewModel = viewModel()
 
@@ -149,7 +142,8 @@ fun ProfileView(
                             text = user?.username ?: "",
                             fontSize = 30.sp,
                             color = Color.Yellow,
-                            modifier = Modifier.padding(start = 15.dp)
+                            modifier = Modifier.padding(start = 15.dp),
+                            maxLines = 1
                         )
                         Text(
                             text = user?.role.toString(),
@@ -159,21 +153,24 @@ fun ProfileView(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ){
+                            Text(
+                                text = stringResource(R.string.profile_followers_list),
+                                modifier = Modifier
+                                    .clickable(onClick = {navigate("follows/${user?.id}")})
+                                    .padding(start = 16.dp)
+                            )
                             if (user?.id != viewedBy?.id) {
                                 Button(
-                                    onClick = {
-                                        viewModel.followHandle(token, user?.id, isFollowed)
-                                        isFollowed = !isFollowed
-                                              },
+                                    onClick = {viewModel.followHandle(token, user?.id, user?.follow != null) },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isFollowed) Color.Black else Color.White,
-                                        contentColor = if (isFollowed) Color.White else Color.Black
+                                        containerColor = if (user?.follow != null) Color.Black else Color.White,
+                                        contentColor = if (user?.follow != null) Color.White else Color.Black
                                     ),
                                     modifier = Modifier
-                                        .padding(top = 5.dp, start = 16.dp)
+                                        .padding(top = 5.dp, start = 8.dp)
                                 ) {
                                     Text(stringResource(
-                                        id = if (isFollowed) R.string.profile_following else R.string.profile_follow)
+                                        id = if (user?.follow != null) R.string.profile_following else R.string.profile_follow)
                                     )
                                 }
                             }
