@@ -10,6 +10,7 @@ data class Post(
     val title: String,
     val content: String,
     val date: Instant,
+    val tag: List<String>,
     val validated: Boolean,
     val user: User? = null,
     val favorite: Favorite? = null

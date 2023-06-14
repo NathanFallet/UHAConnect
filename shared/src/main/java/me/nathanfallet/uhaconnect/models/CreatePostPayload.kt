@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CreatePostPayload(
     val title: String,
-    val content: String
+    val content: String,
+    val tag: List<String>
 )
