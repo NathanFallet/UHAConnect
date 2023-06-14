@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 
 @Composable
@@ -33,7 +35,8 @@ fun CommentCard(
     modifier: Modifier = Modifier,
     comment: Comment,
     deleteComment: () -> Unit,
-    viewedBy: User?
+    updateUser: (UpdateUserPayload) -> Unit,
+    viewedBy: User?,
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -84,6 +87,8 @@ fun CommentCard(
                                 text = { Text("Ban user") },
                                 onClick = {
                                     //TODO : Ban user method
+                                    updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
+
                                 }
                             )
                         }

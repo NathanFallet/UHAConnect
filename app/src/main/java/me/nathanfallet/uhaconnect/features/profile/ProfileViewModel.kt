@@ -9,7 +9,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
@@ -105,5 +107,18 @@ class ProfileViewModel(
             }
         }
     }
+    fun updateUser(token: String?, id:Int, payload: UpdateUserPayload) {
+        if (token == null) return
+        viewModelScope.launch {
+            try {
+                APIService.getInstance(Unit).updateUser(
+                    token, id, payload
+                )
+            } catch (e: Exception) {
+                //TODO : ERRORS
+            }
+        }
+    }
+
 
 }

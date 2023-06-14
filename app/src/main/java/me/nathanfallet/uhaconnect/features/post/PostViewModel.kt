@@ -7,11 +7,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
+import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
 class PostViewModel(
@@ -105,6 +109,19 @@ class PostViewModel(
             }
         }
     }
+    fun updateUser(token: String?, id:Int, payload: UpdateUserPayload) {
+        if (token == null) return
+        viewModelScope.launch {
+            try {
+                APIService.getInstance(Unit).updateUser(
+                    token, id, payload
+                )
+            } catch (e: Exception) {
+                //TODO : ERRORS
+            }
+        }
+    }
+
 
     fun favoritesHandle(token: String?, postId: Int, addOrDelete: Boolean){
         if (token == null) return

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.components.UserPictureView
@@ -52,7 +53,9 @@ fun ProfileView(
     navigate: (String) -> Unit,
     token: String?,
     disconnect: () -> Unit,
-    viewedBy: User?
+    viewedBy: User?,
+    onUpdateUser: (User) -> Unit,
+
 ) {
 
     val viewModel: ProfileViewModel = viewModel()
@@ -129,7 +132,7 @@ fun ProfileView(
                             modifier = Modifier.padding(start = 15.dp)
                         )
                         //TODO: use current user instead
-                        if (user?.role == RoleStatus.ADMINISTRATOR) {
+                        if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -148,7 +151,9 @@ fun ProfileView(
                                 ) {
                                     DropdownMenuItem(
                                         text = { Text("Ban user") },
-                                        onClick = { Toast.makeText(context, "User has been banned", Toast.LENGTH_SHORT).show() }
+                                        onClick = {
+                                            viewModel.updateUser(token, user!!.id, UpdateUserPayload(role = RoleStatus.BANNED))
+                                        }
                                     )
                                 }
                             }
@@ -175,7 +180,7 @@ fun ProfileView(
                     viewModel.deletePost(token, post.id)
                 },
                 updateUser = {
-
+                    viewModel.updateUser(token, post.user_id, it)
                 },
                 viewedBy = viewedBy
             )

@@ -38,6 +38,7 @@ import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.timeAgo
 import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
@@ -137,12 +138,7 @@ fun PostCard(
                             DropdownMenuItem(
                                 text = { Text("Ban user") },
                                 onClick = {
-                                    //TODO: method to ban user
-                                    Toast.makeText(
-                                        context,
-                                        "User has been banned",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
                                 }
                             )
                         }
