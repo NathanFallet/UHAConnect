@@ -1,7 +1,6 @@
 package me.nathanfallet.uhaconnect.ui.components
 
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -64,12 +63,14 @@ fun PostCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(vertical = 16.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -98,7 +99,9 @@ fun PostCard(
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
                 Text(
                     text = post.title,
@@ -151,11 +154,12 @@ fun PostCard(
                 color = Color.White,
                 textAlign = TextAlign.Start
             )
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 50.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 IconButton(onClick = { favoriteCheck(post.favorite != null) }) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
