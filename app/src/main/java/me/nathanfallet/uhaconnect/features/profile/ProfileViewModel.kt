@@ -112,7 +112,9 @@ class ProfileViewModel(
             try {
                 APIService.getInstance(Unit).updateUser(
                     token, id, payload
-                )
+                ).let {
+                    _user.value = it
+                }
             } catch (e: Exception) {
                 //TODO : ERRORS
             }
