@@ -49,11 +49,11 @@ class IdentificationViewModel : ViewModel() {
     }
 
     fun createAccount(loginUser: (UserToken) -> Unit) {
-        if (firstname.value?.isNotBlank() == true) {
+        if (firstname.value.isNullOrBlank()) {
             error.value = R.string.login_missing_fields
             return
         }
-        if (lastname.value?.isNotBlank() == true) {
+        if (lastname.value.isNullOrBlank()) {
             error.value = R.string.login_missing_fields
             return
         }
