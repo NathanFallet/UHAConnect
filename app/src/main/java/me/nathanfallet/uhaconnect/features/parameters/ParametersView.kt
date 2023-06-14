@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -159,9 +160,15 @@ fun ParametersView(
                     singleLine = true,
                     maxLines = 1
                 )
-                Button(onClick = {
-                    viewModel.changeUsername(token, user?.id, onUpdateUser)
-                }) {
+                Button(
+                    onClick = {
+                        viewModel.changeUsername(token, user?.id, onUpdateUser)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = darkBlue,
+                        contentColor = Color.LightGray
+                    ),
+                ) {
                     Text(stringResource(R.string.parameters_validate))
                     Icon(
                         imageVector = Icons.Filled.Send,
@@ -193,9 +200,15 @@ fun ParametersView(
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
-                Button(onClick = {
-                    viewModel.changePassword(token, user?.id, onUpdateUser)
-                }) {
+                Button(
+                    onClick = {
+                        viewModel.changePassword(token, user?.id, onUpdateUser)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = darkBlue,
+                        contentColor = Color.LightGray
+                    ),
+                ) {
                     Text(stringResource(R.string.parameters_validate))
                     Icon(
                         imageVector = Icons.Filled.Send,

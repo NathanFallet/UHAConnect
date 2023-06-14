@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.UserToken
+import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,6 +121,10 @@ fun LoginPage(
             onClick = {
                 viewModel.login(login)
             },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = darkBlue,
+                contentColor = Color.LightGray
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 33.dp, horizontal = 2.dp)
@@ -260,6 +265,10 @@ fun CreateAccountPage(
             onClick = {
                 viewModel.createAccount(login)
             },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = darkBlue,
+                contentColor = Color.LightGray
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 33.dp, horizontal = 2.dp)
@@ -328,7 +337,11 @@ fun ResetEmailPage(navigate: (String) -> Unit) {
         Button(
             onClick = {
                 viewModel.sendMail(navigate)
-                      },
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = darkBlue,
+                contentColor = Color.LightGray
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 33.dp, horizontal = 2.dp)
@@ -413,7 +426,11 @@ fun ResetPasswordPage(navigate: (String) -> Unit) {
         Button(
             onClick = {
                 viewModel.resetPassword(navigate)
-                      },
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = darkBlue,
+                contentColor = Color.LightGray
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 33.dp, horizontal = 2.dp)

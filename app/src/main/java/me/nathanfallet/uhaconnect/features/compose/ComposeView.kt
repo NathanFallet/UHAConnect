@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -103,7 +104,12 @@ fun ComposeView(
                 Button(
                     onClick = {
                         // TODO: Add tag
-                    }, modifier = Modifier.padding(start = 8.dp)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = darkBlue,
+                        contentColor = Color.LightGray
+                    ),
+                    modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text(text = stringResource(R.string.compose_tag), color = Color.White)
                     Icon(
@@ -115,6 +121,10 @@ fun ComposeView(
                 }
                 Button(
                     onClick = { imagePickerLauncher.launch("image/*, video/*") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = darkBlue,
+                        contentColor = Color.LightGray
+                    ),
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Image(
@@ -154,6 +164,10 @@ fun ComposeView(
                 onClick = {
                     viewModel.post(token, navigate)
                 },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = darkBlue,
+                    contentColor = Color.LightGray
+                ),
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 8.dp)

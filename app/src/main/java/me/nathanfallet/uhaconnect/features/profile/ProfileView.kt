@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -115,7 +116,7 @@ fun ProfileView(
                 Box(
                     modifier = Modifier
                         .background(darkBlue)
-                        .height(58.dp)
+                        .height(54.dp)
                         .fillMaxWidth()
                 )
                 Row(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
@@ -123,13 +124,20 @@ fun ProfileView(
                         user = user,
                         size = 100.dp
                     )
-                    Column(modifier = Modifier.padding(top = 12.dp)) {
+                    Column(modifier = Modifier.padding(top = 14.dp)) {
                         Text(
-                            text = user?.username ?: "",
-                            fontSize = 30.sp,
+                            text = "${user?.firstName} ${user?.lastName}",
+                            fontSize = 24.sp,
                             color = Color.Yellow,
                             modifier = Modifier.padding(start = 15.dp),
-                            maxLines = 1
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = user?.username ?: "",
+                            modifier = Modifier.padding(start = 15.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         user?.role?.let {
                             Text(
@@ -160,8 +168,8 @@ fun ProfileView(
                     Button(
                         onClick = {viewModel.followHandle(token, user?.id, user?.follow != null) },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (user?.follow != null) Color.Black else Color.White,
-                            contentColor = if (user?.follow != null) Color.White else Color.Black
+                            containerColor = if (user?.follow != null) darkBlue else Color.LightGray,
+                            contentColor = if (user?.follow != null) Color.LightGray else darkBlue
                         ),
                         modifier = Modifier
                             .padding(top = 5.dp, start = 8.dp)
