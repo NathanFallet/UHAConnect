@@ -112,9 +112,9 @@ fun Route.apiAuth() {
             Emails.sendEmail(
                 newUser.email,
                 "Welcome to UHA Connect",
-                "Welcome ${newUser.firstName} to UHA Connect!<br/>We're happy to see you here!<br/><br/>" +
+                "Welcome ${newUser.firstName} to UHAConnect!<br/>We're happy to see you here!<br/><br/>" +
                         "You can now login to your account using your email address or your username.<br/><br/>" +
-                        "Have a nice day!<br/>UHA Connect team."
+                        "Have a nice day!<br/>UHAConnect team."
             )
             val token = JWT.create()
                 .withSubject(newUser.id.toString())
