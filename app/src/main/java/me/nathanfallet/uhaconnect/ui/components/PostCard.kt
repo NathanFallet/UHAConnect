@@ -127,19 +127,19 @@ fun PostCard(
                             onDismissRequest = { expanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Remove post") },
+                                text = { Text(stringResource(R.string.post_card_remove)) },
                                 onClick = deletePost
                             )
                             if (!post.validated) {
                                 DropdownMenuItem(
-                                    text = { Text("Validate post") },
+                                    text = { Text(stringResource(R.string.post_card_validate)) },
                                     onClick = {
                                         updatePost(UpdatePostPayload(null, null, true))
                                     }
                                 )
                             }
                             DropdownMenuItem(
-                                text = { Text("Ban user") },
+                                text = { Text(stringResource(R.string.post_card_ban)) },
                                 onClick = {
                                     updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
                                 }
