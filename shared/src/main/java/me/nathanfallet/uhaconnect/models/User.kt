@@ -11,7 +11,8 @@ data class User(
     val email: String,
     val role: RoleStatus,
     val password: String,
-    val picture: String?
+    val picture: String?,
+    val follow: Follow? = null
 ) {
 
     companion object {
