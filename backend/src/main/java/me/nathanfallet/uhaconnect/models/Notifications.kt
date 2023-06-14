@@ -8,7 +8,7 @@ object Notifications : IntIdTable() {
 
     val dest_id = reference("dest_id", Users)
     val post_id = integer("post_id").nullable()
-    val type = varchar("type", 6)
+    val type = varchar("type", 64)
     val origin_id = reference("origin_id", Users)
     val date = long("date")
 
