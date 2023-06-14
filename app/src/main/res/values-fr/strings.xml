@@ -22,7 +22,7 @@
     <string name="instantextension_hours">%s heures</string>
     <string name="instantextension_minutes">%s minutes</string>
     <string name="instantextension_seconds">%s secondes</string>
-    <string name="login_username">Nom d\'utilisateur</string>
+    <string name="login_username">Nom d\'utilisateur ou E-mail</string>
     <string name="login_password">Mot de passe</string>
     <string name="login_forgot_pw">Mot de passe oublié?</string>
     <string name="login_no_account">Vous n\'avez pas de compte? </string>
@@ -65,7 +65,7 @@
     <string name="login_invalid_username" >Invalid username</string>
     <string name="login_invalid_password">Invalid password</string>
     <string name="login_passwords_not_match" >Passwords do not match</string>
-    <string name="login_invalid_mail">Email is already used</string>
+    <string name="login_invalid_mail">Invalid email</string>
     <string name="parameters_settings">Paramètres</string>
     <string name="notification_notifications">Notifications</string>
     <string name="notifications_like">%s a aimé votre publication</string>
