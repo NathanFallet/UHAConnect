@@ -61,7 +61,7 @@
     <string name="login_invalid_username" >Invalid username</string>
     <string name="login_invalid_password">Invalid password</string>
     <string name="login_passwords_not_match" >Passwords do not match</string>
-    <string name="login_invalid_mail">Email is already used</string>
+    <string name="login_invalid_mail">Invalid email</string>
     <string name="parameters_settings">Settings</string>
     <string name="notification_notifications">Notifications</string>
     <string name="notifications_like">%s liked your post</string>
