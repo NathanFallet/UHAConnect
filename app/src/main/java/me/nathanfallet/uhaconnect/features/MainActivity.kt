@@ -34,6 +34,7 @@ import androidx.navigation.navArgument
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.features.compose.ComposeView
 import me.nathanfallet.uhaconnect.features.feed.FeedView
+import me.nathanfallet.uhaconnect.features.follows.FollowsView
 import me.nathanfallet.uhaconnect.features.login.CreateAccountPage
 import me.nathanfallet.uhaconnect.features.login.LoginPage
 import me.nathanfallet.uhaconnect.features.login.ResetEmailPage
@@ -217,6 +218,9 @@ fun UHAConnectApp() {
                     val userId = user?.id ?: ""
                     navController.navigate("profile/$userId")
                 }
+                dialog("following"){
+                    navController.navigate("feed/following")
+                }
                 composable(
                     "profile/{userId}",
                     arguments = listOf(navArgument("userId") { type = NavType.IntType })
@@ -240,6 +244,16 @@ fun UHAConnectApp() {
                         user,
                         navController::navigate,
                         viewModel::onUpdateUser
+                    )
+                }
+                composable(
+                    "follows/{userId}",
+                arguments = listOf(navArgument("userId") { type = NavType.IntType })
+                ){
+                    FollowsView(
+                        modifier = Modifier.padding(padding),
+                        token,
+                        navigate = navController::navigate
                     )
                 }
             }

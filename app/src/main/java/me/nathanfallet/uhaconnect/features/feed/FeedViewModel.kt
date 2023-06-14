@@ -39,6 +39,7 @@ class FeedViewModel(
                     "posts" -> APIService.getInstance(Unit).getPosts(token, offset)
                     "favorites" -> APIService.getInstance(Unit).getFavorites(token, offset)
                     "validation" -> APIService.getInstance(Unit).getPostsRequests(token, offset)
+                    "following" -> APIService.getInstance(Unit).getPostsFollowing(token, offset)
                     else -> listOf()
                 }.let {
                     _posts.value =

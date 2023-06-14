@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.Favorite
+import me.nathanfallet.uhaconnect.models.Follow
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
@@ -39,9 +40,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             try {
                 _user.value = APIService.getInstance(Unit).getUser(id, token)
-            } catch (e: Exception) {
-
-            }
+            } catch (e: Exception) { }
         }
     }
 
@@ -117,6 +116,23 @@ class ProfileViewModel(
             } catch (e: Exception) {
                 //TODO : ERRORS
             }
+        }
+    }
+
+
+    fun followHandle(token: String?, id: Int?, isFollowed: Boolean){
+        if (token == null || id == null) return
+        viewModelScope.launch{
+            try {
+                val follow: Follow? =
+                    if (isFollowed) {
+                        APIService.getInstance(Unit).unfollow(token, id)
+                        null
+                    }
+                    else APIService.getInstance(Unit).follow(token, id)
+                _user.value = _user.value?.copy(follow = follow)
+            }
+            catch (e: Exception){}
         }
     }
 

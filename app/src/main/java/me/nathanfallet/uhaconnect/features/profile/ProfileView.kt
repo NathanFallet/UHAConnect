@@ -3,6 +3,8 @@ package me.nathanfallet.uhaconnect.features.profile
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -107,7 +111,7 @@ fun ProfileView(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .height(160.dp)
+                    .height(200.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -120,35 +124,71 @@ fun ProfileView(
                         user = user,
                         size = 100.dp
                     )
-                    Column(modifier = Modifier.padding(vertical = 12.dp)) {
+                    Column(modifier = Modifier.padding(top = 12.dp)) {
                         Text(
                             text = user?.username ?: "",
                             fontSize = 30.sp,
                             color = Color.Yellow,
-                            modifier = Modifier.padding(start = 15.dp)
+                            modifier = Modifier.padding(start = 15.dp),
+                            maxLines = 1
                         )
                         Text(
                             text = user?.role.toString(),
                             modifier = Modifier.padding(start = 15.dp)
                         )
-                        //TODO: use current user instead
-                        if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
-                            Box(
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Text(
+                                text = stringResource(R.string.profile_followers_list),
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentSize(Alignment.TopEnd)
-                            ) {
-                                IconButton(onClick = { expanded = !expanded }) {
-                                    Icon(
-                                        imageVector = Icons.Default.MoreVert,
-                                        contentDescription = "More"
+                                    .clickable(onClick = {navigate("follows/${user?.id}")})
+                                    .padding(start = 16.dp)
+                            )
+                            if (user?.id != viewedBy?.id) {
+                                Button(
+                                    onClick = {viewModel.followHandle(token, user?.id, user?.follow != null) },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (user?.follow != null) Color.Black else Color.White,
+                                        contentColor = if (user?.follow != null) Color.White else Color.Black
+                                    ),
+                                    modifier = Modifier
+                                        .padding(top = 5.dp, start = 8.dp)
+                                ) {
+                                    Text(stringResource(
+                                        id = if (user?.follow != null) R.string.profile_following else R.string.profile_follow)
                                     )
                                 }
-
-                                DropdownMenu(
-                                    expanded = expanded,
-                                    onDismissRequest = { expanded = false }
+                            }
+                            //TODO: use current user instead
+                            if (user?.role == RoleStatus.ADMINISTRATOR) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentSize(Alignment.TopEnd)
                                 ) {
+                                    IconButton(onClick = { expanded = !expanded }) {
+                                        Icon(
+                                            imageVector = Icons.Default.MoreVert,
+                                            contentDescription = "More"
+                                        )
+                                    }
+                                    DropdownMenu(
+                                        expanded = expanded,
+                                        onDismissRequest = { expanded = false }
+                                    ) {
+                                        DropdownMenuItem(
+                                            text = { Text(stringResource(R.string.profile_ban)) },
+                                            onClick = {
+                                                Toast.makeText(
+                                                    context,
+                                                    R.string.profile_been_banned,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        )
+                                    }
                                     DropdownMenuItem(
                                         text = { Text("Ban user") },
                                         onClick = {
