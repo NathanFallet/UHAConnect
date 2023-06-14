@@ -18,6 +18,7 @@ import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Favorites
 import me.nathanfallet.uhaconnect.models.Notifications
 import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.Posts
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.TypeStatus
@@ -75,6 +76,11 @@ fun Route.apiPosts() {
             } catch (e: Exception) {
                 call.response.status(HttpStatusCode.BadRequest)
                 call.respond(mapOf("error" to "Invalid title or content."))
+                return@post
+            }
+            if (!Post.isTitleValid(newPost.title)) {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Title is blank or too long."))
                 return@post
             }
             val post = Database.dbQuery {

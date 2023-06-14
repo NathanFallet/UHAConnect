@@ -13,4 +13,14 @@ data class Post(
     val validated: Boolean,
     val user: User? = null,
     val favorite: Favorite? = null
-)
+) {
+
+    companion object {
+
+        fun isTitleValid(title: String): Boolean {
+            return title.isBlank() && title.length <= 64
+        }
+
+    }
+
+}
