@@ -176,7 +176,7 @@ fun Route.apiUsers() {
             }
             call.respond(posts)
         }
-        get("/{id}/follow") {
+        get("/{id}/followers") {
             val user = getUser() ?: run {
                 call.response.status(HttpStatusCode.Unauthorized)
                 call.respond(mapOf("error" to "Invalid user"))
@@ -195,6 +195,30 @@ fun Route.apiUsers() {
                         Follows.follower_id eq Users.id and (Follows.user_id eq null or (Follows.user_id eq user.id))
                     }
                     .select { Follows.user_id eq id }
+                    .limit(limit, offset)
+                    .map(Users::toUser)
+            }
+            call.respond(follows)
+        }
+        get("/{id}/following") {
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@get
+            }
+            val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid user id"))
+                return@get
+            }
+            val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+            val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+            val follows = Database.dbQuery {
+                Users
+                    .join(Follows, JoinType.LEFT) {
+                        Follows.user_id eq Users.id and (Follows.follower_id eq null or (Follows.follower_id eq user.id))
+                    }
+                    .select { Follows.follower_id eq id }
                     .limit(limit, offset)
                     .map(Users::toUser)
             }
