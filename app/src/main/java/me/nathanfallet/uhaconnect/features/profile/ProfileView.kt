@@ -1,10 +1,8 @@
 package me.nathanfallet.uhaconnect.features.profile
 
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -35,21 +31,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
+import me.nathanfallet.uhaconnect.ui.components.UserPictureView
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -120,19 +113,9 @@ fun ProfileView(
                         .fillMaxWidth()
                 )
                 Row(modifier = Modifier.padding(vertical = 30.dp, horizontal = 16.dp)) {
-                    AsyncImage(
-                        model = user?.pictureUrl,
-                        contentDescription = user?.username,
-                        placeholder = painterResource(id = R.drawable.picture_placeholder),
-                        error = painterResource(id = R.drawable.picture_placeholder),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape)
-                            .border(
-                                BorderStroke(3.dp, Color.White),
-                                CircleShape
-                            )
+                    UserPictureView(
+                        user = user,
+                        size = 100.dp
                     )
                     Column(modifier = Modifier.padding(vertical = 12.dp)) {
                         Text(

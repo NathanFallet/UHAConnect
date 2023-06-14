@@ -2,10 +2,8 @@ package me.nathanfallet.uhaconnect.features.parameters
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,8 +37,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,10 +46,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.ui.components.UserPictureView
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -122,22 +117,13 @@ fun ParametersView(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Box {
-                        AsyncImage(
-                            model = user?.pictureUrl,
-                            contentDescription = user?.username,
-                            placeholder = painterResource(id = R.drawable.picture_placeholder),
-                            error = painterResource(id = R.drawable.picture_placeholder),
-                            contentScale = ContentScale.Crop,
+                        UserPictureView(
                             modifier = Modifier
                                 .clickable {
                                     imagePickerLauncher.launch("image/*")
-                                }
-                                .clip(CircleShape)
-                                .size(100.dp)
-                                .border(
-                                    BorderStroke(3.dp, White),
-                                    CircleShape
-                                )
+                                },
+                            user = user,
+                            size = 100.dp
                         )
                         Icon(
                             painter = painterResource(R.drawable.edit),
