@@ -187,12 +187,15 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "Invalid user id"))
                 return@get
             }
+            val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+            val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val follows = Database.dbQuery {
                 Users
                     .join(Follows, JoinType.LEFT) {
                         Follows.user_id eq Users.id and (Follows.follower_id eq null or (Follows.follower_id eq user.id))
                     }
                     .select { Follows.user_id eq id }
+                    .limit(limit, offset)
                     .map(Users::toUser)
             }
             call.respond(follows)
