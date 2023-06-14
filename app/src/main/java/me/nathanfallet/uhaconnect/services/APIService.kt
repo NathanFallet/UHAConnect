@@ -235,8 +235,14 @@ class APIService {
         createRequest(HttpMethod.Delete, "/users/$id/follow", token)
     }
 
-    suspend fun getFollows(token: String, id: Int, offset: Long = 0): List<User>{
-        return createRequest(HttpMethod.Get, "/users/$id/follow", token) {
+    suspend fun getFollowing(token: String, id: Int, offset: Long = 0): List<User>{
+        return createRequest(HttpMethod.Get, "/users/$id/following", token) {
+            parameter("offset", offset)
+        }.body()
+    }
+
+    suspend fun getFollowers(token: String, id: Int, offset: Long = 0): List<User>{
+        return createRequest(HttpMethod.Get, "/users/$id/followers", token) {
             parameter("offset", offset)
         }.body()
     }

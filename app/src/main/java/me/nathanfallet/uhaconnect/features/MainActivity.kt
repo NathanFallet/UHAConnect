@@ -176,7 +176,8 @@ fun UHAConnectApp() {
                 composable("notifications") {
                     NotificationView(
                         modifier = Modifier.padding(padding),
-                        token = token
+                        token = token,
+                        navController::navigate
                     )
                 }
                 composable(
@@ -247,8 +248,11 @@ fun UHAConnectApp() {
                     )
                 }
                 composable(
-                    "follows/{userId}",
-                arguments = listOf(navArgument("userId") { type = NavType.IntType })
+                    "follows/{userId}/{loader}",
+                arguments = listOf(
+                    navArgument("userId") { type = NavType.IntType },
+                    navArgument("loader") { type = NavType.StringType }
+                )
                 ){
                     FollowsView(
                         modifier = Modifier.padding(padding),

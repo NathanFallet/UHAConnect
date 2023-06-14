@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import me.nathanfallet.uhaconnect.models.Follow
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
@@ -17,6 +16,7 @@ class FollowsViewModel(
 ) : AndroidViewModel(application) {
 
     private val id: Int? = savedStateHandle["userId"]
+    val loader: String? = savedStateHandle["loader"]
 
     private val _user = MutableLiveData<User>()
     val user: LiveData<User>
@@ -46,7 +46,8 @@ class FollowsViewModel(
         viewModelScope.launch {
             try {
                 val offset = (if (reset) 0 else _follows.value?.size ?: 0).toLong()
-                APIService.getInstance(Unit).getFollows(token, id, offset).let {
+                (if (loader=="following") APIService.getInstance(Unit).getFollowing(token, id, offset)
+                        else APIService.getInstance(Unit).getFollowers(token, id, offset)).let {
                     _follows.value =
                         if (reset) it
                         else (_follows.value ?: listOf()) + it
@@ -58,23 +59,5 @@ class FollowsViewModel(
         }
     }
 
-    fun followHandle(token: String?, id: Int?, isFollowed: Boolean){
-        if (token == null || id == null) return
-        viewModelScope.launch{
-            try {
-                val follow: Follow? =
-                    if (isFollowed) {
-                        APIService.getInstance(Unit).unfollow(token, id)
-                        null
-                    }
-                    else APIService.getInstance(Unit).follow(token, id)
-                _follows.value = _follows.value?.map {
-                    if (it.id == id) it.copy(follow = follow)
-                    else it
-                }
-            }
-            catch (e: Exception){}
-        }
-    }
 
 }

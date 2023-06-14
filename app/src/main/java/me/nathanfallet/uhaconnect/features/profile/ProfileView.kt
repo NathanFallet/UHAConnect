@@ -111,7 +111,7 @@ fun ProfileView(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .height(200.dp)
+                    .height(160.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -119,7 +119,7 @@ fun ProfileView(
                         .height(80.dp)
                         .fillMaxWidth()
                 )
-                Row(modifier = Modifier.padding(vertical = 30.dp, horizontal = 16.dp)) {
+                Row(modifier = Modifier.padding(top = 30.dp, start = 16.dp, end = 16.dp)) {
                     UserPictureView(
                         user = user,
                         size = 100.dp
@@ -136,70 +136,65 @@ fun ProfileView(
                             text = user?.role.toString(),
                             modifier = Modifier.padding(start = 15.dp)
                         )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ){
-                            Text(
-                                text = stringResource(R.string.profile_followers_list),
-                                modifier = Modifier
-                                    .clickable(onClick = {navigate("follows/${user?.id}")})
-                                    .padding(start = 16.dp)
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    text = stringResource(R.string.profile_followers_list),
+                    modifier = Modifier
+                        .clickable(onClick = {navigate("follows/${user?.id}/followers")})
+                        .padding(start = 16.dp)
+                )
+                Text(
+                    text = stringResource(R.string.profile_following_list),
+                    modifier = Modifier
+                        .clickable(onClick = {navigate("follows/${user?.id}/following")})
+                        .padding(start = 16.dp)
+                )
+                if (user?.id != viewedBy?.id) {
+                    Button(
+                        onClick = {viewModel.followHandle(token, user?.id, user?.follow != null) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (user?.follow != null) Color.Black else Color.White,
+                            contentColor = if (user?.follow != null) Color.White else Color.Black
+                        ),
+                        modifier = Modifier
+                            .padding(top = 5.dp, start = 8.dp)
+                    ) {
+                        Text(stringResource(
+                            id = if (user?.follow != null) R.string.profile_following else R.string.profile_follow)
+                        )
+                    }
+                }
+                //TODO: use current user instead
+                if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentSize(Alignment.TopEnd)
+                    ) {
+                        IconButton(onClick = { expanded = !expanded }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More"
                             )
-                            if (user?.id != viewedBy?.id) {
-                                Button(
-                                    onClick = {viewModel.followHandle(token, user?.id, user?.follow != null) },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (user?.follow != null) Color.Black else Color.White,
-                                        contentColor = if (user?.follow != null) Color.White else Color.Black
-                                    ),
-                                    modifier = Modifier
-                                        .padding(top = 5.dp, start = 8.dp)
-                                ) {
-                                    Text(stringResource(
-                                        id = if (user?.follow != null) R.string.profile_following else R.string.profile_follow)
-                                    )
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.profile_ban)) },
+                                onClick = {
+                                    viewModel.updateUser(token, user!!.id, UpdateUserPayload(role = RoleStatus.BANNED))
                                 }
-                            }
-                            //TODO: use current user instead
-                            if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentSize(Alignment.TopEnd)
-                                ) {
-                                    IconButton(onClick = { expanded = !expanded }) {
-                                        Icon(
-                                            imageVector = Icons.Default.MoreVert,
-                                            contentDescription = "More"
-                                        )
-                                    }
-                                    DropdownMenu(
-                                        expanded = expanded,
-                                        onDismissRequest = { expanded = false }
-                                    ) {
-                                        DropdownMenuItem(
-                                            text = { Text(stringResource(R.string.profile_ban)) },
-                                            onClick = {
-                                                Toast.makeText(
-                                                    context,
-                                                    R.string.profile_been_banned,
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text("Ban user") },
-                                            onClick = {
-                                                viewModel.updateUser(token, user!!.id, UpdateUserPayload(role = RoleStatus.BANNED))
-                                            }
-                                        )
-                                    }
-                                }
-                            }
+                            )
                         }
                     }
-
                 }
             }
         }
