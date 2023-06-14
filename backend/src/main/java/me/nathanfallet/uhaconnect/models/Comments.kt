@@ -5,12 +5,11 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ResultRow
 
 object Comments : IntIdTable() {
+
     val post_id = reference("post_id", Posts)
     val user_id = reference("user_id", Users)
     val content = text("content")
     val date = long("date")
-
-    override val primaryKey = PrimaryKey(id)
 
     fun toComment(row: ResultRow): Comment {
         val user = if (row.hasValue(Users.id)) Users.toUser(row)

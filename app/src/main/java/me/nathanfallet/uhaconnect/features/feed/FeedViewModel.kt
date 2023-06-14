@@ -7,9 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
-import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.services.APIService
 
 class FeedViewModel(
@@ -23,21 +23,25 @@ class FeedViewModel(
     val posts: LiveData<List<Post>>
         get() = _posts
 
-    private val _user = MutableLiveData<User>()
+    private val _hasMore = MutableLiveData(true)
+    val hasMore: LiveData<Boolean>
+        get() = _hasMore
 
-    private val api = APIService.getInstance(Unit)
-
-    fun loadData(token: String?) {
-        if (token == null) {
-            return
-        }
+    fun loadData(token: String?, reset: Boolean) {
+        if (token == null) return
         viewModelScope.launch {
             try {
-                _posts.value = when (loader) {
-                    "posts" -> api.getPosts(token)
-                    "favorites" -> api.getFavorites(token)
-                    "validation" -> api.getPostsRequests(token)
+                val offset = (if (reset) 0 else _posts.value?.size ?: 0).toLong()
+                when (loader) {
+                    "posts" -> APIService.getInstance(Unit).getPosts(token, offset)
+                    "favorites" -> APIService.getInstance(Unit).getFavorites(token, offset)
+                    "validation" -> APIService.getInstance(Unit).getPostsRequests(token, offset)
                     else -> listOf()
+                }.let {
+                    _posts.value =
+                        if (reset) it
+                        else (_posts.value ?: listOf()) + it
+                    _hasMore.value = it.isNotEmpty()
                 }
             } catch (e: Exception) {
 
@@ -75,9 +79,17 @@ class FeedViewModel(
         if (token == null) return
         viewModelScope.launch {
             try {
-                if (!addOrDelete) api.addToFavorites(token, postId)
-                else api.deleteToFavorites(token, postId)
-                loadData(token)
+                val favorite: Favorite? =
+                    if (!addOrDelete) APIService.getInstance(Unit).addToFavorites(token, postId)
+                    else {
+                        APIService.getInstance(Unit).deleteToFavorites(token, postId)
+                        null
+                    }
+                _posts.value = _posts.value?.map {
+                    if (it.id == postId) {
+                        it.copy(favorite = favorite)
+                    } else it
+                }
             } catch (e: Exception) {
             }
         }

@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Notification(
+    val id: Int,
     val dest_id: Int, // who receives the notification
     val post_id: Int?,
     val type: TypeStatus,

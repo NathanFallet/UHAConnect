@@ -5,6 +5,7 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -25,8 +26,8 @@ import me.nathanfallet.uhaconnect.models.NotificationsTokenPayload
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.RegisterPayload
 import me.nathanfallet.uhaconnect.models.ResetPasswordPayload
-import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.models.UserToken
 import me.nathanfallet.uhaconnect.utils.SingletonHolder
@@ -77,10 +78,12 @@ class APIService {
     suspend fun getUser(id:Int, token: String): User {
         return createRequest(HttpMethod.Get, "/users/$id", token).body()
     }
-    
+
     @Throws(Exception::class)
-    suspend fun getUserPosts(id:Int, token: String): List<Post> {
-        return createRequest(HttpMethod.Get, "/users/$id/posts", token).body()
+    suspend fun getUserPosts(id: Int, token: String, offset: Long = 0): List<Post> {
+        return createRequest(HttpMethod.Get, "/users/$id/posts", token) {
+            parameter("offset", offset)
+        }.body()
     }
 
     @Throws(Exception::class)
@@ -132,8 +135,10 @@ class APIService {
     }
 
     @Throws(Exception::class)
-    suspend fun getNotification(token: String): List<Notification> {
-        return createRequest(HttpMethod.Get, "/notifications", token).body()
+    suspend fun getNotifications(token: String, offset: Long = 0): List<Notification> {
+        return createRequest(HttpMethod.Get, "/notifications", token) {
+            parameter("offset", offset)
+        }.body()
     }
 
     @Throws(Exception::class)
@@ -145,22 +150,28 @@ class APIService {
     }
 
     @Throws(Exception::class)
-    suspend fun getPosts(token: String): List<Post> {
-        return createRequest(HttpMethod.Get, "/posts", token).body()
+    suspend fun getPosts(token: String, offset: Long = 0): List<Post> {
+        return createRequest(HttpMethod.Get, "/posts", token) {
+            parameter("offset", offset)
+        }.body()
     }
 
     @Throws(Exception::class)
-    suspend fun getPostsRequests(token: String): List<Post> {
-        return createRequest(HttpMethod.Get, "/posts/requests", token).body()
+    suspend fun getPostsRequests(token: String, offset: Long = 0): List<Post> {
+        return createRequest(HttpMethod.Get, "/posts/requests", token) {
+            parameter("offset", offset)
+        }.body()
     }
 
     @Throws(Exception::class)
-    suspend fun getComments(token: String, id: Int): List<Comment> {
-        return createRequest(HttpMethod.Get, "/posts/$id/comments", token).body()
+    suspend fun getComments(token: String, id: Int, offset: Long = 0): List<Comment> {
+        return createRequest(HttpMethod.Get, "/posts/$id/comments", token) {
+            parameter("offset", offset)
+        }.body()
     }
 
     @Throws(Exception::class)
-    suspend fun updatePost(token: String, id: Int, payload: UpdatePostPayload): List<Comment> {
+    suspend fun updatePost(token: String, id: Int, payload: UpdatePostPayload): Post {
         return createRequest(HttpMethod.Put, "/posts/$id", token) {
             contentType(ContentType.Application.Json)
             setBody(payload)
@@ -178,27 +189,29 @@ class APIService {
     }
 
     @Throws(Exception::class)
-    suspend fun getFavorites(token: String): List<Post> {
-        return createRequest(HttpMethod.Get, "/favorites", token).body()
+    suspend fun getFavorites(token: String, offset: Long = 0): List<Post> {
+        return createRequest(HttpMethod.Get, "/favorites", token) {
+            parameter("offset", offset)
+        }.body()
     }
 
     suspend fun addToFavorites(token: String, id: Int): Favorite {
         return createRequest(HttpMethod.Post, "/favorites/$id", token).body()
     }
 
-    suspend fun deleteToFavorites(token: String, id: Int){
+    suspend fun deleteToFavorites(token: String, id: Int) {
         createRequest(HttpMethod.Delete, "/favorites/$id", token)
     }
 
-    suspend fun updateUser(token: String, id: Int, payload: UpdateUserPayload): User{
+    suspend fun updateUser(token: String, id: Int, payload: UpdateUserPayload): User {
         return createRequest(HttpMethod.Put, "/users/$id", token) {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }.body()
     }
 
-    suspend fun resetPassword(payload: ResetPasswordPayload){
-        createRequest(HttpMethod.Post, "/auth/reset"){
+    suspend fun resetPassword(payload: ResetPasswordPayload) {
+        createRequest(HttpMethod.Post, "/auth/reset") {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }
