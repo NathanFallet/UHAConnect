@@ -171,7 +171,7 @@ class APIService {
     }
 
     @Throws(Exception::class)
-    suspend fun updatePost(token: String, id: Int, payload: UpdatePostPayload): List<Comment> {
+    suspend fun updatePost(token: String, id: Int, payload: UpdatePostPayload): Post {
         return createRequest(HttpMethod.Put, "/posts/$id", token) {
             contentType(ContentType.Application.Json)
             setBody(payload)
@@ -199,19 +199,19 @@ class APIService {
         return createRequest(HttpMethod.Post, "/favorites/$id", token).body()
     }
 
-    suspend fun deleteToFavorites(token: String, id: Int){
+    suspend fun deleteToFavorites(token: String, id: Int) {
         createRequest(HttpMethod.Delete, "/favorites/$id", token)
     }
 
-    suspend fun updateUser(token: String, id: Int, payload: UpdateUserPayload): User{
+    suspend fun updateUser(token: String, id: Int, payload: UpdateUserPayload): User {
         return createRequest(HttpMethod.Put, "/users/$id", token) {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }.body()
     }
 
-    suspend fun resetPassword(payload: ResetPasswordPayload){
-        createRequest(HttpMethod.Post, "/auth/reset"){
+    suspend fun resetPassword(payload: ResetPasswordPayload) {
+        createRequest(HttpMethod.Post, "/auth/reset") {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }

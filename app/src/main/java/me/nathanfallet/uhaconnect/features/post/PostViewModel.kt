@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
+import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.Post
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.services.APIService
@@ -69,13 +70,17 @@ class PostViewModel(
         }
         if (token == null || postId == null) return
         viewModelScope.launch {
-            _comments.value = _comments.value?.plus(
-                APIService.getInstance(Unit).postComment(
-                    token,
-                    postId,
-                    CreateCommentPayload(newComment.value ?: "")
+            try {
+                _comments.value = _comments.value?.plus(
+                    APIService.getInstance(Unit).postComment(
+                        token,
+                        postId,
+                        CreateCommentPayload(newComment.value ?: "")
+                    )
                 )
-            )
+            } catch (e: Exception) {
+
+            }
         }
     }
 
@@ -84,6 +89,7 @@ class PostViewModel(
         viewModelScope.launch {
             try {
                 APIService.getInstance(Unit).deleteComment(token, idPost, idComment)
+                _comments.value = _comments.value?.filter { it.id != idComment }
             } catch (e: Exception) {
                 //TODO: ERRORS
             }
@@ -104,9 +110,13 @@ class PostViewModel(
         if (token == null) return
         viewModelScope.launch {
             try {
-                if (addOrDelete) APIService.getInstance(Unit).addToFavorites(token, postId)
-                else APIService.getInstance(Unit).deleteToFavorites(token, postId)
-                loadPost(token)
+                val favorite: Favorite? =
+                    if (!addOrDelete) APIService.getInstance(Unit).addToFavorites(token, postId)
+                    else {
+                        APIService.getInstance(Unit).deleteToFavorites(token, postId)
+                        null
+                    }
+                _post.value = _post.value?.copy(favorite = favorite)
             } catch (e: Exception) {
             }
         }
@@ -116,7 +126,7 @@ class PostViewModel(
         if (token == null) return
         viewModelScope.launch {
             try {
-                APIService.getInstance(Unit).updatePost(token, id, payload)
+                _post.value = APIService.getInstance(Unit).updatePost(token, id, payload)
             } catch (e: Exception) {
                 //TODO: ERRORS
             }
