@@ -4,38 +4,13 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.delete
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import io.ktor.server.routing.put
-import io.ktor.server.routing.route
+import io.ktor.server.routing.*
 import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.Comments
-import me.nathanfallet.uhaconnect.models.CreateCommentPayload
-import me.nathanfallet.uhaconnect.models.CreatePostPayload
-import me.nathanfallet.uhaconnect.models.Favorites
-import me.nathanfallet.uhaconnect.models.Follows
-import me.nathanfallet.uhaconnect.models.Notifications
-import me.nathanfallet.uhaconnect.models.Permission
-import me.nathanfallet.uhaconnect.models.Post
-import me.nathanfallet.uhaconnect.models.Posts
-import me.nathanfallet.uhaconnect.models.RoleStatus
-import me.nathanfallet.uhaconnect.models.TypeStatus
-import me.nathanfallet.uhaconnect.models.UpdatePostPayload
-import me.nathanfallet.uhaconnect.models.Users
+import me.nathanfallet.uhaconnect.models.*
 import me.nathanfallet.uhaconnect.plugins.NotificationData
 import me.nathanfallet.uhaconnect.plugins.NotificationsPlugin
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
 
 fun Route.apiPosts() {
     route("/posts") {
@@ -89,6 +64,7 @@ fun Route.apiPosts() {
                     it[title] = newPost.title
                     it[content] = newPost.content
                     it[date] = Clock.System.now().toEpochMilliseconds()
+                    it[tag] = newPost.tag.joinToString(",")
                 }.resultedValues?.map(Posts::toPost)?.singleOrNull()
             } ?: run {
                 call.response.status(HttpStatusCode.InternalServerError)
