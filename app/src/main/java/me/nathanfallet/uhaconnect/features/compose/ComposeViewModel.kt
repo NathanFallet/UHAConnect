@@ -31,7 +31,8 @@ class ComposeViewModel : ViewModel() {
                 APIService.getInstance(Unit).postPost(
                     token, CreatePostPayload(
                         titleContent.value ?: "",
-                        postContent.value ?: ""
+                        postContent.value ?: "",
+                        listOf()
                     )
                 ).let {
                     navigate("post/${it.id}")
