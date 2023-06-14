@@ -192,9 +192,9 @@ fun Route.apiUsers() {
             val follows = Database.dbQuery {
                 Users
                     .join(Follows, JoinType.LEFT) {
-                        Follows.user_id eq Users.id and (Follows.follower_id eq null or (Follows.follower_id eq user.id))
+                        Follows.follower_id eq Users.id and (Follows.user_id eq null or (Follows.user_id eq user.id))
                     }
-                    .select { Follows.follower_id eq id }
+                    .select { Follows.user_id eq id }
                     .limit(limit, offset)
                     .map(Users::toUser)
             }
