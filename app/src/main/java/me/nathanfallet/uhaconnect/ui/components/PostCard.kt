@@ -59,7 +59,7 @@ fun PostCard(
     favoriteCheck: (Boolean) -> Unit,
     updatePost: (UpdatePostPayload) -> Unit,
     deletePost: () -> Unit,
-    updateUser: (UpdateUserPayload) -> Unit,
+    banUser: (UpdateUserPayload) -> Unit,
     viewedBy: User?,
     detailed: Boolean = false
 ){
@@ -148,19 +148,14 @@ fun PostCard(
                                 DropdownMenuItem(
                                     text = { Text("Validate post") },
                                     onClick = {
-                                        updatePost(UpdatePostPayload(null, null, true))
+                                        banUser
                                     }
                                 )
                             }
                             DropdownMenuItem(
                                 text = { Text("Ban user") },
                                 onClick = {
-                                    //TODO: method to ban user
-                                    Toast.makeText(
-                                        context,
-                                        "User has been banned",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    updatePost(UpdatePostPayload(null, null, true))
                                 }
                             )
                         }

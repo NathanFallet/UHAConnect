@@ -44,7 +44,8 @@ fun CommentCard(
     modifier: Modifier = Modifier,
     comment: Comment,
     deleteComment: () -> Unit,
-    viewedBy: User?
+    banUser: () -> Unit,
+    viewedBy: User?,
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -105,6 +106,7 @@ fun CommentCard(
                                 text = { Text("Ban user") },
                                 onClick = {
                                     //TODO : Ban user method
+                                    banUser
                                 }
                             )
                         }

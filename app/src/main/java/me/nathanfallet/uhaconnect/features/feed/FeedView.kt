@@ -34,7 +34,8 @@ fun FeedView(
     modifier: Modifier,
     navigate: (String) -> Unit,
     token: String?,
-    user: User?
+    user: User?,
+    onUpdateUser: (User) -> Unit
 ) {
 
     val viewModel: FeedViewModel = viewModel()
@@ -125,8 +126,8 @@ fun FeedView(
                 deletePost = {
                     viewModel.deletePost(token, post.id)
                 },
-                updateUser = {
-
+                banUser =  {
+                    viewModel.banUser(token, post.user_id)
                 },
                 viewedBy = user
             )

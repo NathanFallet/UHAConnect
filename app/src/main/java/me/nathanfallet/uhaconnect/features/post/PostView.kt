@@ -37,7 +37,8 @@ fun PostView(
     modifier: Modifier,
     navigate: (String) -> Unit,
     token: String?,
-    viewedBy: User?
+    viewedBy: User?,
+    onUpdateUser: (User) -> Unit
 ) {
 
     val viewModel: PostViewModel = viewModel()
@@ -89,8 +90,8 @@ fun PostView(
                     deletePost = {
                         viewModel.deletePost(token, post.id)
                     },
-                    updateUser = {
-
+                    banUser = {
+                        viewModel.banUser(token, post.user_id)
                     },
                     viewedBy = viewedBy,
                     detailed = true
@@ -126,6 +127,9 @@ fun PostView(
                     comment = comment,
                     deleteComment = {
                         viewModel.deleteComment(token, post.id, comment.id)
+                    },
+                    banUser ={
+                        viewModel.banUser(token, comment.user_id)
                     },
                     viewedBy = viewedBy
                 )
