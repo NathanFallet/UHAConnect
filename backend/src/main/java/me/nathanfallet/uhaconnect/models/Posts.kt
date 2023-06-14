@@ -10,6 +10,7 @@ object Posts : IntIdTable() {
     val title = varchar("title", 32)
     val content = text("content")
     val date = long("date")
+    val tag = text("tag")
     val validated = bool("validated").default(false)
 
     fun toPost(row: ResultRow): Post {
@@ -29,6 +30,7 @@ object Posts : IntIdTable() {
             title = row[title],
             content = row[content],
             date = Instant.fromEpochMilliseconds(row[date]),
+            tag = row[tag].split(",").filter { it.isNotBlank() },
             validated = row[validated],
             user = user,
             favorite = favorite
