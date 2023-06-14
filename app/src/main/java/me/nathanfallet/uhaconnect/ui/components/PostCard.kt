@@ -168,6 +168,7 @@ fun PostCard(
                 }
             }
             MarkdownText(
+                modifier = modifier.fillMaxWidth(),
                 markdown = post.content,
                 color = Color.White
                 )
