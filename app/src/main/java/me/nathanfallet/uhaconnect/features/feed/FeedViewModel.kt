@@ -77,7 +77,7 @@ class FeedViewModel(
             }
         }
     }
-    fun banUser(token: String?, id:Int) {
+    fun updateUser(token: String?, id:Int) {
         if (token == null) return
         viewModelScope.launch {
             try {

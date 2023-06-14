@@ -107,12 +107,12 @@ class ProfileViewModel(
             }
         }
     }
-    fun banUser(token: String?, id:Int) {
+    fun updateUser(token: String?, id:Int, payload: UpdateUserPayload) {
         if (token == null) return
         viewModelScope.launch {
             try {
                 APIService.getInstance(Unit).updateUser(
-                    token, id, UpdateUserPayload(role = RoleStatus.BANNED)
+                    token, id, payload
                 )
             } catch (e: Exception) {
                 //TODO : ERRORS

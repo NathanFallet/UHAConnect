@@ -207,7 +207,7 @@ fun UHAConnectApp() {
                         navigate = navController::navigate,
                         token = token,
                         user = user,
-                        viewModel::onUpdateUser
+                        //viewModel::onUpdateUser
                     )
                 }
                 dialog("feed") {

@@ -26,6 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.CommentCard
 import me.nathanfallet.uhaconnect.ui.components.PostCard
@@ -90,8 +92,8 @@ fun PostView(
                     deletePost = {
                         viewModel.deletePost(token, post.id)
                     },
-                    banUser = {
-                        viewModel.banUser(token, post.user_id)
+                    updateUser = {
+                        viewModel.updateUser(token, post.user_id,UpdateUserPayload(role = RoleStatus.BANNED))
                     },
                     viewedBy = viewedBy,
                     detailed = true
@@ -128,8 +130,8 @@ fun PostView(
                     deleteComment = {
                         viewModel.deleteComment(token, post.id, comment.id)
                     },
-                    banUser ={
-                        viewModel.banUser(token, comment.user_id)
+                    updateUser ={
+                        viewModel.updateUser(token, comment.user_id, UpdateUserPayload(role = RoleStatus.BANNED))
                     },
                     viewedBy = viewedBy
                 )

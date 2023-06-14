@@ -46,6 +46,7 @@ import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.extensions.timeAgo
 import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Post
+import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
@@ -59,7 +60,7 @@ fun PostCard(
     favoriteCheck: (Boolean) -> Unit,
     updatePost: (UpdatePostPayload) -> Unit,
     deletePost: () -> Unit,
-    banUser: (UpdateUserPayload) -> Unit,
+    updateUser: (UpdateUserPayload) -> Unit,
     viewedBy: User?,
     detailed: Boolean = false
 ){
@@ -148,14 +149,14 @@ fun PostCard(
                                 DropdownMenuItem(
                                     text = { Text("Validate post") },
                                     onClick = {
-                                        banUser
+                                        updatePost(UpdatePostPayload(null, null, true))
                                     }
                                 )
                             }
                             DropdownMenuItem(
                                 text = { Text("Ban user") },
                                 onClick = {
-                                    updatePost(UpdatePostPayload(null, null, true))
+                                    updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
                                 }
                             )
                         }

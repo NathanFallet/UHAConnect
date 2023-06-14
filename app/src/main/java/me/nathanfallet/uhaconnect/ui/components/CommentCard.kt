@@ -37,6 +37,8 @@ import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 
 @Composable
@@ -44,7 +46,7 @@ fun CommentCard(
     modifier: Modifier = Modifier,
     comment: Comment,
     deleteComment: () -> Unit,
-    banUser: () -> Unit,
+    updateUser: (UpdateUserPayload) -> Unit,
     viewedBy: User?,
 ) {
 
@@ -106,7 +108,8 @@ fun CommentCard(
                                 text = { Text("Ban user") },
                                 onClick = {
                                     //TODO : Ban user method
-                                    banUser
+                                    updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
+
                                 }
                             )
                         }

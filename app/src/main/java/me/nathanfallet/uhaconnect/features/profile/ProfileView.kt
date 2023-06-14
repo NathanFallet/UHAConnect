@@ -48,6 +48,7 @@ import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
@@ -168,8 +169,8 @@ fun ProfileView(
                                     DropdownMenuItem(
                                         text = { Text("Ban user") },
                                         onClick = {
-                                            viewModel.banUser(token, user!!.id)
-                                             }
+                                            viewModel.updateUser(token, user!!.id, UpdateUserPayload(role = RoleStatus.BANNED))
+                                        }
                                     )
                                 }
                             }
@@ -195,8 +196,8 @@ fun ProfileView(
                 deletePost = {
                     viewModel.deletePost(token, post.id)
                 },
-                banUser = {
-                    viewModel.banUser(token, post.user_id)
+                updateUser = {
+                    viewModel.updateUser(token, post.user_id, it)
                 },
                 viewedBy = viewedBy
             )
