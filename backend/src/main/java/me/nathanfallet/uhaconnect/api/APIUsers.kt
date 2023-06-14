@@ -194,7 +194,7 @@ fun Route.apiUsers() {
                     .join(Follows, JoinType.LEFT) {
                         Follows.user_id eq Users.id and (Follows.follower_id eq null or (Follows.follower_id eq user.id))
                     }
-                    .select { Follows.user_id eq id }
+                    .select { Follows.follower_id eq id }
                     .limit(limit, offset)
                     .map(Users::toUser)
             }
