@@ -162,7 +162,7 @@ fun ProfileView(
                                 }
                             }
                             //TODO: use current user instead
-                            if (user?.role == RoleStatus.ADMINISTRATOR) {
+                            if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -188,13 +188,13 @@ fun ProfileView(
                                                 ).show()
                                             }
                                         )
+                                        DropdownMenuItem(
+                                            text = { Text("Ban user") },
+                                            onClick = {
+                                                viewModel.updateUser(token, user!!.id, UpdateUserPayload(role = RoleStatus.BANNED))
+                                            }
+                                        )
                                     }
-                                    DropdownMenuItem(
-                                        text = { Text("Ban user") },
-                                        onClick = {
-                                            viewModel.updateUser(token, user!!.id, UpdateUserPayload(role = RoleStatus.BANNED))
-                                        }
-                                    )
                                 }
                             }
                         }
