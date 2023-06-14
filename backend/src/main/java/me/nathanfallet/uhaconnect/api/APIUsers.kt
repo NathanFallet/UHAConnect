@@ -5,13 +5,35 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.put
+import io.ktor.server.routing.route
 import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.*
+import me.nathanfallet.uhaconnect.models.Favorites
+import me.nathanfallet.uhaconnect.models.Follows
+import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.Posts
+import me.nathanfallet.uhaconnect.models.TypeStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
+import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.Users
 import me.nathanfallet.uhaconnect.plugins.NotificationData
 import me.nathanfallet.uhaconnect.plugins.NotificationsPlugin
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 
 fun Route.apiUsers() {
     route("/users") {
@@ -165,13 +187,16 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "Invalid user id"))
                 return@get
             }
+            val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+            val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val follows = Database.dbQuery {
                 Users
                     .join(Follows, JoinType.LEFT) {
                         Follows.user_id eq Users.id and (Follows.follower_id eq null or (Follows.follower_id eq user.id))
                     }
                     .select { Follows.user_id eq id }
-                    .map(Follows::toFollow)
+                    .limit(limit, offset)
+                    .map(Users::toUser)
             }
             call.respond(follows)
         }
@@ -186,7 +211,7 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "Invalid user"))
                 return@post
             }
-            Database.dbQuery {
+            val follow = Database.dbQuery {
                 Follows
                     .select { Follows.user_id eq id and (Follows.follower_id eq user.id) }
                     .map(Follows::toFollow)
@@ -216,7 +241,8 @@ fun Route.apiUsers() {
                     body_loc_args = listOf(user.username),
                 )
             )
-            call.respond(HttpStatusCode.Created)
+            call.response.status(HttpStatusCode.Created)
+            call.respond(follow)
         }
         delete("/{id}/follow") {
             val id = call.parameters["id"]?.toIntOrNull() ?: run {

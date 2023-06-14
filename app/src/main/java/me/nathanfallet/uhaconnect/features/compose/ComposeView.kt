@@ -2,18 +2,14 @@ package me.nathanfallet.uhaconnect.features.compose
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -31,18 +27,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.ui.components.UserPictureView
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
 
 
@@ -103,19 +96,9 @@ fun ComposeView(
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
-                AsyncImage(
-                    model = viewedBy?.pictureUrl,
-                    contentDescription = viewedBy?.username,
-                    placeholder = painterResource(id = R.drawable.picture_placeholder),
-                    error = painterResource(id = R.drawable.picture_placeholder),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .border(
-                            BorderStroke(1.dp, Color.White),
-                            CircleShape
-                        )
+                UserPictureView(
+                    user = viewedBy,
+                    size = 40.dp
                 )
                 Button(
                     onClick = {
