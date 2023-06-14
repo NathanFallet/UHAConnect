@@ -16,6 +16,7 @@ import me.nathanfallet.uhaconnect.models.Comments
 import me.nathanfallet.uhaconnect.models.CreateCommentPayload
 import me.nathanfallet.uhaconnect.models.CreatePostPayload
 import me.nathanfallet.uhaconnect.models.Favorites
+import me.nathanfallet.uhaconnect.models.Follows
 import me.nathanfallet.uhaconnect.models.Notifications
 import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Post
@@ -49,11 +50,10 @@ fun Route.apiPosts() {
             val posts = Database.dbQuery {
                 Posts
                     .join(Users, JoinType.INNER, Posts.user_id, Users.id)
-                    .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
-                    .select {
-                        Posts.validated eq true and
-                                (Favorites.user_id eq null or (Favorites.user_id eq user.id))
+                    .join(Favorites, JoinType.LEFT) {
+                        Favorites.post_id eq Posts.id and (Favorites.user_id eq null or (Favorites.user_id eq user.id))
                     }
+                    .select { Posts.validated eq true }
                     .orderBy(Posts.date, SortOrder.DESC)
                     .limit(limit, offset)
                     .map(Posts::toPost)
@@ -107,13 +107,42 @@ fun Route.apiPosts() {
             call.respond(post)
         }
         get("/requests") {
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@get
+            }
             val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
             val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val posts = Database.dbQuery {
                 Posts
                     .join(Users, JoinType.INNER, Posts.user_id, Users.id)
-                    .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
+                    .join(Favorites, JoinType.LEFT) {
+                        Favorites.post_id eq Posts.id and (Favorites.user_id eq null or (Favorites.user_id eq user.id))
+                    }
                     .select { Posts.validated eq false }
+                    .orderBy(Posts.date, SortOrder.DESC)
+                    .limit(limit, offset)
+                    .map(Posts::toPost)
+            }
+            call.respond(posts)
+        }
+        get("/follow") {
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@get
+            }
+            val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+            val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
+            val posts = Database.dbQuery {
+                Posts
+                    .join(Users, JoinType.INNER, Posts.user_id, Users.id)
+                    .join(Follows, JoinType.INNER, Posts.user_id, Follows.user_id)
+                    .join(Favorites, JoinType.LEFT) {
+                        Favorites.post_id eq Posts.id and (Favorites.user_id eq null or (Favorites.user_id eq user.id))
+                    }
+                    .select { Posts.validated eq true and (Follows.follower_id eq user.id) }
                     .orderBy(Posts.date, SortOrder.DESC)
                     .limit(limit, offset)
                     .map(Posts::toPost)
@@ -134,11 +163,10 @@ fun Route.apiPosts() {
             val post = Database.dbQuery {
                 Posts
                     .join(Users, JoinType.INNER, Posts.user_id, Users.id)
-                    .join(Favorites, JoinType.LEFT, Favorites.post_id, Posts.id)
-                    .select {
-                        Posts.id eq id and
-                                (Favorites.user_id eq null or (Favorites.user_id eq user.id))
+                    .join(Favorites, JoinType.LEFT) {
+                        Favorites.post_id eq Posts.id and (Favorites.user_id eq null or (Favorites.user_id eq user.id))
                     }
+                    .select { Posts.id eq id }
                     .map(Posts::toPost)
                     .singleOrNull()
             } ?: run {
