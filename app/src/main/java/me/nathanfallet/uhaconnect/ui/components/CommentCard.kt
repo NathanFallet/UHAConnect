@@ -1,5 +1,6 @@
 package me.nathanfallet.uhaconnect.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ fun CommentCard(
     deleteComment: () -> Unit,
     updateUser: (UpdateUserPayload) -> Unit,
     viewedBy: User?,
+    navigate: (String)->Unit
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -55,14 +57,21 @@ fun CommentCard(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                UserPictureView(
-                    user = comment.user,
-                    size = 22.dp
-                )
-                Text(
-                    text = comment.user?.username.toString(),
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                    .clickable(onClick = {navigate("profile/${comment.user?.id}")}
+                    )
+                ){
+                    UserPictureView(
+                        user = comment.user,
+                        size = 22.dp
+                    )
+                    Text(
+                        text = comment.user?.username.toString(),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
                 if (viewedBy?.role?.hasPermission(Permission.COMMENT_DELETE) == true) {
                     Box(
                         modifier = Modifier

@@ -27,7 +27,9 @@ fun UserPictureView(
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(it)
+                .diskCacheKey(it)
                 .memoryCacheKey(it)
+                .diskCachePolicy(CachePolicy.ENABLED)
                 .networkCachePolicy(CachePolicy.ENABLED)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .build(),

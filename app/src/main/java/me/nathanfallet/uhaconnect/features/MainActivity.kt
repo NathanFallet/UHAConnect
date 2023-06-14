@@ -208,8 +208,7 @@ fun UHAConnectApp() {
                         modifier = Modifier.padding(padding),
                         navigate = navController::navigate,
                         token = token,
-                        user = user,
-                        //viewModel::onUpdateUser
+                        user = user
                     )
                 }
                 dialog("feed") {
@@ -234,8 +233,7 @@ fun UHAConnectApp() {
                             viewModel.login(null)
                             navController.navigate("login")
                         },
-                        viewedBy = user,
-                        viewModel::onUpdateUser
+                        viewedBy = user
                     )
                 }
                 composable("settings") {

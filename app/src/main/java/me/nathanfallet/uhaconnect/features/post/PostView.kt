@@ -133,7 +133,8 @@ fun PostView(
                     updateUser ={
                         viewModel.updateUser(token, comment.user_id, UpdateUserPayload(role = RoleStatus.BANNED))
                     },
-                    viewedBy = viewedBy
+                    viewedBy = viewedBy,
+                    navigate = navigate
                 )
                 if (hasMore == true && comments?.lastOrNull()?.id == comment.id) {
                     // Load more comments (pagination)

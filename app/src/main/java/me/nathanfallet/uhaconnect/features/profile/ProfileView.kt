@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,9 +57,7 @@ fun ProfileView(
     navigate: (String) -> Unit,
     token: String?,
     disconnect: () -> Unit,
-    viewedBy: User?,
-    onUpdateUser: (User) -> Unit,
-
+    viewedBy: User?
 ) {
 
     val viewModel: ProfileViewModel = viewModel()
@@ -107,93 +106,113 @@ fun ProfileView(
             )
         }
         item {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .height(116.dp)
-            ) {
+            user?.let {
                 Box(
                     modifier = Modifier
-                        .background(darkBlue)
-                        .height(58.dp)
-                        .fillMaxWidth()
-                )
-                Row(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
-                    UserPictureView(
-                        user = user,
-                        size = 100.dp
-                    )
-                    Column(modifier = Modifier.padding(top = 12.dp)) {
-                        Text(
-                            text = user?.username ?: "",
-                            fontSize = 30.sp,
-                            color = Color.Yellow,
-                            modifier = Modifier.padding(start = 15.dp),
-                            maxLines = 1
-                        )
-                        user?.role?.let {
-                            Text(
-                                text = stringResource(id = it.text),
-                                modifier = Modifier.padding(start = 15.dp)
-                            )
-                        }
-                    }
-                }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(
-                    text = stringResource(R.string.profile_followers_list),
-                    modifier = Modifier
-                        .clickable(onClick = { navigate("follows/${user?.id}/followers") })
-                        .padding(start = 16.dp)
-                )
-                Text(
-                    text = stringResource(R.string.profile_following_list),
-                    modifier = Modifier
-                        .clickable(onClick = { navigate("follows/${user?.id}/following") })
-                        .padding(start = 16.dp)
-                )
-                if (user?.id != viewedBy?.id) {
-                    Button(
-                        onClick = {viewModel.followHandle(token, user?.id, user?.follow != null) },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (user?.follow != null) Color.Black else Color.White,
-                            contentColor = if (user?.follow != null) Color.White else Color.Black
-                        ),
-                        modifier = Modifier
-                            .padding(top = 5.dp, start = 8.dp)
-                    ) {
-                        Text(stringResource(
-                            id = if (user?.follow != null) R.string.profile_following else R.string.profile_follow)
-                        )
-                    }
-                }
-                //TODO: use current user instead
-                if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
+                        .fillMaxSize()
+                        .height(116.dp)
+                ) {
                     Box(
                         modifier = Modifier
+                            .background(darkBlue)
+                            .height(54.dp)
                             .fillMaxWidth()
-                            .wrapContentSize(Alignment.TopEnd)
-                    ) {
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More"
+                    )
+                    Row(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
+                        UserPictureView(
+                            user = user,
+                            size = 100.dp
+                        )
+                        Column(modifier = Modifier.padding(top = 14.dp)) {
+                            Text(
+                                text = "${user?.firstName} ${user?.lastName}",
+                                fontSize = 24.sp,
+                                color = Color.Yellow,
+                                modifier = Modifier.padding(start = 15.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = user?.username ?: "",
+                                modifier = Modifier.padding(start = 15.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            user?.role?.let {
+                                Text(
+                                    text = stringResource(id = it.text),
+                                    modifier = Modifier.padding(start = 15.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.profile_followers_list),
+                        modifier = Modifier
+                            .clickable(onClick = { navigate("follows/${user?.id}/followers") })
+                            .padding(start = 16.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.profile_following_list),
+                        modifier = Modifier
+                            .clickable(onClick = { navigate("follows/${user?.id}/following") })
+                            .padding(start = 16.dp)
+                    )
+                    if (user?.id != viewedBy?.id) {
+                        Button(
+                            onClick = {
+                                viewModel.followHandle(
+                                    token,
+                                    user?.id,
+                                    user?.follow != null
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (user?.follow != null) darkBlue else Color.LightGray,
+                                contentColor = if (user?.follow != null) Color.LightGray else darkBlue
+                            ),
+                            modifier = Modifier
+                                .padding(top = 5.dp, start = 8.dp)
+                        ) {
+                            Text(
+                                stringResource(
+                                    id = if (user?.follow != null) R.string.profile_following else R.string.profile_follow
+                                )
                             )
                         }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
+                    }
+                    if (viewedBy?.role == RoleStatus.ADMINISTRATOR) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentSize(Alignment.TopEnd)
                         ) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.profile_ban)) },
-                                onClick = {
-                                    viewModel.updateUser(token, user!!.id, UpdateUserPayload(role = RoleStatus.BANNED))
-                                }
-                            )
+                            IconButton(onClick = { expanded = !expanded }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "More"
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.profile_ban)) },
+                                    onClick = {
+                                        viewModel.updateUser(
+                                            token,
+                                            user!!.id,
+                                            UpdateUserPayload(role = RoleStatus.BANNED)
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
