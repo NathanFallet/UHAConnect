@@ -62,9 +62,9 @@
     <string name="parameters_repeat_password">Repeat password</string>
     <string name="parameters_invalid_un_credentials">Invalid username</string>
     <string name="parameters_invalid_pw_credentials">Invalid password</string>
-    <string name="login_invalid_username" >Invalid username</string>
+    <string name="login_invalid_username">Invalid username</string>
     <string name="login_invalid_password">Invalid password</string>
-    <string name="login_passwords_not_match" >Passwords do not match</string>
+    <string name="login_passwords_not_match">Passwords do not match</string>
     <string name="login_invalid_mail">Invalid email</string>
     <string name="parameters_settings">Settings</string>
     <string name="notification_notifications">Notifications</string>
@@ -72,6 +72,8 @@
     <string name="notifications_comment">%s commented your post</string>
     <string name="notifications_follow">%s starts following you</string>
     <string name="notifications_post">New post from %s</string>
+    <string name="notifications_ban_title">You have been banned.</string>
+    <string name="notifications_ban_body">Banned by %s</string>
     <string name="profile_follow">Follow</string>
     <string name="profile_following">Following</string>
     <string name="profile_followers_list">Followers</string>
