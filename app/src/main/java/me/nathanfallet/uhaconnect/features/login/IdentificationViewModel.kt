@@ -24,7 +24,7 @@ class IdentificationViewModel : ViewModel() {
     val code = MutableLiveData("")
 
     fun login(loginUser: (UserToken) -> Unit) {
-        if (!User.isUsernameValid(username.value ?: "")) {
+        if (!User.isUsernameValid(username.value ?: "") && !User.isEmailValid(username.value ?: "")) {
             error.value = R.string.login_invalid_username
             return
         }

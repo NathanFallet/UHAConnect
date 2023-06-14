@@ -18,7 +18,7 @@
     <string name="instantextension_hours">%s hours</string>
     <string name="instantextension_minutes">%s minutes</string>
     <string name="instantextension_seconds">%s seconds</string>
-    <string name="login_username">Username</string>
+    <string name="login_username">Username or E-mail</string>
     <string name="login_password">Password</string>
     <string name="login_forgot_pw">Forgotten your password?</string>
     <string name="login_no_account">You don\'t have an account? </string>
