@@ -164,6 +164,13 @@ class APIService {
     }
 
     @Throws(Exception::class)
+    suspend fun getPostsFollowing(token: String, offset: Long = 0): List<Post> {
+        return createRequest(HttpMethod.Get, "/posts/follow", token) {
+            parameter("offset", offset)
+        }.body()
+    }
+
+    @Throws(Exception::class)
     suspend fun getComments(token: String, id: Int, offset: Long = 0): List<Comment> {
         return createRequest(HttpMethod.Get, "/posts/$id/comments", token) {
             parameter("offset", offset)
@@ -215,6 +222,14 @@ class APIService {
             contentType(ContentType.Application.Json)
             setBody(payload)
         }
+    }
+
+    suspend fun follow(token: String, id: Int){
+        createRequest(HttpMethod.Post, "/users/$id/follow", token)
+    }
+
+    suspend fun unfollow(token: String, id: Int){
+        createRequest(HttpMethod.Delete, "/users/$id/follow", token)
     }
 }
 

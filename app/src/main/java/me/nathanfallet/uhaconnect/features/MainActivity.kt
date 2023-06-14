@@ -215,6 +215,9 @@ fun UHAConnectApp() {
                     val userId = user?.id ?: ""
                     navController.navigate("profile/$userId")
                 }
+                dialog("following"){
+                    navController.navigate("feed/following")
+                }
                 composable(
                     "profile/{userId}",
                     arguments = listOf(navArgument("userId") { type = NavType.IntType })

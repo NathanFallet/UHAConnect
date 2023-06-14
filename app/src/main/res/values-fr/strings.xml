@@ -8,6 +8,8 @@
     <string name="profile_logout">Déconnexion</string>
     <string name="profile_profile">Profile</string>
     <string name="profile_settings">Paramètres</string>
+    <string name="profile_ban">Ban user</string>
+    <string name="profile_been_banned">L\'utilisateur a été banni</string>
     <string name="title_activity_post_view">PostView</string>
     <string name="title_activity_favs_view">Favoris</string>
     <string name="title_activity_validation_view">Requêtes</string>
@@ -69,4 +71,8 @@
     <string name="notifications_comment">%s a commenté votre publication</string>
     <string name="notifications_follow">%s a commencé à vous suivre</string>
     <string name="notifications_post">Nouvelle publication de %s</string>
+    <string name="profile_follow">Suivre</string>
+    <string name="profile_following">Abonné</string>
+    <string name="feed_following">Suivis</string>
+    <string name="feed_all">Tout</string>
 </resources>

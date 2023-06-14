@@ -106,4 +106,16 @@ class ProfileViewModel(
         }
     }
 
+    fun followHandle(token: String?, id: Int?, isFollowed: Boolean){
+        if (token == null || id == null) return
+        viewModelScope.launch{
+            try {
+                if (isFollowed) APIService.getInstance(Unit).unfollow(token, id)
+                else APIService.getInstance(Unit).follow(token, id)
+            }
+            catch (e: Exception){}
+        }
+    }
+
+
 }

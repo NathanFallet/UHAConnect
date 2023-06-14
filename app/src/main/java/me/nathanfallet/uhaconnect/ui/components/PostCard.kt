@@ -169,7 +169,8 @@ fun PostCard(
             }
             MarkdownText(
                 markdown = post.content,
-                color = Color.White
+                color = Color.White,
+                maxLines = if (detailed) Int.MAX_VALUE else 3 ,
                 )
             Row(modifier = Modifier
                 .fillMaxWidth()
@@ -180,7 +181,7 @@ fun PostCard(
                     Icon(
                         imageVector = Icons.Filled.Favorite,
                         contentDescription = "Like",
-                        tint = if (post.favorite == null) Color.Black else Color.White
+                        tint = if (post.favorite == null) Color.White else Color.Red
                     )
                 }
                 if (!detailed) {
