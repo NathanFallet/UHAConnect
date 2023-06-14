@@ -24,11 +24,13 @@ jobs:
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTOREPASSWORD }}
           keyPassword: ${{ secrets.KEYPASSWORD }}
-      - name: Upload app
+      - name: Upload apk
         uses: actions/upload-artifact@v3
         with:
-          name: app-release-signed
+          name: apk
           path: ${{steps.sign_apk.outputs.signedReleaseFile}}
+      - name: Build backend
+        run: ./gradlew buildFatJar
       - name: Upload backend
         uses: actions/upload-artifact@v3
         with:
