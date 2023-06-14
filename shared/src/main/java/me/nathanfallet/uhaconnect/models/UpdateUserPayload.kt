@@ -4,11 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UpdateUserPayload(
-    var firstName: String? = null,
-    var lastName: String? = null,
-    var username: String? = null,
-    var email: String? = null,
-    var role: RoleStatus? = null,
-    var password: String? = null,
-    var picture: String? = null
+    val firstName: String? = null,
+    val lastName: String? = null,
+    val username: String? = null,
+    val email: String? = null,
+    val role: RoleStatus? = null,
+    val password: String? = null,
+    val picture: String? = null
 )

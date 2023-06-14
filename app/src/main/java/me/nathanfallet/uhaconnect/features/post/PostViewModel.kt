@@ -30,6 +30,10 @@ class PostViewModel(
     val comments: LiveData<List<Comment>>
         get() = _comments
 
+    private val _hasMore = MutableLiveData(true)
+    val hasMore: LiveData<Boolean>
+        get() = _hasMore
+
     fun loadPost(token: String?) {
         if (postId == null || token == null) return
         viewModelScope.launch {
@@ -41,11 +45,17 @@ class PostViewModel(
         }
     }
 
-    fun loadComments(token: String?) {
+    fun loadComments(token: String?, reset: Boolean) {
         if (postId == null || token == null) return
         viewModelScope.launch {
             try {
-                _comments.value = APIService.getInstance(Unit).getComments(token, postId)
+                val offset = (if (reset) 0 else _comments.value?.size ?: 0).toLong()
+                APIService.getInstance(Unit).getComments(token, postId, offset).let {
+                    _comments.value =
+                        if (reset) it
+                        else (_comments.value ?: listOf()) + it
+                    _hasMore.value = it.isNotEmpty()
+                }
             } catch (e: Exception) {
 
             }

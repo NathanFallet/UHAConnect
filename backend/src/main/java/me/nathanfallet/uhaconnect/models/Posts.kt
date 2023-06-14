@@ -5,13 +5,12 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ResultRow
 
 object Posts : IntIdTable() {
+
     val user_id = reference("user_id", Users)
     val title = varchar("title", 32)
     val content = text("content")
     val date = long("date")
     val validated = bool("validated").default(false)
-
-    override val primaryKey = PrimaryKey(id)
 
     fun toPost(row: ResultRow): Post {
         val user = if (row.hasValue(Users.id)) Users.toUser(row)

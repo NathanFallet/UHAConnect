@@ -1,7 +1,6 @@
 package me.nathanfallet.uhaconnect.features.feed
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,13 +40,13 @@ fun FeedView(
     val viewModel: FeedViewModel = viewModel()
 
     val posts by viewModel.posts.observeAsState()
+    val hasMore by viewModel.hasMore.observeAsState()
 
-    if (posts == null) viewModel.loadData(token)
+    if (posts == null) viewModel.loadData(token, true)
 
     LazyColumn(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         stickyHeader{
             TopAppBar(
@@ -113,7 +112,8 @@ fun FeedView(
         items(posts ?: listOf()) { post ->
             PostCard(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .padding(vertical = 8.dp),
                 post = post,
                 navigate = navigate,
                 favoriteCheck = {
@@ -125,11 +125,15 @@ fun FeedView(
                 deletePost = {
                     viewModel.deletePost(token, post.id)
                 },
-                updateUser ={
+                updateUser = {
 
                 },
                 viewedBy = user
             )
+            if (hasMore == true && posts?.lastOrNull()?.id == post.id) {
+                // Load more posts (pagination)
+                viewModel.loadData(token, false)
+            }
         }
     }
 }

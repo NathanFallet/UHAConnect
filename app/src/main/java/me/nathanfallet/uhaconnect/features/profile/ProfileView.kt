@@ -66,8 +66,10 @@ fun ProfileView(
 
     val posts by viewModel.posts.observeAsState()
     val user by viewModel.user.observeAsState()
+    val hasMore by viewModel.hasMore.observeAsState()
 
-    if (posts == null || user == null) viewModel.loadData(token)
+    if (user == null) viewModel.loadUser(token)
+    else if (posts == null) viewModel.loadPosts(token, true)
 
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
@@ -189,11 +191,15 @@ fun ProfileView(
                 deletePost = {
                     viewModel.deletePost(token, post.id)
                 },
-                updateUser ={
+                updateUser = {
 
                 },
                 viewedBy = viewedBy
             )
+            if (hasMore == true && posts?.lastOrNull()?.id == post.id) {
+                // Load more posts (pagination)
+                viewModel.loadPosts(token, false)
+            }
         }
     }
 }

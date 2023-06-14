@@ -41,12 +41,14 @@ fun PostView(
 ) {
 
     val viewModel: PostViewModel = viewModel()
+
     val newComment by viewModel.newComment.observeAsState()
     val post by viewModel.post.observeAsState()
     val comments by viewModel.comments.observeAsState()
+    val hasMore by viewModel.hasMore.observeAsState()
 
     if (post == null) viewModel.loadPost(token)
-    else if (comments == null) viewModel.loadComments(token)
+    else if (comments == null) viewModel.loadComments(token, true)
 
     LazyColumn(modifier) {
         stickyHeader {
@@ -127,6 +129,10 @@ fun PostView(
                     },
                     viewedBy = viewedBy
                 )
+                if (hasMore == true && comments?.lastOrNull()?.id == comment.id) {
+                    // Load more comments (pagination)
+                    viewModel.loadComments(token, false)
+                }
             }
         }
     }

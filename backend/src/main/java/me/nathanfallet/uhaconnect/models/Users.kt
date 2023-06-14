@@ -14,8 +14,6 @@ object Users : IntIdTable() {
     val password = varchar("password", 255)
     val picture = varchar("picture", 255).nullable()
 
-    override val primaryKey = PrimaryKey(id)
-
     fun toUser(row: ResultRow): User {
         return User(
             id = row[id].value,

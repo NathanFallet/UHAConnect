@@ -45,8 +45,9 @@ fun NotificationView(
 
     val viewModel = viewModel<NotificationViewModel>()
     val notifications by viewModel.notifications.observeAsState()
+    val hasMore by viewModel.hasMore.observeAsState()
 
-    if (notifications == null) viewModel.loadData(token)
+    if (notifications == null) viewModel.loadData(token, true)
 
     LazyColumn(
         modifier = modifier,
@@ -99,6 +100,10 @@ fun NotificationView(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
+            }
+            if (hasMore == true && notifications?.lastOrNull()?.id == notification.id) {
+                // Load more notifications (pagination)
+                viewModel.loadData(token, false)
             }
         }
     }
