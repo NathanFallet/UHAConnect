@@ -82,7 +82,7 @@ fun NotificationView(
                     )
                     Text(
                         text = stringResource(
-                            id = notification.type.text(),
+                            id = notification.type.text,
                             notification.user?.username ?: ""
                         ),
                         style = MaterialTheme.typography.bodyMedium

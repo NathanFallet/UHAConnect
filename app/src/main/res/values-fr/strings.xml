@@ -84,4 +84,10 @@
     <string name="post_card_remove">Supprimer</string>
     <string name="post_card_validate">Valider</string>
     <string name="post_card_ban">Bannir l\'utilisateur</string>
+    <string name="role_student">Etudiant</string>
+    <string name="role_teacher">Professeur</string>
+    <string name="role_staff">Personnel</string>
+    <string name="role_moderator">Modérateur</string>
+    <string name="role_administrator">Administrateur</string>
+    <string name="role_banned">Banni</string>
 </resources>
