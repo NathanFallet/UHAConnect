@@ -62,9 +62,9 @@
     <string name="parameters_repeat_password">Répéter le mot de passe</string>
     <string name="parameters_invalid_un_credentials">Nom d\'utilisateur invalide</string>
     <string name="parameters_invalid_pw_credentials">Mot de passe invalide</string>
-    <string name="login_invalid_username" >Invalid username</string>
+    <string name="login_invalid_username">Invalid username</string>
     <string name="login_invalid_password">Invalid password</string>
-    <string name="login_passwords_not_match" >Passwords do not match</string>
+    <string name="login_passwords_not_match">Passwords do not match</string>
     <string name="login_invalid_mail">Invalid email</string>
     <string name="parameters_settings">Paramètres</string>
     <string name="notification_notifications">Notifications</string>
@@ -72,6 +72,8 @@
     <string name="notifications_comment">%s a commenté votre publication</string>
     <string name="notifications_follow">%s a commencé à vous suivre</string>
     <string name="notifications_post">Nouvelle publication de %s</string>
+    <string name="notifications_ban_title">Vous avez été banni.</string>
+    <string name="notifications_ban_body">Banned by %s</string>
     <string name="profile_follow">Suivre</string>
     <string name="profile_following">Abonné</string>
     <string name="profile_followers_list">Abonnés</string>
