@@ -1,16 +1,12 @@
 package me.nathanfallet.uhaconnect.ui.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
@@ -27,16 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import me.nathanfallet.uhaconnect.R
-import me.nathanfallet.uhaconnect.extensions.pictureUrl
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.RoleStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 
 @Composable
@@ -44,7 +35,8 @@ fun CommentCard(
     modifier: Modifier = Modifier,
     comment: Comment,
     deleteComment: () -> Unit,
-    viewedBy: User?
+    updateUser: (UpdateUserPayload) -> Unit,
+    viewedBy: User?,
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -63,19 +55,9 @@ fun CommentCard(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                AsyncImage(
-                    model = comment.user?.pictureUrl,
-                    contentDescription = comment.user?.username,
-                    placeholder = painterResource(id = R.drawable.picture_placeholder),
-                    error = painterResource(id = R.drawable.picture_placeholder),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(22.dp)
-                        .clip(CircleShape)
-                        .border(
-                            BorderStroke(1.dp, Color.White),
-                            CircleShape
-                        )
+                UserPictureView(
+                    user = comment.user,
+                    size = 22.dp
                 )
                 Text(
                     text = comment.user?.username.toString(),
@@ -105,6 +87,8 @@ fun CommentCard(
                                 text = { Text("Ban user") },
                                 onClick = {
                                     //TODO : Ban user method
+                                    updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
+
                                 }
                             )
                         }

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
@@ -34,7 +35,7 @@ fun FeedView(
     modifier: Modifier,
     navigate: (String) -> Unit,
     token: String?,
-    user: User?
+    user: User?,
 ) {
 
     val viewModel: FeedViewModel = viewModel()
@@ -125,8 +126,8 @@ fun FeedView(
                 deletePost = {
                     viewModel.deletePost(token, post.id)
                 },
-                updateUser = {
-
+                updateUser =  {
+                    viewModel.updateUser(token, post.user_id)
                 },
                 viewedBy = user
             )

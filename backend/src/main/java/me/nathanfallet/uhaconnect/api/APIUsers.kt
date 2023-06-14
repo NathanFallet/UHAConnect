@@ -187,13 +187,16 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "Invalid user id"))
                 return@get
             }
+            val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 10
+            val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val follows = Database.dbQuery {
                 Users
                     .join(Follows, JoinType.LEFT) {
                         Follows.user_id eq Users.id and (Follows.follower_id eq null or (Follows.follower_id eq user.id))
                     }
-                    .select { Follows.user_id eq id }
-                    .map(Follows::toFollow)
+                    .select { Follows.follower_id eq id }
+                    .limit(limit, offset)
+                    .map(Users::toUser)
             }
             call.respond(follows)
         }
@@ -208,7 +211,7 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "Invalid user"))
                 return@post
             }
-            Database.dbQuery {
+            val follow = Database.dbQuery {
                 Follows
                     .select { Follows.user_id eq id and (Follows.follower_id eq user.id) }
                     .map(Follows::toFollow)
@@ -238,7 +241,8 @@ fun Route.apiUsers() {
                     body_loc_args = listOf(user.username),
                 )
             )
-            call.respond(HttpStatusCode.Created)
+            call.response.status(HttpStatusCode.Created)
+            call.respond(follow)
         }
         delete("/{id}/follow") {
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
@@ -253,7 +257,7 @@ fun Route.apiUsers() {
             }
             Database.dbQuery {
                 Follows.deleteWhere {
-                    Op.build { Follows.user_id eq user.id and (Follows.follower_id eq id) }
+                    Op.build { Follows.user_id eq id and (Follows.follower_id eq user.id) }
                 }
             }
             call.respond(HttpStatusCode.NoContent)
