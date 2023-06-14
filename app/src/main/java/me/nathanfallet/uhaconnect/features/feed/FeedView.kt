@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -31,16 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.Permission
-import me.nathanfallet.uhaconnect.models.RoleStatus
-import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
@@ -134,38 +131,41 @@ fun FeedView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp)
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.Center
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = stringResource(R.string.feed_following),
                         fontSize = 20.sp,
-                        fontWeight = if (viewModel.loader == "following") FontWeight.Bold else null,
-                        modifier = Modifier.clickable(
-                            onClick = {
+                        fontWeight = if (viewModel.loader == "following") FontWeight.Bold
+                        else FontWeight.Thin,
+                        modifier = Modifier
+                            .weight(1f)
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                            .clickable(onClick = {
                                 navigate("feed/following")
-                            }
-                        )
+                            })
                     )
                     Divider(
                         modifier = Modifier
                             .padding(horizontal = 10.dp)
                             .fillMaxHeight()
-                            .width(1.dp)
-                            .height(10.dp)
+                            .width(2.dp)
+                            .height(20.dp)
                     )
                     Text(
                         stringResource(R.string.feed_all),
                         fontSize = 20.sp,
-                        fontWeight = if (viewModel.loader != "following") FontWeight.Bold else null,
-                        modifier = Modifier.clickable(
-                            onClick = {
+                        fontWeight = if (viewModel.loader != "following") FontWeight.Bold
+                        else FontWeight.Thin,
+                        modifier = Modifier
+                            .weight(1f)
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                            .clickable(onClick = {
                                 navigate("feed/posts")
                                 following = !following
-
-                            }
-                        )
+                            })
                     )
                 }
             }
@@ -174,7 +174,7 @@ fun FeedView(
             PostCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .padding(vertical = 8.dp),
+                    .padding(bottom = 16.dp),
                 post = post,
                 navigate = navigate,
                 favoriteCheck = {

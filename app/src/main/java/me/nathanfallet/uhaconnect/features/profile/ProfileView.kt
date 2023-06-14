@@ -1,9 +1,7 @@
 package me.nathanfallet.uhaconnect.features.profile
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.extensions.text
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
@@ -111,15 +110,15 @@ fun ProfileView(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .height(160.dp)
+                    .height(116.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .background(darkBlue)
-                        .height(80.dp)
+                        .height(58.dp)
                         .fillMaxWidth()
                 )
-                Row(modifier = Modifier.padding(top = 30.dp, start = 16.dp, end = 16.dp)) {
+                Row(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)) {
                     UserPictureView(
                         user = user,
                         size = 100.dp
@@ -132,10 +131,12 @@ fun ProfileView(
                             modifier = Modifier.padding(start = 15.dp),
                             maxLines = 1
                         )
-                        Text(
-                            text = user?.role.toString(),
-                            modifier = Modifier.padding(start = 15.dp)
-                        )
+                        user?.role?.let {
+                            Text(
+                                text = stringResource(id = it.text),
+                                modifier = Modifier.padding(start = 15.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -146,13 +147,13 @@ fun ProfileView(
                 Text(
                     text = stringResource(R.string.profile_followers_list),
                     modifier = Modifier
-                        .clickable(onClick = {navigate("follows/${user?.id}/followers")})
+                        .clickable(onClick = { navigate("follows/${user?.id}/followers") })
                         .padding(start = 16.dp)
                 )
                 Text(
                     text = stringResource(R.string.profile_following_list),
                     modifier = Modifier
-                        .clickable(onClick = {navigate("follows/${user?.id}/following")})
+                        .clickable(onClick = { navigate("follows/${user?.id}/following") })
                         .padding(start = 16.dp)
                 )
                 if (user?.id != viewedBy?.id) {
