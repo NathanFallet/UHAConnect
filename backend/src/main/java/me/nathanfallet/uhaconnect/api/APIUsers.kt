@@ -5,13 +5,35 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.put
+import io.ktor.server.routing.route
 import kotlinx.datetime.Clock
 import me.nathanfallet.uhaconnect.database.Database
-import me.nathanfallet.uhaconnect.models.*
+import me.nathanfallet.uhaconnect.models.Favorites
+import me.nathanfallet.uhaconnect.models.Follows
+import me.nathanfallet.uhaconnect.models.Notifications
+import me.nathanfallet.uhaconnect.models.Permission
+import me.nathanfallet.uhaconnect.models.Posts
+import me.nathanfallet.uhaconnect.models.TypeStatus
+import me.nathanfallet.uhaconnect.models.UpdateUserPayload
+import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.models.Users
 import me.nathanfallet.uhaconnect.plugins.NotificationData
 import me.nathanfallet.uhaconnect.plugins.NotificationsPlugin
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 
 fun Route.apiUsers() {
     route("/users") {
@@ -22,7 +44,6 @@ fun Route.apiUsers() {
             }
             call.respond(users)
         }
-
         get("/me") {
             val user = getUser() ?: run {
                 call.response.status(HttpStatusCode.Unauthorized)
@@ -31,16 +52,25 @@ fun Route.apiUsers() {
             }
             call.respond(user)
         }
-
         get("/{id}") {
+            val me = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@get
+            }
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
                 call.respond(mapOf("error" to "Invalid user id"))
                 return@get
             }
             val user = Database.dbQuery {
-                Users.select { Users.id eq id }
-                    .map { Users.toUser(it) }.singleOrNull()
+                Users
+                    .join(Follows, JoinType.LEFT) {
+                        Follows.user_id eq Users.id and (Follows.follower_id eq null or (Follows.follower_id eq me.id))
+                    }
+                    .select { Users.id eq id }
+                    .map { Users.toUser(it) }
+                    .singleOrNull()
             } ?: run {
                 call.response.status(HttpStatusCode.NotFound)
                 call.respond(mapOf("error" to "User not found"))
@@ -48,7 +78,6 @@ fun Route.apiUsers() {
             }
             call.respond(user)
         }
-
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
@@ -56,7 +85,8 @@ fun Route.apiUsers() {
                 return@put
             }
             val user = Database.dbQuery {
-                Users.select { Users.id eq id }
+                Users
+                    .select { Users.id eq id }
                     .map { Users.toUser(it) }.singleOrNull()
             } ?: run {
                 call.response.status(HttpStatusCode.NotFound)
@@ -70,7 +100,6 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "Invalid field."))
                 return@put
             }
-
             uploadUser.username
                 ?.takeIf { !it.equals(user.username, true) }
                 ?.let {
@@ -89,7 +118,6 @@ fun Route.apiUsers() {
                         return@put
                     }
                 }
-
             Database.dbQuery {
                 Users
                     .update({ Users.id eq user.id }) {
@@ -112,7 +140,6 @@ fun Route.apiUsers() {
                         }
                     }
             }
-
             val newUser = Database.dbQuery {
                 Users.select { Users.id eq id }
                     .map { Users.toUser(it) }.singleOrNull()
@@ -121,11 +148,14 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "User not found"))
                 return@put
             }
-
             call.respond(newUser)
         }
-
         get("/{id}/posts") {
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@get
+            }
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
                 call.respond(mapOf("error" to "Invalid user id"))
@@ -135,27 +165,38 @@ fun Route.apiUsers() {
             val offset = call.request.queryParameters["offset"]?.toLongOrNull() ?: 0L
             val posts = Database.dbQuery {
                 Posts
-                    .join(
-                        Users,
-                        JoinType.INNER
-                    )
-                    .join(
-                        Favorites,
-                        JoinType.LEFT,
-                        Favorites.post_id,
-                        Posts.id
-                    )
+                    .join(Users, JoinType.INNER)
+                    .join(Favorites, JoinType.LEFT) {
+                        Favorites.post_id eq Posts.id and (Favorites.user_id eq null or (Favorites.user_id eq user.id))
+                    }
                     .select { Posts.user_id eq id }
-                    .orderBy(
-                        Posts.date,
-                        SortOrder.DESC
-                    )
+                    .orderBy(Posts.date, SortOrder.DESC)
                     .limit(limit, offset)
                     .map(Posts::toPost)
             }
             call.respond(posts)
         }
-
+        get("/{id}/follow") {
+            val user = getUser() ?: run {
+                call.response.status(HttpStatusCode.Unauthorized)
+                call.respond(mapOf("error" to "Invalid user"))
+                return@get
+            }
+            val id = call.parameters["id"]?.toIntOrNull() ?: run {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid user id"))
+                return@get
+            }
+            val follows = Database.dbQuery {
+                Users
+                    .join(Follows, JoinType.LEFT) {
+                        Follows.user_id eq Users.id and (Follows.follower_id eq null or (Follows.follower_id eq user.id))
+                    }
+                    .select { Follows.user_id eq id }
+                    .map(Follows::toFollow)
+            }
+            call.respond(follows)
+        }
         post("/{id}/follow") {
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)
@@ -167,9 +208,11 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "Invalid user"))
                 return@post
             }
-
             Database.dbQuery {
-                Follows.insert {
+                Follows
+                    .select { Follows.user_id eq id and (Follows.follower_id eq user.id) }
+                    .map(Follows::toFollow)
+                    .singleOrNull() ?: Follows.insert {
                     it[Follows.user_id] = id
                     it[Follows.follower_id] = user.id
                 }.resultedValues?.map(Follows::toFollow)?.singleOrNull()
@@ -178,7 +221,6 @@ fun Route.apiUsers() {
                 call.respond(mapOf("error" to "Error while creating post."))
                 return@post
             }
-
             Database.dbQuery {
                 Notifications
                     .insert {
@@ -188,7 +230,6 @@ fun Route.apiUsers() {
                         it[date] = Clock.System.now().toEpochMilliseconds()
                     }
             }
-
             NotificationsPlugin.sendNotificationToUser(
                 id,
                 NotificationData(
@@ -197,10 +238,8 @@ fun Route.apiUsers() {
                     body_loc_args = listOf(user.username),
                 )
             )
-
             call.respond(HttpStatusCode.Created)
         }
-
         delete("/{id}/follow") {
             val id = call.parameters["id"]?.toIntOrNull() ?: run {
                 call.response.status(HttpStatusCode.BadRequest)

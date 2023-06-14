@@ -15,6 +15,14 @@ object Users : IntIdTable() {
     val picture = varchar("picture", 255).nullable()
 
     fun toUser(row: ResultRow): User {
+        val follow =
+            if (
+                row.hasValue(Follows.user_id) &&
+                row.getOrNull(Follows.user_id) != null &&
+                row.hasValue(Follows.follower_id) &&
+                row.getOrNull(Follows.follower_id) != null
+            ) Follows.toFollow(row)
+            else null
         return User(
             id = row[id].value,
             username = row[username],
@@ -23,7 +31,8 @@ object Users : IntIdTable() {
             email = row[email],
             role = RoleStatus.valueOf(row[role]),
             password = row[password],
-            picture = row.getOrNull(picture)
+            picture = row.getOrNull(picture),
+            follow = follow
         )
     }
 
