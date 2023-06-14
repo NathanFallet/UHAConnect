@@ -16,12 +16,12 @@ jobs:
       - name: Build apk
         run: ./gradlew assemble
       - name: Upload app
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-release-unsigned.apk
           path: app/build/outputs/apk/release/app-release-unsigned.apk
       - name: Upload backend
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: backend-all.jar
           path: backend/build/libs/backend-all.jar
