@@ -14,14 +14,23 @@ jobs:
           distribution: 'temurin'
           java-version: 19
       - name: Build apk
-        run: ./gradlew assemble
+        run: ./gradlew assembleRelease
+      - name: Sign APK
+        id: sign_apk
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNINGKEYBASE64 }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTOREPASSWORD }}
+          keyPassword: ${{ secrets.KEYPASSWORD }}
       - name: Upload app
         uses: actions/upload-artifact@v3
         with:
-          name: app-release-unsigned.apk
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          name: app-release-signed
+          path: ${{steps.sign_apk.outputs.signedReleaseFile}}
       - name: Upload backend
         uses: actions/upload-artifact@v3
         with:
-          name: backend-all.jar
+          name: backend
           path: backend/build/libs/backend-all.jar
