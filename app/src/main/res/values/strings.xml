@@ -22,7 +22,7 @@
     <string name="instantextension_minutes">%s minutes</string>
     <string name="instantextension_seconds">%s seconds</string>
     <string name="register_username">Username</string>
-    <string name="login_username">Username or uha E-mail</string>
+    <string name="login_username">Username or uha email</string>
     <string name="login_password">Password</string>
     <string name="login_forgot_pw">Forgotten your password?</string>
     <string name="login_no_account">You don\'t have an account?</string>
@@ -42,13 +42,13 @@
     <string name="login_new_password">New password</string>
     <string name="login_rp_new_password">Confirm new password</string>
     <string name="login_change_password">Change password</string>
-    <string name="login_email_wrong">E-mail unknown</string>
+    <string name="login_email_wrong">Unknown email</string>
     <string name="login_code_pw_wrong">Code wrong or invalid password</string>
     <string name="login_missing_fields">Missing fields</string>
     <string name="post_write_comment">Write a comment</string>
     <string name="login_login">Log in</string>
     <string name="compose_post">Post</string>
-    <string name="compose_mind">What\'s in your mind ?</string>
+    <string name="compose_mind">What\'s in your mind?</string>
     <string name="compose_title">Title</string>
     <string name="compose_tag">Tag</string>
     <string name="compose_add_tag">Add tag</string>
