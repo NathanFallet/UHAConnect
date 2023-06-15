@@ -184,7 +184,7 @@ fun ParametersView(
                 OutlinedTextField(
                     value = newUsername,
                     onValueChange = { viewModel.newUsername.value = it },
-                    label = { Text(stringResource(R.string.login_username)) },
+                    label = { Text(stringResource(R.string.register_username)) },
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
