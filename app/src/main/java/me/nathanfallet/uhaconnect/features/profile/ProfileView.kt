@@ -46,6 +46,7 @@ import me.nathanfallet.uhaconnect.extensions.text
 import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
+import me.nathanfallet.uhaconnect.ui.components.Picker
 import me.nathanfallet.uhaconnect.ui.components.PostCard
 import me.nathanfallet.uhaconnect.ui.components.UserPictureView
 import me.nathanfallet.uhaconnect.ui.theme.darkBlue
@@ -207,9 +208,28 @@ fun ProfileView(
                                     onClick = {
                                         viewModel.updateUser(
                                             token,
-                                            user!!.id,
+                                            user?.id,
                                             UpdateUserPayload(role = RoleStatus.BANNED)
                                         )
+                                        expanded = false
+                                    }
+                                )
+                                Picker(
+                                    items = mapOf(
+                                        RoleStatus.STUDENT to stringResource(RoleStatus.STUDENT.text),
+                                        RoleStatus.TEACHER to stringResource(RoleStatus.TEACHER.text),
+                                        RoleStatus.STAFF to stringResource(RoleStatus.STAFF.text),
+                                        RoleStatus.MODERATOR to stringResource(RoleStatus.MODERATOR.text),
+                                        RoleStatus.ADMINISTRATOR to stringResource(RoleStatus.ADMINISTRATOR.text)
+                                    ),
+                                    placeholder = stringResource(R.string.role_set),
+                                    onSelected = {
+                                        viewModel.updateUser(
+                                            token,
+                                            user?.id,
+                                            UpdateUserPayload(role = it)
+                                        )
+                                        expanded = false
                                     }
                                 )
                             }

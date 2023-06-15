@@ -82,6 +82,7 @@
     <string name="feed_following">Following</string>
     <string name="feed_all">All</string>
     <string name="post_card_remove">Remove post</string>
+    <string name="post_card_remove_comment">Remove comment</string>
     <string name="post_card_validate">Validate post</string>
     <string name="post_card_ban">Ban user</string>
     <string name="role_student">Student</string>
@@ -90,4 +91,5 @@
     <string name="role_moderator">Moderator</string>
     <string name="role_administrator">Administrator</string>
     <string name="role_banned">Banned</string>
+    <string name="role_set">Set role</string>
 </resources>

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import coil.imageLoader
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.extensions.text
 import me.nathanfallet.uhaconnect.extensions.timeAgo
 import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Post
@@ -110,7 +111,6 @@ fun PostCard(
                     fontSize = 24.sp,
                 )
                 if (viewedBy?.role?.hasPermission(Permission.POST_DELETE) == true) {
-
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -135,7 +135,8 @@ fun PostCard(
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.post_card_validate)) },
                                     onClick = {
-                                        updatePost(UpdatePostPayload(null, null, true))
+                                        updatePost(UpdatePostPayload(validated = true))
+                                        expanded = false
                                     }
                                 )
                             }
@@ -143,8 +144,25 @@ fun PostCard(
                                 text = { Text(stringResource(R.string.post_card_ban)) },
                                 onClick = {
                                     updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
+                                    expanded = false
                                 }
                             )
+                            if (viewedBy.role == RoleStatus.ADMINISTRATOR) {
+                                Picker(
+                                    items = mapOf(
+                                        RoleStatus.STUDENT to stringResource(RoleStatus.STUDENT.text),
+                                        RoleStatus.TEACHER to stringResource(RoleStatus.TEACHER.text),
+                                        RoleStatus.STAFF to stringResource(RoleStatus.STAFF.text),
+                                        RoleStatus.MODERATOR to stringResource(RoleStatus.MODERATOR.text),
+                                        RoleStatus.ADMINISTRATOR to stringResource(RoleStatus.ADMINISTRATOR.text)
+                                    ),
+                                    placeholder = stringResource(R.string.role_set),
+                                    onSelected = {
+                                        updateUser(UpdateUserPayload(role = it))
+                                        expanded = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
