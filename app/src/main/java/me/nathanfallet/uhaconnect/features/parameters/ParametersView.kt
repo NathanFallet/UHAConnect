@@ -184,7 +184,7 @@ fun ParametersView(
                 OutlinedTextField(
                     value = newUsername,
                     onValueChange = { viewModel.newUsername.value = it },
-                    label = { stringResource(R.string.login_username) },
+                    label = { Text(stringResource(R.string.login_username)) },
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .fillMaxWidth(),
@@ -218,7 +218,7 @@ fun ParametersView(
                 OutlinedTextField(
                     value = newPw,
                     onValueChange = { viewModel.newPassword.value = it },
-                    label = { stringResource(R.string.parameters_new_password) },
+                    label = { Text(stringResource(R.string.parameters_new_password)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 5.dp)
@@ -229,7 +229,7 @@ fun ParametersView(
                 OutlinedTextField(
                     value = rpPw,
                     onValueChange = { viewModel.newPassword2.value = it },
-                    label = { stringResource(R.string.parameters_repeat_password) },
+                    label = { Text(stringResource(R.string.parameters_repeat_password)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 5.dp)
