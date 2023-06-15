@@ -19,7 +19,7 @@ data class Post(
     companion object {
 
         fun isTitleValid(title: String): Boolean {
-            return title.isNotBlank() && title.length <= 64
+            return title.isNotBlank() && title.length <= 255
         }
 
     }

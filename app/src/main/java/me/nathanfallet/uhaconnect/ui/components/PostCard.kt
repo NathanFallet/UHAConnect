@@ -34,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.imageLoader
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.extensions.text
@@ -170,11 +169,13 @@ fun PostCard(
             }
             MarkdownText(
                 modifier = modifier.fillMaxWidth(),
-                markdown = post.content,
+                markdown = post.content.let {
+                    if (detailed) it else it
+                        .replace(Regex("!\\[.*]\\(.*\\)"), "")
+                },
                 color = Color.White,
                 maxLines = if (detailed) Int.MAX_VALUE else 3,
-                textAlign = TextAlign.Start,
-                imageLoader = context.imageLoader
+                textAlign = TextAlign.Start
             )
             if (post.tag.isNotEmpty()) {
                 Row(
