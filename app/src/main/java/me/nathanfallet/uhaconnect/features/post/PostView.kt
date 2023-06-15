@@ -129,8 +129,8 @@ fun PostView(
                     deleteComment = {
                         viewModel.deleteComment(token, post.id, comment.id)
                     },
-                    updateUser ={
-                        viewModel.updateUser(token, comment.user_id, UpdateUserPayload(role = RoleStatus.BANNED))
+                    updateUser = {
+                        viewModel.updateUser(token, comment.user_id, it)
                     },
                     viewedBy = viewedBy,
                     navigate = navigate
