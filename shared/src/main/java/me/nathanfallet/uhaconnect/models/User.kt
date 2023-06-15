@@ -22,7 +22,7 @@ data class User(
         }
 
         fun isEmailValid(email: String): Boolean {
-            return Regex("[a-zA-Z0-9]+\\.[a-zA-Z0-9]+@uha\\.fr").matches(email)
+            return Regex("[a-zA-Z0-9\\-]+\\.[a-zA-Z0-9\\-]+@uha\\.fr").matches(email)
         }
 
     }
