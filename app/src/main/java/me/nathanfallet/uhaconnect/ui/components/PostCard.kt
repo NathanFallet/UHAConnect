@@ -19,7 +19,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -108,21 +107,21 @@ fun PostCard(
             ) {
                 Text(
                     text = post.title,
-                    modifier = Modifier.padding(bottom = 5.dp, top = 5.dp),
+                    modifier = Modifier
+                        .padding(bottom = 5.dp, top = 5.dp)
+                        .weight(1f),
                     fontSize = 24.sp,
                 )
                 if (viewedBy?.role?.hasPermission(Permission.POST_DELETE) == true) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .wrapContentSize(Alignment.TopEnd)
                     ) {
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More"
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More",
+                            modifier = Modifier.clickable { expanded = !expanded }
+                        )
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }

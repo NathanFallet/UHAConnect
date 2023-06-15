@@ -14,7 +14,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +50,7 @@ fun CommentCard(
             .fillMaxWidth()
     ) {
         Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .padding(16.dp)
         ) {
@@ -63,9 +63,9 @@ fun CommentCard(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
-                    .clickable(onClick = {navigate("profile/${comment.user?.id}")}
-                    )
-                ){
+                        .clickable { navigate("profile/${comment.user?.id}") }
+                        .weight(1f)
+                ) {
                     UserPictureView(
                         user = comment.user,
                         size = 22.dp
@@ -78,15 +78,13 @@ fun CommentCard(
                 if (viewedBy?.role?.hasPermission(Permission.COMMENT_DELETE) == true) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .wrapContentSize(Alignment.TopEnd)
                     ) {
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More"
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More",
+                            modifier = Modifier.clickable { expanded = !expanded }
+                        )
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
