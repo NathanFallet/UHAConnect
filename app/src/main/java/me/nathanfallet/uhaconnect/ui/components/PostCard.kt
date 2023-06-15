@@ -176,6 +176,30 @@ fun PostCard(
                 textAlign = TextAlign.Start,
                 imageLoader = context.imageLoader
             )
+            if (post.tag.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    post.tag.forEach {
+                        Box(
+                            modifier = Modifier
+                                .background(Color.Yellow, RoundedCornerShape(20.dp))
+                        ) {
+                            Text(
+                                text = it,
+                                modifier = Modifier
+                                    .padding(8.dp),
+                                color = Color.DarkGray,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -201,27 +225,6 @@ fun PostCard(
                         modifier = Modifier.padding(start = 8.dp)
                     ) {
                         Text(text = stringResource(R.string.postcard_showmore))
-                    }
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                post.tag.forEach {
-                    Box(
-                        modifier = Modifier
-                            .background(Color.Yellow, RoundedCornerShape(20.dp))
-                    ) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .padding(8.dp),
-                            color = Color.DarkGray,
-                            fontSize = 12.sp
-                        )
                     }
                 }
             }
