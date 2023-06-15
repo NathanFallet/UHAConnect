@@ -54,6 +54,8 @@
     <string name="compose_mind">What\'s in your mind ?</string>
     <string name="compose_title">Title</string>
     <string name="compose_tag">Tag</string>
+    <string name="compose_add_tag">Add tag</string>
+    <string name="compose_image">Image</string>
     <string name="parameters_change_un">Change username</string>
     <string name="parameters_new_username">New username</string>
     <string name="parameters_validate">Validate</string>

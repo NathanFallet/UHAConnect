@@ -1,5 +1,6 @@
 package me.nathanfallet.uhaconnect.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
@@ -122,7 +124,6 @@ fun PostCard(
                                 contentDescription = "More"
                             )
                         }
-
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
@@ -179,15 +180,17 @@ fun PostCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { favoriteCheck(post.favorite != null) }) {
-                    Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Like",
-                        tint = if (post.favorite == null) Color.White else Color.Red
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = "Like",
+                    tint = if (post.favorite == null) Color.White else Color.Red,
+                    modifier = Modifier.clickable {
+                        favoriteCheck(post.favorite != null)
+                    }
+                )
                 if (!detailed) {
                     Button(
                         onClick = { navigate("post/${post.id}") },
@@ -198,6 +201,27 @@ fun PostCard(
                         modifier = Modifier.padding(start = 8.dp)
                     ) {
                         Text(text = stringResource(R.string.postcard_showmore))
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                post.tag.forEach {
+                    Box(
+                        modifier = Modifier
+                            .background(Color.Yellow, RoundedCornerShape(20.dp))
+                    ) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .padding(8.dp),
+                            color = Color.DarkGray,
+                            fontSize = 12.sp
+                        )
                     }
                 }
             }

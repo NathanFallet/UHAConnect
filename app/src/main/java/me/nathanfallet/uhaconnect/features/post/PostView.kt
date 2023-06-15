@@ -39,8 +39,7 @@ fun PostView(
     modifier: Modifier,
     navigate: (String) -> Unit,
     token: String?,
-    viewedBy: User?,
-    onUpdateUser: (User) -> Unit
+    viewedBy: User?
 ) {
 
     val viewModel: PostViewModel = viewModel()

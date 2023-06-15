@@ -3,22 +3,27 @@ package me.nathanfallet.uhaconnect.features.compose
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -26,13 +31,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.nathanfallet.uhaconnect.R
 import me.nathanfallet.uhaconnect.models.User
@@ -53,12 +62,15 @@ fun ComposeView(
 
     val postContent by viewModel.postContent.observeAsState()
     val titleContent by viewModel.titleContent.observeAsState()
+    val tags by viewModel.tags.observeAsState()
+    val newTag by viewModel.newTag.observeAsState()
 
     val context = LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> viewModel.selectMedia(token, uri, context) }
     )
+    var showDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = modifier,
@@ -103,7 +115,7 @@ fun ComposeView(
                 )
                 Button(
                     onClick = {
-                        // TODO: Add tag
+                        showDialog = true
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = darkBlue,
@@ -114,24 +126,60 @@ fun ComposeView(
                     Text(text = stringResource(R.string.compose_tag), color = Color.White)
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "Post",
+                        contentDescription = "Tag",
                         tint = Color.White,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
+                if (showDialog) {
+                    Dialog(
+                        onDismissRequest = { showDialog = false }
+                    ) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 30.dp, vertical = 40.dp)
+                            ) {
+                                OutlinedTextField(
+                                    value = newTag ?: "",
+                                    onValueChange = { viewModel.newTag.value = it },
+                                )
+                                Button(
+                                    onClick = {
+                                        viewModel.addTag()
+                                        showDialog = false
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = darkBlue,
+                                        contentColor = Color.LightGray
+                                    ),
+                                    enabled = newTag?.isNotBlank() == true,
+                                ) {
+                                    Text(text = stringResource(R.string.compose_add_tag))
+                                }
+                            }
+                        }
+                    }
+                }
                 Button(
-                    onClick = { imagePickerLauncher.launch("image/*, video/*") },
+                    onClick = { imagePickerLauncher.launch("image/*") },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = darkBlue,
                         contentColor = Color.LightGray
                     ),
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.round_file_present_24),
-                        contentDescription = "My Icon"
+                    Text(text = stringResource(R.string.compose_image), color = Color.White)
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Image",
+                        tint = Color.White,
+                        modifier = Modifier.padding(start = 8.dp)
                     )
-
                 }
             }
         }
@@ -158,6 +206,26 @@ fun ComposeView(
                     .padding(bottom = 8.dp)
                     .height(300.dp)
             )
+        }
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                tags?.forEach {
+                    Box(
+                        modifier = Modifier
+                            .background(Color.Yellow, RoundedCornerShape(20.dp))
+                    ) {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .padding(8.dp),
+                            color = Color.DarkGray,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
         }
         item {
             Button(

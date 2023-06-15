@@ -54,7 +54,9 @@
     <string name="compose_post">Publier</string>
     <string name="compose_mind">Qu\'avez vous à dire?</string>
     <string name="compose_title">Titre</string>
-    <string name="compose_tag">Tag</string>  
+    <string name="compose_tag">Tag</string>
+    <string name="compose_add_tag">Ajouter le tag</string>
+    <string name="compose_image">Image</string>
     <string name="parameters_change_un">Changer le nom d\'utilisateur</string>
     <string name="parameters_new_username">Nouveau nom d\'utilisateur</string>
     <string name="parameters_validate">Valider</string>

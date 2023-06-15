@@ -15,6 +15,14 @@ class ComposeViewModel : ViewModel() {
 
     val postContent = MutableLiveData("")
     val titleContent = MutableLiveData("")
+    val tags = MutableLiveData(listOf<String>())
+    val newTag = MutableLiveData("")
+
+    fun addTag() {
+        if (newTag.value.isNullOrBlank()) return
+        tags.value = tags.value?.plus(newTag.value ?: "")
+        newTag.value = ""
+    }
 
     fun post(token: String?, navigate: (String) -> Unit) {
         if (token == null) return
@@ -32,7 +40,7 @@ class ComposeViewModel : ViewModel() {
                     token, CreatePostPayload(
                         titleContent.value ?: "",
                         postContent.value ?: "",
-                        listOf()
+                        tags.value ?: listOf()
                     )
                 ).let {
                     navigate("post/${it.id}")
