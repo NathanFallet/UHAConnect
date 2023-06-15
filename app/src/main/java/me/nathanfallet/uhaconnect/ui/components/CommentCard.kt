@@ -24,7 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.extensions.text
 import me.nathanfallet.uhaconnect.models.Comment
 import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.RoleStatus
@@ -89,17 +92,32 @@ fun CommentCard(
                             onDismissRequest = { expanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Remove comment") },
+                                text = { Text(stringResource(R.string.post_card_remove_comment)) },
                                 onClick = deleteComment
                             )
                             DropdownMenuItem(
-                                text = { Text("Ban user") },
+                                text = { Text(stringResource(R.string.post_card_ban)) },
                                 onClick = {
-                                    //TODO : Ban user method
                                     updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
-
+                                    expanded = false
                                 }
                             )
+                            if (viewedBy.role == RoleStatus.ADMINISTRATOR) {
+                                Picker(
+                                    items = mapOf(
+                                        RoleStatus.STUDENT to stringResource(RoleStatus.STUDENT.text),
+                                        RoleStatus.TEACHER to stringResource(RoleStatus.TEACHER.text),
+                                        RoleStatus.STAFF to stringResource(RoleStatus.STAFF.text),
+                                        RoleStatus.MODERATOR to stringResource(RoleStatus.MODERATOR.text),
+                                        RoleStatus.ADMINISTRATOR to stringResource(RoleStatus.ADMINISTRATOR.text)
+                                    ),
+                                    placeholder = stringResource(R.string.role_set),
+                                    onSelected = {
+                                        updateUser(UpdateUserPayload(role = it))
+                                        expanded = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package me.nathanfallet.uhaconnect.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import coil.imageLoader
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import me.nathanfallet.uhaconnect.R
+import me.nathanfallet.uhaconnect.extensions.text
 import me.nathanfallet.uhaconnect.extensions.timeAgo
 import me.nathanfallet.uhaconnect.models.Permission
 import me.nathanfallet.uhaconnect.models.Post
@@ -110,7 +113,6 @@ fun PostCard(
                     fontSize = 24.sp,
                 )
                 if (viewedBy?.role?.hasPermission(Permission.POST_DELETE) == true) {
-
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -122,7 +124,6 @@ fun PostCard(
                                 contentDescription = "More"
                             )
                         }
-
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
@@ -135,7 +136,8 @@ fun PostCard(
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.post_card_validate)) },
                                     onClick = {
-                                        updatePost(UpdatePostPayload(null, null, true))
+                                        updatePost(UpdatePostPayload(validated = true))
+                                        expanded = false
                                     }
                                 )
                             }
@@ -143,8 +145,25 @@ fun PostCard(
                                 text = { Text(stringResource(R.string.post_card_ban)) },
                                 onClick = {
                                     updateUser(UpdateUserPayload(role = RoleStatus.BANNED))
+                                    expanded = false
                                 }
                             )
+                            if (viewedBy.role == RoleStatus.ADMINISTRATOR) {
+                                Picker(
+                                    items = mapOf(
+                                        RoleStatus.STUDENT to stringResource(RoleStatus.STUDENT.text),
+                                        RoleStatus.TEACHER to stringResource(RoleStatus.TEACHER.text),
+                                        RoleStatus.STAFF to stringResource(RoleStatus.STAFF.text),
+                                        RoleStatus.MODERATOR to stringResource(RoleStatus.MODERATOR.text),
+                                        RoleStatus.ADMINISTRATOR to stringResource(RoleStatus.ADMINISTRATOR.text)
+                                    ),
+                                    placeholder = stringResource(R.string.role_set),
+                                    onSelected = {
+                                        updateUser(UpdateUserPayload(role = it))
+                                        expanded = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -157,19 +176,45 @@ fun PostCard(
                 textAlign = TextAlign.Start,
                 imageLoader = context.imageLoader
             )
+            if (post.tag.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    post.tag.forEach {
+                        Box(
+                            modifier = Modifier
+                                .background(Color.Yellow, RoundedCornerShape(20.dp))
+                        ) {
+                            Text(
+                                text = it,
+                                modifier = Modifier
+                                    .padding(8.dp),
+                                color = Color.DarkGray,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { favoriteCheck(post.favorite != null) }) {
-                    Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Like",
-                        tint = if (post.favorite == null) Color.White else Color.Red
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = "Like",
+                    tint = if (post.favorite == null) Color.White else Color.Red,
+                    modifier = Modifier.clickable {
+                        favoriteCheck(post.favorite != null)
+                    }
+                )
                 if (!detailed) {
                     Button(
                         onClick = { navigate("post/${post.id}") },

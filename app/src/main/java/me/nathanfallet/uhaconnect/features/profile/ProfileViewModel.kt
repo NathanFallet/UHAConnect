@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import me.nathanfallet.uhaconnect.models.Favorite
 import me.nathanfallet.uhaconnect.models.Follow
 import me.nathanfallet.uhaconnect.models.Post
-import me.nathanfallet.uhaconnect.models.RoleStatus
 import me.nathanfallet.uhaconnect.models.UpdatePostPayload
 import me.nathanfallet.uhaconnect.models.UpdateUserPayload
 import me.nathanfallet.uhaconnect.models.User
@@ -106,8 +105,9 @@ class ProfileViewModel(
             }
         }
     }
-    fun updateUser(token: String?, id:Int, payload: UpdateUserPayload) {
-        if (token == null) return
+
+    fun updateUser(token: String?, id: Int?, payload: UpdateUserPayload) {
+        if (token == null || id == null) return
         viewModelScope.launch {
             try {
                 APIService.getInstance(Unit).updateUser(

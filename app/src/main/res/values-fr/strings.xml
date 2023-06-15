@@ -54,7 +54,9 @@
     <string name="compose_post">Publier</string>
     <string name="compose_mind">Qu\'avez vous à dire?</string>
     <string name="compose_title">Titre</string>
-    <string name="compose_tag">Tag</string>  
+    <string name="compose_tag">Tag</string>
+    <string name="compose_add_tag">Ajouter le tag</string>
+    <string name="compose_image">Image</string>
     <string name="parameters_change_un">Changer le nom d\'utilisateur</string>
     <string name="parameters_new_username">Nouveau nom d\'utilisateur</string>
     <string name="parameters_validate">Valider</string>
@@ -82,7 +84,8 @@
     <string name="profile_following_list">Abonnements</string>
     <string name="feed_following">Suivis</string>
     <string name="feed_all">Tout</string>
-    <string name="post_card_remove">Supprimer</string>
+    <string name="post_card_remove">Supprimer le post</string>
+    <string name="post_card_remove_comment">Supprimer le commentaire</string>
     <string name="post_card_validate">Valider</string>
     <string name="post_card_ban">Bannir l\'utilisateur</string>
     <string name="role_student">Etudiant</string>
@@ -91,4 +94,5 @@
     <string name="role_moderator">Modérateur</string>
     <string name="role_administrator">Administrateur</string>
     <string name="role_banned">Banni</string>
+    <string name="role_set">Changer le rôle</string>
 </resources>
