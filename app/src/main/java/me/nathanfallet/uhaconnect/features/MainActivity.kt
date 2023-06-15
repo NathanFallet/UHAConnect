@@ -91,7 +91,7 @@ enum class NavigationItem(
     PROFILE(
         "self_profile",
         R.drawable.profile,
-        R.string.title_activity_profile_view
+        R.string.profile_profile
     )
 }
 

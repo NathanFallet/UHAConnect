@@ -12,7 +12,6 @@
     <string name="title_activity_post_view">Post</string>
     <string name="title_activity_favs_view">Favorites</string>
     <string name="title_activity_validation_view">Requests</string>
-    <string name="title_activity_profile_view">Profile</string>
     <string name="title_activity_followers">%s\'s followers</string>
     <string name="title_activity_following">%s\'s following</string>
     <string name="login_invalid_credentials">Invalid username or password</string>

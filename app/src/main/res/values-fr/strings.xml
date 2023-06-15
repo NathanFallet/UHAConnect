@@ -13,7 +13,6 @@
     <string name="title_activity_post_view">Publication</string>
     <string name="title_activity_favs_view">Favoris</string>
     <string name="title_activity_validation_view">Requêtes</string>
-    <string name="title_activity_profile_view">Profile</string>
     <string name="title_activity_followers">Abonnés de %s</string>
     <string name="title_activity_following">Abonnements de %s</string>
     <string name="login_invalid_credentials">Mot de passe ou nom d\'utilisateur invalide</string>
