@@ -158,13 +158,13 @@ fun UHAConnectApp() {
                         navigate = navController::navigate
                     ) { token ->
                         viewModel.login(token)
-                        navController.navigate("home")
+                        navController.navigate("feed")
                     }
                 }
                 composable("createAccount") {
                     CreateAccountPage(navigate = navController::navigate) { token ->
                         viewModel.login(token)
-                        navController.navigate("home")
+                        navController.navigate("feed")
                     }
                 }
                 composable("resetPasswordMail") {

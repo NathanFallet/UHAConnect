@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -28,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -35,6 +37,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -42,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -60,10 +64,12 @@ fun ParametersView(
     user: User?,
     navigate: (String) -> Unit,
     onUpdateUser: (User) -> Unit
-){
+) {
 
     val viewModel: ParametersViewModel = viewModel()
 
+    val error by viewModel.error.observeAsState()
+    val success by viewModel.success.observeAsState()
     val newUsername by viewModel.newUsername.observeAsState("")
     val newPw by viewModel.newPassword.observeAsState("")
     val rpPw by viewModel.newPassword2.observeAsState("")
@@ -139,10 +145,41 @@ fun ParametersView(
                     }
                 }
             }
-            Column (modifier = Modifier
-                .padding(start = 16.dp, bottom = 8.dp, end = 16.dp)
-                .fillMaxWidth())
-            {
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp, bottom = 8.dp, end = 16.dp)
+                    .fillMaxWidth()
+            ) {
+                error?.let {
+                    Text(
+                        text = stringResource(id = it),
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = Color.Red
+                        ),
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
+                }
+                success?.let {
+                    Text(
+                        text = stringResource(id = it),
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontFamily = FontFamily.SansSerif,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = Color.Green
+                        ),
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
+                }
                 Text(text = stringResource(R.string.parameters_change_un))
                 OutlinedTextField(
                     value = newUsername,
@@ -176,7 +213,7 @@ fun ParametersView(
                         modifier = Modifier.padding(start = 5.dp)
                     )
                 }
-                Divider(modifier = Modifier.padding(bottom = 8.dp, top = 8.dp))
+                Divider(modifier = Modifier.padding(vertical = 16.dp))
                 Text(text = stringResource(R.string.parameters_change_password))
                 OutlinedTextField(
                     value = newPw,

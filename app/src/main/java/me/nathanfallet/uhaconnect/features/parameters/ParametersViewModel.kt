@@ -15,6 +15,7 @@ import me.nathanfallet.uhaconnect.services.APIService
 class ParametersViewModel: ViewModel() {
 
     val error = MutableLiveData<Int>()
+    val success = MutableLiveData<Int>()
     val newUsername = MutableLiveData("")
     val newPassword = MutableLiveData("")
     val newPassword2 = MutableLiveData("")
@@ -34,6 +35,7 @@ class ParametersViewModel: ViewModel() {
                         UpdateUserPayload(username = newUsername.value ?: "")
                     )
                 )
+                success.value = R.string.parameters_username_updated
             } catch (e: Exception) {
                 error.value = R.string.parameters_invalid_un_credentials
             }
@@ -55,6 +57,7 @@ class ParametersViewModel: ViewModel() {
                         UpdateUserPayload(password = newPassword.value ?: "")
                     )
                 )
+                success.value = R.string.parameters_password_updated
             } catch (e: Exception) {
                 Log.d("ParametersViewModel", e.toString())
                 error.value = R.string.parameters_invalid_pw_credentials
