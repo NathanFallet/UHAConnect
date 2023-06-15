@@ -338,7 +338,10 @@ fun Route.apiPosts() {
                     it[user_id] = user.id
                     it[content] = newComment.content
                     it[date] = Clock.System.now().toEpochMilliseconds()
-                }.resultedValues?.map(Comments::toComment)?.singleOrNull()
+                }.resultedValues
+                    ?.map(Comments::toComment)
+                    ?.singleOrNull()
+                    ?.copy(user = user)
             } ?: run {
                 call.response.status(HttpStatusCode.InternalServerError)
                 call.respond(mapOf("error" to "Error while creating post."))

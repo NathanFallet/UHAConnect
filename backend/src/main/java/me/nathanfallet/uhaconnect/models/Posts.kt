@@ -30,7 +30,7 @@ object Posts : IntIdTable() {
             title = row[title],
             content = row[content],
             date = Instant.fromEpochMilliseconds(row[date]),
-            tag = row[tag].split(",").filter { it.isNotBlank() },
+            tag = row[tag].split(",").map { it.trim() }.filter { it.isNotBlank() },
             validated = row[validated],
             user = user,
             favorite = favorite
